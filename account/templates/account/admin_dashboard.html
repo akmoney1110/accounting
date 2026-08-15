@@ -54,14 +54,14 @@
             <div class="w-10 h-10 bg-[#F0F5E0] rounded-xl flex items-center justify-center text-xl">🌰</div>
             <div>
                 <h2 class="text-xl font-bold text-[#4E342E]">Your Cashew Farm Story</h2>
-                <p class="text-xs text-[#8D7B6B]">Everything about your cashew business, explained like you dey talk with friend</p>
+                <p class="text-xs text-[#8D7B6B]">Everything about your cashew business, explained simply as if talking to a friend</p>
             </div>
         </div>
         <div class="bg-white border border-[#E8DDD0] rounded-xl p-3 mt-2 flex items-center gap-3">
             <span class="text-2xl">📖</span>
             <p class="text-sm text-[#5D4037]">
-                <strong>Story so far:</strong> You buy cashew from farmers, dry am for sun, sell am to buyers. 
-                Dis page show you how much money enter your hand, how much you spend, and how much remain for your pocket.
+                <strong>Story so far:</strong> You buy cashew from farmers, dry them in the sun, and sell them to buyers. 
+                This page shows you how much money you received, how much you spent, and how much remains in your pocket.
             </p>
         </div>
     </div>
@@ -77,13 +77,13 @@
                         <i class="fas fa-sack-dollar text-[#6B8E23] text-lg"></i>
                     </div>
                     <span class="text-xs font-semibold text-[#6B8E23] bg-[#F0F5E0] px-2.5 py-1 rounded-full flex items-center gap-1">
-                        <i class="fas fa-arrow-down"></i> Money Enter
+                        <i class="fas fa-arrow-down"></i> Money In
                     </span>
                 </div>
                 <p class="text-sm text-[#8D7B6B] font-medium">Money Buyers Paid You</p>
                 <h3 class="text-2xl font-bold text-[#4E342E] mt-1">₦<span class="counter" data-target="{{ total_sales|default:'0' }}">{{ total_sales|default:"0.00" }}</span></h3>
                 <div class="explain-box mt-2">
-                    <p>💡 This is all the cash buyers give you when dem buy your dried cashew nuts.</p>
+                    <p>💡 This is all the cash buyers gave you when they bought your dried cashew nuts.</p>
                 </div>
             </div>
         </div>
@@ -97,13 +97,13 @@
                         <i class="fas fa-people-carry-box text-[#C9952C] text-lg"></i>
                     </div>
                     <span class="text-xs font-semibold text-[#C9952C] bg-[#F9F1E0] px-2.5 py-1 rounded-full flex items-center gap-1">
-                        <i class="fas fa-wheat-awn"></i> Money Go Out
+                        <i class="fas fa-wheat-awn"></i> Money Out
                     </span>
                 </div>
                 <p class="text-sm text-[#8D7B6B] font-medium">Money You Paid Farmers</p>
                 <h3 class="text-2xl font-bold text-[#4E342E] mt-1">₦<span class="counter" data-target="{{ total_purchases|default:'0' }}">{{ total_purchases|default:"0.00" }}</span></h3>
                 <div class="explain-box mt-2">
-                    <p>💡 You pay farmers dis money to collect fresh cashew nuts from their farm.</p>
+                    <p>💡 You pay farmers this money to collect fresh cashew nuts from their farm.</p>
                 </div>
             </div>
         </div>
@@ -117,13 +117,13 @@
                         <i class="fas fa-truck-ramp-box text-[#C75B39] text-lg"></i>
                     </div>
                     <span class="text-xs font-semibold text-[#C75B39] bg-[#FDEDE8] px-2.5 py-1 rounded-full flex items-center gap-1">
-                        <i class="fas fa-fire"></i> Small Costs
+                        <i class="fas fa-fire"></i> Operating Costs
                     </span>
                 </div>
                 <p class="text-sm text-[#8D7B6B] font-medium">Transport, Fuel, Bags & Labour</p>
                 <h3 class="text-2xl font-bold text-[#4E342E] mt-1">₦<span class="counter" data-target="{{ total_expenses|default:'0' }}">{{ total_expenses|default:"0.00" }}</span></h3>
                 <div class="explain-box mt-2">
-                    <p>💡 Money wey you spend to carry cashew, buy sacks, put fuel for generator, and pay people wey help you work.</p>
+                    <p>💡 Money you spent to transport cashew, buy sacks, fuel the generator, and pay workers who helped you.</p>
                 </div>
             </div>
         </div>
@@ -137,24 +137,24 @@
                         <i class="fas fa-piggy-bank text-[#2E7D32] text-lg"></i>
                     </div>
                     <span class="text-xs font-semibold {% if net_profit > 0 %}text-[#2E7D32] bg-[#E8F5E9]{% else %}text-[#C75B39] bg-[#FDEDE8]{% endif %} px-2.5 py-1 rounded-full flex items-center gap-1">
-                        {% if net_profit > 0 %}<i class="fas fa-face-smile"></i> You Gain{% else %}<i class="fas fa-face-frown"></i> You Loss{% endif %}
+                        {% if net_profit > 0 %}<i class="fas fa-face-smile"></i> Profit{% else %}<i class="fas fa-face-frown"></i> Loss{% endif %}
                     </span>
                 </div>
-                <p class="text-sm text-[#8D7B6B] font-medium">Money Remaining for Your Pocket</p>
+                <p class="text-sm text-[#8D7B6B] font-medium">Money Remaining in Your Pocket</p>
                 <h3 class="text-2xl font-bold {% if net_profit > 0 %}text-[#2E7D32]{% else %}text-[#C75B39]{% endif %} mt-1">₦<span class="counter" data-target="{{ net_profit|default:'0' }}">{{ net_profit|default:"0.00" }}</span></h3>
                 <div class="explain-box mt-2">
-                    <p>💡 After you pay farmers and cover all small costs, dis na the money wey remain for you to keep.</p>
+                    <p>💡 After paying farmers and covering all operating costs, this is the money that remains for you to keep.</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- ====== FARM YARD NUMBERS (What Dey Ground) ====== -->
+    <!-- ====== FARM YARD NUMBERS (What Is On the Ground) ====== -->
     <div class="mb-2 fade-in">
         <h3 class="font-bold text-[#4E342E] flex items-center gap-2 text-sm uppercase tracking-wider">
-            <i class="fas fa-warehouse text-[#8B5E3C]"></i> Wetin Dey Your Farm Yard
+            <i class="fas fa-warehouse text-[#8B5E3C]"></i> What Is In Your Farm Yard
         </h3>
-        <p class="text-xs text-[#8D7B6B] mb-4">Numbers wey show wetin you gather from farmers</p>
+        <p class="text-xs text-[#8D7B6B] mb-4">Numbers showing what you gathered from farmers</p>
     </div>
     <div class="grid grid-cols-2 lg:grid-cols-6 gap-4 mb-6 fade-in">
         <div class="bg-white rounded-xl p-4 border border-[#E8DDD0] flex items-center gap-3">
@@ -180,7 +180,7 @@
                 <i class="fas fa-hand-holding-dollar text-[#C75B39] text-base"></i>
             </div>
             <div>
-                <p class="text-xs text-[#8D7B6B]">Loads Wey Never Pay Finish</p>
+                <p class="text-xs text-[#8D7B6B]">Loads Not Fully Paid</p>
                 <p class="text-lg font-bold text-[#C75B39]">{{ pending_payments|default:"0" }} <span class="text-xs font-normal text-[#8D7B6B]">pending</span></p>
             </div>
         </div>
@@ -207,7 +207,7 @@
                 <i class="fas fa-droplet text-[#C75B39] text-base"></i>
             </div>
             <div>
-                <p class="text-xs text-[#8D7B6B]">Water Wey Sun Dry Comot</p>
+                <p class="text-xs text-[#8D7B6B]">Water Removed by Sun Drying</p>
                 <p class="text-lg font-bold text-[#C75B39]">{{ vendor_moisture_loss|default:"0" }} <span class="text-xs font-normal text-[#8D7B6B]">kg</span></p>
             </div>
         </div>
@@ -218,16 +218,16 @@
         <div class="flex items-center justify-between mb-4">
             <div>
                 <h3 class="font-bold text-[#4E342E] flex items-center gap-2">
-                    <i class="fas fa-sun text-[#C9952C]"></i> The Drying Rack (How Sun Take Remove Water)
+                    <i class="fas fa-sun text-[#C9952C]"></i> The Drying Rack (How the Sun Removes Water)
                 </h3>
-                <p class="text-xs text-[#8D7B6B]">See how fresh cashew from farmers become dry cashew ready for market</p>
+                <p class="text-xs text-[#8D7B6B]">See how fresh cashew from farmers becomes dry cashew ready for the market</p>
             </div>
         </div>
 
         <div class="bg-[#FFF8E1] border border-[#F5E6C8] rounded-xl p-4 mb-5">
             <p class="text-sm text-[#5D4037] font-medium">
                 <i class="fas fa-lightbulb text-[#C9952C] mr-2"></i>
-                <strong>How e dey work:</strong> When farmers bring fresh cashew, e get water inside. You spread am for sun for 2-3 days. The water disappear (evaporate), and the cashew become lighter. You fit sell the dry one, but you no fit sell the water wey comot.
+                <strong>How it works:</strong> When farmers bring fresh cashew, it contains water. You spread them in the sun for 2-3 days. The water disappears (evaporates), and the cashew becomes lighter. You can sell the dry ones, but you cannot sell the water that was removed.
             </p>
         </div>
 
@@ -245,19 +245,19 @@
                 <div class="text-2xl mb-1">🌧️</div>
                 <p class="text-xs text-[#8D7B6B] font-semibold uppercase tracking-wider mb-1">Fresh from Farmers (Wet)</p>
                 <p class="text-2xl font-bold text-[#4E342E]">{{ wet }} <span class="text-sm font-normal text-[#8D7B6B]">kg</span></p>
-                <p class="text-xs text-[#A89B8C] mt-1">Weight when farmers just bring am</p>
+                <p class="text-xs text-[#A89B8C] mt-1">Weight when farmers first bring them</p>
             </div>
             <div class="bg-[#F9F1E0] rounded-xl p-4 text-center border-2 border-[#F5E6C8]">
                 <div class="text-2xl mb-1">☀️</div>
                 <p class="text-xs text-[#8D7B6B] font-semibold uppercase tracking-wider mb-1">After Drying (Ready for Market)</p>
                 <p class="text-2xl font-bold text-[#C9952C]">{{ dry }} <span class="text-sm font-normal text-[#8D7B6B]">kg</span></p>
-                <p class="text-xs text-[#A89B8C] mt-1">Weight after sun dry am well well</p>
+                <p class="text-xs text-[#A89B8C] mt-1">Weight after thorough sun drying</p>
             </div>
             <div class="bg-[#FDEDE8] rounded-xl p-4 text-center border-2 border-[#FFCCBC]">
                 <div class="text-2xl mb-1">💨</div>
-                <p class="text-xs text-[#8D7B6B] font-semibold uppercase tracking-wider mb-1">Water Wey Comot</p>
+                <p class="text-xs text-[#8D7B6B] font-semibold uppercase tracking-wider mb-1">Water Removed</p>
                 <p class="text-2xl font-bold text-[#C75B39]">{{ lost }} <span class="text-sm font-normal text-[#8D7B6B]">kg</span></p>
-                <p class="text-xs text-[#A89B8C] mt-1">Water wey evaporate for sun</p>
+                <p class="text-xs text-[#A89B8C] mt-1">Water that evaporated in the sun</p>
             </div>
         </div>
 
@@ -274,26 +274,26 @@
             </div>
         </div>
         <div class="mt-3 flex gap-4 text-xs text-[#8D7B6B]">
-            <span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-[#6B8E23] inline-block"></span> <strong>Dry Cashew</strong> — dis one you fit sell</span>
-            <span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-[#C75B39] inline-block"></span> <strong>Water</strong> — dis one don disappear for sun</span>
+            <span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-[#6B8E23] inline-block"></span> <strong>Dry Cashew</strong> — this is what you can sell</span>
+            <span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-[#C75B39] inline-block"></span> <strong>Water</strong> — this has disappeared in the sun</span>
         </div>
         
         {% if wet > 0 and dry > 0 %}
         <div class="mt-4 simple-math-box">
             <p class="text-sm text-[#4E342E] font-bold text-center">
-                <span class="story-emoji">🧮</span>Simple Example: If you buy 100kg wet cashew, after drying you fit get only {{ dry_pct }}kg ({{ dry_pct }}%) wey you fit sell. The remaining {{ lost_pct }}kg ({{ lost_pct }}%) na water wey sun take.
+                <span class="story-emoji">🧮</span>Simple Example: If you buy 100kg wet cashew, after drying you may get only {{ dry_pct }}kg ({{ dry_pct }}%) that you can sell. The remaining {{ lost_pct }}kg ({{ lost_pct }}%) is water removed by the sun.
             </p>
         </div>
         {% endif %}
         {% endwith %}
     </div>
 
-    <!-- ====== BALANCE CARDS (Who Owe Who) ====== -->
+    <!-- ====== BALANCE CARDS (Who Owes Whom) ====== -->
     <div class="mb-2 fade-in">
         <h3 class="font-bold text-[#4E342E] flex items-center gap-2 text-sm uppercase tracking-wider">
-            <i class="fas fa-scale-balanced text-[#8B5E3C]"></i> Who Owe Who (Money Wey Still Dey Change Hand)
+            <i class="fas fa-scale-balanced text-[#8B5E3C]"></i> Who Owes Whom (Money Still Changing Hands)
         </h3>
-        <p class="text-xs text-[#8D7B6B] mb-4">See who need pay who — no forget any money!</p>
+        <p class="text-xs text-[#8D7B6B] mb-4">See who needs to pay whom — don't forget any money!</p>
     </div>
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-6 fade-in">
         <!-- You Owe Farmers -->
@@ -305,7 +305,7 @@
                         <i class="fas fa-file-invoice-dollar text-[#C75B39] text-lg"></i>
                     </div>
                     <span class="text-xs font-semibold text-[#C75B39] bg-[#FDEDE8] px-2.5 py-1 rounded-full flex items-center gap-1">
-                        <i class="fas fa-arrow-up"></i> You Go Pay
+                        <i class="fas fa-arrow-up"></i> You Owe
                     </span>
                 </div>
                 <p class="text-sm text-[#8D7B6B] font-medium">Money You Still Owe Farmers</p>
@@ -321,7 +321,7 @@
                     {% endif %}
                 </div>
                 <div class="explain-box mt-2">
-                    <p>💡 You buy cashew from farmers but you never pay dem finish. Na dis money remain wey you owe dem.</p>
+                    <p>💡 You bought cashew from farmers but haven't finished paying them. This is the remaining money you owe them.</p>
                 </div>
             </div>
         </a>
@@ -335,10 +335,10 @@
                         <i class="fas fa-hand-holding-dollar text-[#6B8E23] text-lg"></i>
                     </div>
                     <span class="text-xs font-semibold text-[#6B8E23] bg-[#F0F5E0] px-2.5 py-1 rounded-full flex items-center gap-1">
-                        <i class="fas fa-arrow-down"></i> Dem Go Pay You
+                        <i class="fas fa-arrow-down"></i> They Will Pay You
                     </span>
                 </div>
-                <p class="text-sm text-[#8D7B6B] font-medium">Farmers Over-Pay You (Your Credit)</p>
+                <p class="text-sm text-[#8D7B6B] font-medium">Farmers Overpaid You (Your Credit)</p>
                 <h3 class="text-2xl font-bold text-[#6B8E23] mt-1">₦<span class="counter" data-target="{{ vendors_owe_me|default:'0' }}">{{ vendors_owe_me|default:"0.00" }}</span></h3>
                 <div class="mt-2 flex items-center gap-2 text-xs">
                     <span class="bg-[#F5EFE6] text-[#5D4037] px-2 py-1 rounded-md font-mono font-semibold">
@@ -351,7 +351,7 @@
                     {% endif %}
                 </div>
                 <div class="explain-box mt-2">
-                    <p>💡 Farmers pay you too much money before. Dis money dey your hand — na like credit wey you get with dem.</p>
+                    <p>💡 Farmers paid you too much money before. This money is in your hands — it is like credit you have with them.</p>
                 </div>
             </div>
         </a>
@@ -365,7 +365,7 @@
                         <i class="fas fa-sack-dollar text-[#C9952C] text-lg"></i>
                     </div>
                     <span class="text-xs font-semibold text-[#C9952C] bg-[#F9F1E0] px-2.5 py-1 rounded-full flex items-center gap-1">
-                        <i class="fas fa-arrow-down"></i> Dem Go Pay You
+                        <i class="fas fa-arrow-down"></i> They Will Pay You
                     </span>
                 </div>
                 <p class="text-sm text-[#8D7B6B] font-medium">Buyers Still Need to Pay You</p>
@@ -381,7 +381,7 @@
                     {% endif %}
                 </div>
                 <div class="explain-box mt-2">
-                    <p>💡 You sell cashew give buyers but dem never pay you finish. Dis na money wey buyers must still bring for you.</p>
+                    <p>💡 You sold cashew to buyers but they haven't finished paying you. This is money buyers must still bring to you.</p>
                 </div>
             </div>
         </a>
@@ -395,7 +395,7 @@
                         <i class="fas fa-rotate-left text-[#C75B39] text-lg"></i>
                     </div>
                     <span class="text-xs font-semibold text-[#C75B39] bg-[#FDEDE8] px-2.5 py-1 rounded-full flex items-center gap-1">
-                        <i class="fas fa-arrow-up"></i> You Go Refund
+                        <i class="fas fa-arrow-up"></i> You Must Refund
                     </span>
                 </div>
                 <p class="text-sm text-[#8D7B6B] font-medium">Money You Need to Refund Buyers</p>
@@ -411,7 +411,7 @@
                     {% endif %}
                 </div>
                 <div class="explain-box mt-2">
-                    <p>💡 Buyers pay you too much money before. You need return dis remaining money to dem.</p>
+                    <p>💡 Buyers paid you too much money before. You need to return this remaining money to them.</p>
                 </div>
             </div>
         </a>
@@ -427,7 +427,7 @@
                     <h3 class="font-bold text-[#4E342E] flex items-center gap-2">
                         <i class="fas fa-coins text-[#C9952C]"></i> Money Flow (Where Every Naira Goes)
                     </h3>
-                    <p class="text-xs text-[#8D7B6B]">Imagine you sell cashew and collect money — see how dat money dey share</p>
+                    <p class="text-xs text-[#8D7B6B]">Imagine you sell cashew and collect money — see how that money is shared</p>
                 </div>
             </div>
 
@@ -439,27 +439,27 @@
                 <div>
                     <div class="flex justify-between items-center mb-2 text-sm font-semibold">
                         <span class="text-[#6B8E23] flex items-center gap-2">
-                            <i class="fas fa-circle text-[8px]"></i> Total Sales (All Money Wey Enter)
+                            <i class="fas fa-circle text-[8px]"></i> Total Sales (All Money That Came In)
                         </span>
                         <span class="text-[#4E342E] font-bold">₦{{ total_sales|default:"0.00" }}</span>
                     </div>
                     <div class="w-full bg-[#F5EFE6] h-6 rounded-full overflow-hidden p-1 border border-[#E8DDD0]">
                         <div class="bg-[#6B8E23] h-full rounded-full transition-all duration-1000" style="width: 100%;"></div>
                     </div>
-                    <p class="text-xs text-[#A89B8C] mt-1">This na 100% — imagine am like one full bag of money</p>
+                    <p class="text-xs text-[#A89B8C] mt-1">This is 100% — imagine it like one full bag of money</p>
                 </div>
 
                 <div>
                     <div class="flex justify-between items-center mb-2 text-sm font-semibold">
                         <span class="text-[#C9952C] flex items-center gap-2">
-                            <i class="fas fa-circle text-[8px]"></i> Money You Pay Farmers to Buy Cashew
+                            <i class="fas fa-circle text-[8px]"></i> Money You Paid Farmers to Buy Cashew
                         </span>
                         <span class="text-[#4E342E] font-bold">₦{{ total_purchases|default:"0.00" }}</span>
                     </div>
                     <div class="w-full bg-[#F5EFE6] h-6 rounded-full overflow-hidden p-1 border border-[#E8DDD0]">
                         <div class="bg-[#C9952C] h-full rounded-full transition-all duration-1000" style="width: {% if sales_val > 0 %}{{ purchase_pct }}{% else %}0{% endif %}%;"></div>
                     </div>
-                    <p class="text-xs text-[#A89B8C] mt-1">{% if sales_val > 0 %}{{ purchase_pct }}%{% else %}—{% endif %} of your sales money go back to farmers</p>
+                    <p class="text-xs text-[#A89B8C] mt-1">{% if sales_val > 0 %}{{ purchase_pct }}%{% else %}—{% endif %} of your sales money goes back to farmers</p>
                 </div>
 
                 <div>
@@ -472,7 +472,7 @@
                     <div class="w-full bg-[#F5EFE6] h-6 rounded-full overflow-hidden p-1 border border-[#E8DDD0]">
                         <div class="bg-[#C75B39] h-full rounded-full transition-all duration-1000" style="width: {% if sales_val > 0 %}{{ expense_pct }}{% else %}0{% endif %}%;"></div>
                     </div>
-                    <p class="text-xs text-[#A89B8C] mt-1">{% if sales_val > 0 %}{{ expense_pct }}%{% else %}—{% endif %} of your sales money you spend to move the business</p>
+                    <p class="text-xs text-[#A89B8C] mt-1">{% if sales_val > 0 %}{{ expense_pct }}%{% else %}—{% endif %} of your sales money you spend to run the business</p>
                 </div>
             </div>
             {% endwith %}
@@ -482,10 +482,10 @@
                     <i class="fas fa-piggy-bank"></i>
                 </div>
                 <div>
-                    <p class="text-xs text-[#6B8E23] font-bold uppercase tracking-wider mb-1">Simple Farm Maths</p>
+                    <p class="text-xs text-[#6B8E23] font-bold uppercase tracking-wider mb-1">Simple Farm Math</p>
                     <p class="text-sm font-bold text-[#4E342E]">
                         Buyers Pay You (₦{{ total_sales|default:"0.00" }}) − Farmer Cost (₦{{ total_purchases|default:"0.00" }}) − Small Costs (₦{{ total_expenses|default:"0.00" }}) 
-                        = <span class="{% if net_profit >= 0 %}text-[#2E7D32]{% else %}text-[#C75B39]{% endif %}">₦{{ net_profit|default:"0.00" }} (Your Pocket Money)</span>
+                        = <span class="{% if net_profit >= 0 %}text-[#2E7D32]{% else %}text-[#C75B39]{% endif %}">₦{{ net_profit|default:"0.00" }} (Money for Your Pocket)</span>
                     </p>
                 </div>
             </div>
@@ -496,7 +496,7 @@
             <div class="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-10 -mt-10 blur-2xl"></div>
             <div class="relative">
                 <h3 class="font-bold mb-1">Quick Buttons</h3>
-                <p class="text-xs text-[#D7CCC8] mb-5">Tap below to do something right now</p>
+                <p class="text-xs text-[#D7CCC8] mb-5">Click below to do something right now</p>
                 <div class="space-y-3">
                     <a href="{% url 'batch_create' %}" class="flex items-center gap-3 p-3 rounded-xl bg-white/10 hover:bg-white/20 transition-colors group">
                         <div class="w-9 h-9 bg-[#C9952C] rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -532,7 +532,7 @@
             </div>
             <div class="mt-6 pt-4 border-t border-white/10">
                 <p class="text-[10px] text-[#A1887F] text-center">
-                    <i class="fas fa-shield-alt mr-1"></i> Every transaction dey saved — you fit check am later
+                    <i class="fas fa-shield-alt mr-1"></i> Every transaction is saved — you can check it later
                 </p>
             </div>
         </div>
@@ -544,7 +544,7 @@
             <h3 class="font-bold text-[#4E342E] flex items-center gap-2 mb-1">
                 <i class="fas fa-chart-line text-[#6B8E23]"></i> This Month vs Last Month
             </h3>
-            <p class="text-xs text-[#8D7B6B] mb-4">You dey sell more cashew than before?</p>
+            <p class="text-xs text-[#8D7B6B] mb-4">Are you selling more cashew than before?</p>
             
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div class="bg-[#F5EFE6] rounded-xl p-4 text-center">
@@ -569,11 +569,11 @@
             <h3 class="font-bold text-[#4E342E] flex items-center gap-2 mb-1">
                 <i class="fas fa-clipboard-check text-[#C9952C]"></i> Payment Tracker
             </h3>
-            <p class="text-xs text-[#8D7B6B] mb-4">How many loads don pay finish, pay half, or never pay?</p>
+            <p class="text-xs text-[#8D7B6B] mb-4">How many loads are fully paid, partially paid, or not paid at all?</p>
             
             <div class="space-y-3">
                 <div class="flex items-center justify-between">
-                    <span class="text-sm text-[#5D4037] flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-[#2E7D32]\"></span> Paid Completely</span>
+                    <span class="text-sm text-[#5D4037] flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-[#2E7D32]\"></span> Fully Paid</span>
                     <span class="font-bold text-[#2E7D32]">{{ payment_status_counts.full|default:"0" }}</span>
                 </div>
                 <div class="w-full bg-[#F5EFE6] h-2 rounded-full overflow-hidden">
@@ -581,7 +581,7 @@
                 </div>
                 
                 <div class="flex items-center justify-between">
-                    <span class="text-sm text-[#5D4037] flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-[#F57F17]\"></span> Paid Small (Deposit)</span>
+                    <span class="text-sm text-[#5D4037] flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-[#F57F17]\"></span> Partially Paid (Deposit)</span>
                     <span class="font-bold text-[#F57F17]">{{ payment_status_counts.partial|default:"0" }}</span>
                 </div>
                 <div class="w-full bg-[#F5EFE6] h-2 rounded-full overflow-hidden">
@@ -589,7 +589,7 @@
                 </div>
                 
                 <div class="flex items-center justify-between">
-                    <span class="text-sm text-[#5D4037] flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-[#C75B39]\"></span> Never Pay Anything (Owing)</span>
+                    <span class="text-sm text-[#5D4037] flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-[#C75B39]\"></span> Not Paid At All (Owing)</span>
                     <span class="font-bold text-[#C75B39]">{{ payment_status_counts.none|default:"0" }}</span>
                 </div>
                 <div class="w-full bg-[#F5EFE6] h-2 rounded-full overflow-hidden">
@@ -605,9 +605,9 @@
         <!-- Where Your Money Goes -->
         <div class="bg-white rounded-2xl border border-[#E8DDD0] shadow-sm p-6">
             <h3 class="font-bold text-[#4E342E] flex items-center gap-2 mb-1">
-                <i class="fas fa-pie-chart text-[#C75B39]"></i> Where Your Small Money Dey Go
+                <i class="fas fa-pie-chart text-[#C75B39]"></i> Where Your Operating Money Goes
             </h3>
-            <p class="text-xs text-[#8D7B6B] mb-4">Wetin you spend money on apart from buying cashew</p>
+            <p class="text-xs text-[#8D7B6B] mb-4">What you spend money on apart from buying cashew</p>
             
             {% if expense_breakdown %}
             <div class="chart-container mb-4">
@@ -628,7 +628,7 @@
             <div class="py-12 text-center text-[#A89B8C]">
                 <i class="fas fa-receipt text-4xl text-[#E8DDD0] mb-3"></i>
                 <p class="font-medium">No expenses recorded yet</p>
-                <p class="text-xs mt-1">Transport, fuel, bags, and labour costs go show here when you add dem</p>
+                <p class="text-xs mt-1">Transport, fuel, bags, and labour costs will show here when you add them</p>
             </div>
             {% endif %}
         </div>
@@ -638,7 +638,7 @@
             <h3 class="font-bold text-[#4E342E] flex items-center gap-2 mb-1">
                 <i class="fas fa-chart-column text-[#6B8E23]"></i> Monthly Harvest Trend
             </h3>
-            <p class="text-xs text-[#8D7B6B] mb-4">How much cashew you buy vs sell every month</p>
+            <p class="text-xs text-[#8D7B6B] mb-4">How much cashew you buy vs sell each month</p>
             
             <div class="chart-container">
                 <canvas id="monthlyChart"></canvas>
@@ -652,9 +652,9 @@
         <!-- Top Farmers -->
         <div class="bg-white rounded-2xl border border-[#E8DDD0] shadow-sm p-6">
             <h3 class="font-bold text-[#4E342E] flex items-center gap-2 mb-1">
-                <i class="fas fa-tractor text-[#8B5E3C]"></i> Your Best Farmers (Wey Supply Pass)
+                <i class="fas fa-tractor text-[#8B5E3C]"></i> Your Best Farmers (Top Suppliers)
             </h3>
-            <p class="text-xs text-[#8D7B6B] mb-4">Farmers wey bring you the most cashew nuts</p>
+            <p class="text-xs text-[#8D7B6B] mb-4">Farmers who bring you the most cashew nuts</p>
             
             {% if top_vendors %}
             <div class="space-y-3">
@@ -684,9 +684,9 @@
         <!-- Top Buyers -->
         <div class="bg-white rounded-2xl border border-[#E8DDD0] shadow-sm p-6">
             <h3 class="font-bold text-[#4E342E] flex items-center gap-2 mb-1">
-                <i class="fas fa-store text-[#C9952C]"></i> Your Best Buyers (Wey Buy Pass)
+                <i class="fas fa-store text-[#C9952C]"></i> Your Best Buyers (Top Purchasers)
             </h3>
-            <p class="text-xs text-[#8D7B6B] mb-4">Buyers wey purchase the most cashew from you</p>
+            <p class="text-xs text-[#8D7B6B] mb-4">Buyers who purchase the most cashew from you</p>
             
             {% if top_clients %}
             <div class="space-y-3">
@@ -722,7 +722,7 @@
         </div>
         <div class="flex-1">
             <p class="text-sm font-bold text-[#4E342E]\">Loose Cash: ₦{{ unallocated_payments|default:"0.00" }}</p>
-            <p class="text-xs text-[#8D7B6B]\">Dis na money wey you receive or pay wey you never link to any particular cashew load. You suppose link am so your record go dey correct.</p>
+            <p class="text-xs text-[#8D7B6B]\">This is money you received or paid that you haven't linked to any particular cashew load. You should link it so your records will be correct.</p>
         </div>
         <a href="{% url 'transaction_add' %}" class="text-xs font-semibold text-[#C9952C] bg-white hover:bg-[#F5EFE6] px-3 py-2 rounded-lg border border-[#E8DDD0] transition-colors whitespace-nowrap">
             Link Payment
@@ -735,7 +735,7 @@
         <div class="px-6 py-4 border-b border-[#F5EFE6] flex items-center justify-between">
             <div>
                 <h3 class="font-bold text-[#4E342E] flex items-center gap-2"><i class="fas fa-clipboard-list text-[#C9952C]"></i> Recent Cashew Loads</h3>
-                <p class="text-xs text-[#8D7B6B]">Latest deliveries and sales wey you record</p>
+                <p class="text-xs text-[#8D7B6B]">Latest deliveries and sales you recorded</p>
             </div>
             <div class="flex gap-2">
                 <a href="{% url 'batch_list' %}" class="text-xs font-semibold text-[#8B5E3C] hover:text-[#5D4037] bg-[#F5EFE6] hover:bg-[#E8DDD0] px-3 py-1.5 rounded-lg transition-colors">
@@ -753,11 +753,11 @@
                         <th class="px-6 py-3 text-left font-semibold">Load Number</th>
                         <th class="px-6 py-3 text-left font-semibold">Buy or Sell</th>
                         <th class="px-6 py-3 text-left font-semibold">Person</th>
-                        <th class="px-6 py-3 text-left font-semibold">Cashew Kind</th>
-                        <th class="px-6 py-3 text-right font-semibold">How Heavy</th>
-                        <th class="px-6 py-3 text-right font-semibold">Total Money</th>
-                        <th class="px-6 py-3 text-center font-semibold">Pay Status</th>
-                        <th class="px-6 py-3 text-center font-semibold">When</th>
+                        <th class="px-6 py-3 text-left font-semibold">Cashew Type</th>
+                        <th class="px-6 py-3 text-right font-semibold">Weight</th>
+                        <th class="px-6 py-3 text-right font-semibold">Total Amount</th>
+                        <th class="px-6 py-3 text-center font-semibold">Payment Status</th>
+                        <th class="px-6 py-3 text-center font-semibold">Date</th>
                         <th class="px-6 py-3 text-center font-semibold">Open</th>
                     </tr>
                 </thead>
@@ -767,9 +767,9 @@
                         <td class="px-6 py-4"><span class="font-mono font-bold text-[#5D4037] text-xs bg-[#F5EFE6] px-2 py-1 rounded">{{ batch.batch_code }}</span></td>
                         <td class="px-6 py-4">
                             {% if batch.transaction_type == 'BUY' %}
-                            <span class="status-badge bg-[#F9F1E0] text-[#B8860B] border border-[#F5E6C8]"><i class="fas fa-arrow-down mr-1 text-xs"></i> WE BUY AM</span>
+                            <span class="status-badge bg-[#F9F1E0] text-[#B8860B] border border-[#F5E6C8]"><i class="fas fa-arrow-down mr-1 text-xs"></i> WE BOUGHT IT</span>
                             {% else %}
-                            <span class="status-badge bg-[#F0F5E0] text-[#556B2F] border border-[#E8F0D0]"><i class="fas fa-arrow-up mr-1 text-xs"></i> WE SELL AM</span>
+                            <span class="status-badge bg-[#F0F5E0] text-[#556B2F] border border-[#E8F0D0]"><i class="fas fa-arrow-up mr-1 text-xs"></i> WE SOLD IT</span>
                             {% endif %}
                         </td>
                         <td class="px-6 py-4">
@@ -785,11 +785,11 @@
                         <td class="px-6 py-4 text-right font-mono font-bold text-[#4E342E]\">₦{{ batch.total_amount|default:"0.00" }}</td>
                         <td class="px-6 py-4 text-center">
                             {% if batch.payment_status == 'FULL_PAYMENT' %}
-                            <span class="status-badge bg-[#E8F5E9] text-[#2E7D32] border border-[#C8E6C9]"><i class="fas fa-check-circle mr-1"></i> Paid Finish</span>
+                            <span class="status-badge bg-[#E8F5E9] text-[#2E7D32] border border-[#C8E6C9]"><i class="fas fa-check-circle mr-1"></i> Fully Paid</span>
                             {% elif batch.payment_status == 'PARTIAL_PAYMENT' %}
-                            <span class="status-badge bg-[#FFF8E1] text-[#F57F17] border border-[#FFECB3]"><i class="fas fa-adjust mr-1"></i> Pay Small</span>
+                            <span class="status-badge bg-[#FFF8E1] text-[#F57F17] border border-[#FFECB3]"><i class="fas fa-adjust mr-1"></i> Partially Paid</span>
                             {% else %}
-                            <span class="status-badge bg-[#FDEDE8] text-[#C75B39] border border-[#FFCCBC]"><i class="fas fa-times-circle mr-1"></i> Never Pay</span>
+                            <span class="status-badge bg-[#FDEDE8] text-[#C75B39] border border-[#FFCCBC]"><i class="fas fa-times-circle mr-1"></i> Not Paid</span>
                             {% endif %}
                         </td>
                         <td class="px-6 py-4 text-center text-[#A89B8C] text-xs">{{ batch.transaction_date|date:"M d, Y" }}</td>
@@ -845,7 +845,7 @@
             <div class="px-6 py-12 text-center text-[#A89B8C]">
                 <div class="mb-3"><i class="fas fa-money-bill-wave text-4xl text-[#E8DDD0]\"></i></div>
                 <p class="font-medium">No payments recorded yet</p>
-                <p class="text-xs mt-1">When you pay farmers or buyers pay you, e go show here</p>
+                <p class="text-xs mt-1">When you pay farmers or buyers pay you, it will show here</p>
             </div>
             {% endfor %}
         </div>
