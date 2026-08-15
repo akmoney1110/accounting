@@ -1,0 +1,576 @@
+{% extends 'base.html' %}
+
+{% block title %}Record Payment — AgroLedger{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto space-y-6" style="background-color: #FAF6F0; min-height: 100vh; padding: 1.5rem;">
+
+    <!-- HEADER -->
+    <div class="rounded-2xl p-6 text-white shadow-lg relative overflow-hidden" style="background: linear-gradient(135deg, #8B6914, #C9952C, #B87333); box-shadow: 0 4px 20px rgba(201,149,44,0.25);">
+        <div class="absolute top-0 right-0 w-48 h-48 rounded-full -mr-10 -mt-10 blur-2xl" style="background-color: rgba(255,255,255,0.1);"></div>
+        <div class="absolute bottom-0 left-0 w-32 h-32 rounded-full -ml-8 -mb-8 blur-xl" style="background-color: rgba(255,255,255,0.1);"></div>
+        <div class="relative flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div class="flex items-center gap-4">
+                <div class="w-14 h-14 rounded-xl flex items-center justify-center text-2xl shadow-lg border" style="background-color: rgba(255,255,255,0.2); backdrop-filter: blur(4px); border-color: rgba(255,255,255,0.3);">
+                    <i class="fas fa-money-bill-transfer"></i>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-bold">Write Down Money Move</h1>
+                    <p class="text-sm" style="color: #FDF6E3;">Mark when you pay someone or when someone pays you</p>
+                </div>
+            </div>
+            <a href="{% url 'admin_dashboard' %}" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-colors border" style="background-color: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.2); color: #FFFDF8;" onmouseover="this.style.backgroundColor='rgba(255,255,255,0.25)'" onmouseout="this.style.backgroundColor='rgba(255,255,255,0.15)'">
+                <i class="fas fa-arrow-left text-xs"></i> Back to Farm Board
+            </a>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        <!-- FORM COLUMN -->
+        <div class="lg:col-span-2 space-y-6">
+
+            <form method="post" class="space-y-6" id="paymentForm">
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                <div class="rounded-xl p-4 flex items-start gap-3 border" style="background-color: #FDF0EB; border-color: #E8B8A8;">
+                    <i class="fas fa-exclamation-triangle mt-0.5" style="color: #C75B39;"></i>
+                    <div>
+                        <p class="text-sm font-bold" style="color: #8B3A1F;">Please fix these mistakes</p>
+                        {% for error in form.non_field_errors %}
+                        <p class="text-xs mt-1" style="color: #C75B39;">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Transaction Direction -->
+                <div class="rounded-2xl border shadow-sm p-6" style="background-color: #FFFDF8; border-color: #E8DCC8;">
+                    <h3 class="text-sm font-bold uppercase tracking-wider mb-4 flex items-center gap-2" style="color: #4E342E;">
+                        <span class="w-6 h-6 rounded-lg flex items-center justify-center text-xs" style="background-color: #FDF6E3; color: #8B6914;">1</span>
+                        Which Way Is the Money Going
+                    </h3>
+                    <div class="relative">
+                        {{ form.transaction_type }}
+                    </div>
+                    {% if form.transaction_type.errors %}
+                    <p class="text-xs mt-2 flex items-center gap-1" style="color: #C75B39;"><i class="fas fa-exclamation-circle text-[10px]"></i> {{ form.transaction_type.errors.0 }}</p>
+                    {% endif %}
+                    <p class="text-[11px] mt-2" style="color: #A1887F;" id="directionHint">PAYING OUT = you are giving money to someone. MONEY IN = someone is giving money to you.</p>
+                </div>
+
+                <!-- Payment Details -->
+                <div class="rounded-2xl border shadow-sm p-6" style="background-color: #FFFDF8; border-color: #E8DCC8;">
+                    <h3 class="text-sm font-bold uppercase tracking-wider mb-4 flex items-center gap-2" style="color: #4E342E;">
+                        <span class="w-6 h-6 rounded-lg flex items-center justify-center text-xs" style="background-color: #FDF6E3; color: #8B6914;">2</span>
+                        Money Details
+                    </h3>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <!-- Partner -->
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-1.5" style="color: #5D4037;">
+                                <i class="fas fa-user text-[10px]" style="color: #A1887F;"></i> Who Is the Person <span style="color: #C75B39;">*</span>
+                            </label>
+                            {{ form.user }}
+                            {% if form.user.errors %}
+                            <p class="text-xs mt-1.5 flex items-center gap-1" style="color: #C75B39;"><i class="fas fa-exclamation-circle text-[10px]"></i> {{ form.user.errors.0 }}</p>
+                            {% endif %}
+                            <p class="text-[11px] mt-1.5" style="color: #A1887F;" id="partnerHint">Pick the farmer, buyer, or worker you are dealing with</p>
+                        </div>
+
+                        <!-- Payment Method -->
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-1.5" style="color: #5D4037;">
+                                <i class="fas fa-credit-card text-[10px]" style="color: #A1887F;"></i> How Was It Paid <span style="color: #C75B39;">*</span>
+                            </label>
+                            {{ form.payment_method }}
+                            {% if form.payment_method.errors %}
+                            <p class="text-xs mt-1.5 flex items-center gap-1" style="color: #C75B39;"><i class="fas fa-exclamation-circle text-[10px]"></i> {{ form.payment_method.errors.0 }}</p>
+                            {% endif %}
+                            <div class="mt-2 p-2 rounded-lg text-xs" style="background-color: #F5EFE6; color: #6D4C41;">
+                                <i class="fas fa-lightbulb mr-1" style="color: #C9952C;"></i> Bank transfer, cash, cheque, or mobile money — pick how the money moved.
+                            </div>
+                        </div>
+
+                        <!-- Linked Batch -->
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-1.5" style="color: #5D4037;">
+                                <i class="fas fa-box text-[10px]" style="color: #A1887F;"></i> Which Load First <span class="font-normal normal-case" style="color: #A1887F;">(Optional)</span>
+                            </label>
+                            {{ form.batch }}
+                            {% if form.batch.errors %}
+                            <p class="text-xs mt-1.5 flex items-center gap-1" style="color: #C75B39;"><i class="fas fa-exclamation-circle text-[10px]"></i> {{ form.batch.errors.0 }}</p>
+                            {% endif %}
+                            <p class="text-[11px] mt-1.5" style="color: #A1887F;">
+                                Pick one load to pay first. Any extra money will go to older unpaid loads automatically.
+                            </p>
+                            <div class="mt-2 p-2 rounded-lg text-xs" style="background-color: #F0F5E8; color: #4A6B1A;">
+                                <i class="fas fa-lightbulb mr-1" style="color: #6B8E23;"></i> Leave this blank and the system will pay the oldest debt first — like clearing your oldest bill.
+                            </div>
+                        </div>
+
+                        <!-- Amount -->
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-1.5" style="color: #5D4037;">
+                                <i class="fas fa-money-bill text-[10px]" style="color: #A1887F;"></i> How Much Money (₦) <span style="color: #C75B39;">*</span>
+                            </label>
+                            {{ form.amount }}
+                            {% if form.amount.errors %}
+                            <p class="text-xs mt-1.5 flex items-center gap-1" style="color: #C75B39;"><i class="fas fa-exclamation-circle text-[10px]"></i> {{ form.amount.errors.0 }}</p>
+                            {% endif %}
+                            <div class="mt-2 p-2 rounded-lg text-xs" style="background-color: #F5EFE6; color: #6D4C41;">
+                                <i class="fas fa-lightbulb mr-1" style="color: #C9952C;"></i> Write the exact amount. Double-check — once saved, it is hard to undo.
+                            </div>
+                        </div>
+
+                        <!-- Reference Code -->
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-1.5" style="color: #5D4037;">
+                                <i class="fas fa-hashtag text-[10px]" style="color: #A1887F;"></i> Bank Paper Number or Receipt Code
+                            </label>
+                            {{ form.reference_code }}
+                            {% if form.reference_code.errors %}
+                            <p class="text-xs mt-1.5 flex items-center gap-1" style="color: #C75B39;"><i class="fas fa-exclamation-circle text-[10px]"></i> {{ form.reference_code.errors.0 }}</p>
+                            {% endif %}
+                            <p class="text-[11px] mt-1.5" style="color: #A1887F;">Bank reference, cheque number, or receipt code</p>
+                            <div class="mt-2 p-2 rounded-lg text-xs" style="background-color: #F5EFE6; color: #6D4C41;">
+                                <i class="fas fa-lightbulb mr-1" style="color: #C9952C;"></i> This helps you find the payment later if there is a problem. Always write it down.
+                            </div>
+                        </div>
+
+                        <!-- Transaction Date -->
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-1.5" style="color: #5D4037;">
+                                <i class="far fa-calendar-alt text-[10px]" style="color: #A1887F;"></i> What Day Did This Happen <span style="color: #C75B39;">*</span>
+                            </label>
+                            {{ form.transaction_date }}
+                            {% if form.transaction_date.errors %}
+                            <p class="text-xs mt-1.5 flex items-center gap-1" style="color: #C75B39;"><i class="fas fa-exclamation-circle text-[10px]"></i> {{ form.transaction_date.errors.0 }}</p>
+                            {% endif %}
+                            <div class="mt-2 p-2 rounded-lg text-xs" style="background-color: #F5EFE6; color: #6D4C41;">
+                                <i class="fas fa-lightbulb mr-1" style="color: #C9952C;"></i> Use the real day the money changed hands — not today if it happened before.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Notes -->
+                    <div class="mt-5">
+                        <label class="block text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-1.5" style="color: #5D4037;">
+                            <i class="fas fa-sticky-note text-[10px]" style="color: #A1887F;"></i> Extra Notes
+                        </label>
+                        {{ form.notes }}
+                        {% if form.notes.errors %}
+                        <p class="text-xs mt-1.5 flex items-center gap-1" style="color: #C75B39;"><i class="fas fa-exclamation-circle text-[10px]"></i> {{ form.notes.errors.0 }}</p>
+                        {% endif %}
+                        <div class="mt-2 p-2 rounded-lg text-xs" style="background-color: #F5EFE6; color: #6D4C41;">
+                            <i class="fas fa-lightbulb mr-1" style="color: #C9952C;"></i> Write anything extra — who you spoke to, what was agreed, or why this payment is different.
+                        </div>
+                    </div>
+
+                    <!-- Submit -->
+                    <div class="flex items-center gap-3 pt-4 mt-6 border-t" style="border-color: #F5EFE6;">
+                        <button type="submit" class="flex-1 text-white font-bold py-3.5 rounded-xl shadow-lg transition-all hover:scale-[1.01] active:scale-[0.99] flex items-center justify-center gap-2" style="background: linear-gradient(135deg, #C9952C, #B87333); box-shadow: 0 4px 12px rgba(201,149,44,0.25);">
+                            <i class="fas fa-save"></i> Save This Money Move
+                        </button>
+                        <a href="{% url 'admin_dashboard' %}" class="px-6 py-3.5 font-semibold rounded-xl transition-colors" style="background-color: #F5EFE6; color: #5D4037;">
+                            Cancel
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- LIVE PREVIEW COLUMN -->
+        <div class="space-y-6">
+
+            <!-- Transaction Preview Card -->
+            <div class="rounded-2xl border shadow-sm p-6 sticky top-6" style="background-color: #FFFDF8; border-color: #E8DCC8;">
+                <h3 class="font-bold mb-1 flex items-center gap-2" style="color: #4E342E;">
+                    <i class="fas fa-receipt" style="color: #C9952C;"></i> What This Will Look Like
+                </h3>
+                <p class="text-xs mb-5" style="color: #8D6E63;">A quick look at the record before you save it</p>
+
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between p-3 rounded-xl" style="background-color: #F5EFE6;">
+                        <span class="text-xs font-medium" style="color: #8D6E63;">Direction</span>
+                        <span id="previewDirection" class="text-xs font-bold px-2.5 py-1 rounded-full" style="background-color: #F5EFE6; color: #8D6E63;">—</span>
+                    </div>
+
+                    <div class="flex items-center justify-between p-3 rounded-xl" style="background-color: #F5EFE6;">
+                        <span class="text-xs font-medium" style="color: #8D6E63;">Person</span>
+                        <span id="previewPartner" class="text-xs font-bold" style="color: #4E342E;">—</span>
+                    </div>
+
+                    <div class="flex items-center justify-between p-3 rounded-xl" style="background-color: #F5EFE6;">
+                        <span class="text-xs font-medium" style="color: #8D6E63;">How Paid</span>
+                        <span id="previewMethod" class="text-xs font-bold flex items-center gap-1.5" style="color: #4E342E;">—</span>
+                    </div>
+
+                    <div class="border-t-2 border-dashed my-2" style="border-color: #E8DCC8;"></div>
+
+                    <div class="p-4 rounded-xl text-center transition-colors" style="background-color: #F5EFE6;" id="amountBox">
+                        <p class="text-[10px] font-bold uppercase tracking-wider mb-1" style="color: #8D6E63;" id="amountLabel">Amount</p>
+                        <p class="text-3xl font-bold" style="color: #4E342E;" id="previewAmount">₦0.00</p>
+                    </div>
+
+                    <div class="flex items-center justify-between p-3 rounded-xl" style="background-color: #F5EFE6;">
+                        <span class="text-xs font-medium" style="color: #8D6E63;">Day</span>
+                        <span id="previewDate" class="text-xs font-mono" style="color: #6D4C41;">—</span>
+                    </div>
+                </div>
+
+                <div class="mt-5 p-3 rounded-xl text-center text-sm font-semibold transition-colors" style="background-color: #F5EFE6; color: #8D6E63;" id="impactIndicator">
+                    <i class="fas fa-info-circle mr-1.5"></i> Fill in the form to see preview
+                </div>
+            </div>
+
+            <!-- AUTO-ALLOCATION PREVIEW -->
+            <div class="rounded-2xl border shadow-sm p-6 sticky top-[420px]" style="background-color: #FFFDF8; border-color: #E8DCC8;">
+                <h3 class="font-bold mb-1 flex items-center gap-2" style="color: #4E342E;">
+                    <i class="fas fa-route" style="color: #C9952C;"></i> Which Loads Get Paid First
+                </h3>
+                <p class="text-xs mb-4" style="color: #8D6E63;">How this money will be shared across unpaid loads</p>
+
+                <div id="allocationPreview" class="space-y-2">
+                    <div class="text-center py-8 text-sm rounded-xl border border-dashed" style="background-color: #F5EFE6; color: #A1887F; border-color: #E8DCC8;">
+                        <i class="fas fa-route text-2xl mb-2 block opacity-40"></i>
+                        Pick a person, direction, and amount to see which loads get paid
+                    </div>
+                </div>
+
+                <div id="allocationSummary" class="hidden mt-4 pt-4 border-t" style="border-color: #F5EFE6;">
+                    <div class="flex items-center justify-between text-xs">
+                        <span style="color: #8D6E63;">Total Money Owed</span>
+                        <span class="font-bold" style="color: #4E342E;" id="summaryTotalDebt">₦0.00</span>
+                    </div>
+                    <div class="flex items-center justify-between text-xs mt-2">
+                        <span style="color: #8D6E63;">This Payment Covers</span>
+                        <span class="font-bold" style="color: #6B8E23;" id="summaryCovers">₦0.00</span>
+                    </div>
+                    <div class="flex items-center justify-between text-xs mt-2 pt-2 border-t" style="border-color: #F5EFE6;">
+                        <span style="color: #8D6E63;">Money Left Over</span>
+                        <span class="font-bold" style="color: #8B6914;" id="summaryRemaining">₦0.00</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tips Card -->
+            <div class="rounded-2xl border p-5" style="background: linear-gradient(135deg, #FDF6E3, #F5EFE6); border-color: #E8D5A3;">
+                <h4 class="text-sm font-bold mb-3 flex items-center gap-2" style="color: #4E342E;">
+                    <i class="fas fa-lightbulb" style="color: #C9952C;"></i> How This Works
+                </h4>
+                <ul class="space-y-2.5 text-xs" style="color: #6D4C41;">
+                    <li class="flex items-start gap-2">
+                        <i class="fas fa-check mt-0.5 text-[10px]" style="color: #6B8E23;"></i>
+                        <span>Pick <strong>PAYING OUT</strong> when you give money to a farmer, transporter, or worker.</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <i class="fas fa-check mt-0.5 text-[10px]" style="color: #6B8E23;"></i>
+                        <span>Pick <strong>MONEY IN</strong> when a buyer pays you for a load.</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <i class="fas fa-check mt-0.5 text-[10px]" style="color: #6B8E23;"></i>
+                        <span>Leave <strong>Which Load First</strong> blank and the oldest debt gets paid first — like clearing your oldest bill.</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <i class="fas fa-check mt-0.5 text-[10px]" style="color: #6B8E23;"></i>
+                        <span>Any money left after paying all loads stays on the person's account for next time.</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+const typeSelect = document.getElementById('id_transaction_type');
+const methodSelect = document.getElementById('id_payment_method');
+const userSelect = document.getElementById('id_user');
+const batchSelect = document.getElementById('id_batch');
+const amountInput = document.getElementById('id_amount');
+const dateInput = document.getElementById('id_transaction_date');
+
+const previewDirection = document.getElementById('previewDirection');
+const previewPartner = document.getElementById('previewPartner');
+const previewMethod = document.getElementById('previewMethod');
+const previewAmount = document.getElementById('previewAmount');
+const previewDate = document.getElementById('previewDate');
+const amountBox = document.getElementById('amountBox');
+const amountLabel = document.getElementById('amountLabel');
+const impactIndicator = document.getElementById('impactIndicator');
+const partnerHint = document.getElementById('partnerHint');
+const allocationPreview = document.getElementById('allocationPreview');
+const allocationSummary = document.getElementById('allocationSummary');
+
+let outstandingBatches = [];
+
+function formatMoney(amount) {
+    return '₦' + parseFloat(amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function parseMoney(str) {
+    const val = parseFloat(str);
+    return isNaN(val) ? 0 : val;
+}
+
+function getDirectionLabel(val) {
+    const labels = {
+        'DISBURSEMENT': { text: 'Paying Out', style: 'background-color: #FDF0EB; color: #8B3A1F; border: 1px solid #E8B8A8;', hint: 'Pick the person you are paying' },
+        'RECEIPT': { text: 'Money Coming In', style: 'background-color: #F0F5E8; color: #4A6B1A; border: 1px solid #C5D9A0;', hint: 'Pick the person paying you' }
+    };
+    return labels[val] || { text: '—', style: 'background-color: #F5EFE6; color: #8D6E63;', hint: 'Pick the farmer, buyer, or worker' };
+}
+
+function getMethodLabel(val) {
+    const icons = {
+        'BANK_TRANSFER': '<i class="fas fa-university mr-1" style="color: #8B6914;"></i> Bank Transfer',
+        'CASH': '<i class="fas fa-money-bill mr-1" style="color: #6B8E23;"></i> Cash',
+        'CHEQUE': '<i class="fas fa-file-invoice mr-1" style="color: #C9952C;"></i> Cheque',
+        'MOBILE_MONEY': '<i class="fas fa-mobile-alt mr-1" style="color: #8B6914;"></i> Mobile Money'
+    };
+    return icons[val] || '—';
+}
+
+function updatePreview() {
+    const type = typeSelect?.value || '';
+    const method = methodSelect?.value || '';
+    const amount = parseMoney(amountInput?.value);
+    const userOption = userSelect?.options[userSelect.selectedIndex];
+
+    // Direction preview
+    const dir = getDirectionLabel(type);
+    previewDirection.textContent = dir.text;
+    previewDirection.style.cssText = 'text-xs font-bold px-2.5 py-1 rounded-full ' + dir.style;
+    partnerHint.textContent = dir.hint;
+
+    // Method preview
+    previewMethod.innerHTML = getMethodLabel(method);
+
+    // Amount preview
+    previewAmount.textContent = formatMoney(amount);
+    if (type === 'DISBURSEMENT') {
+        amountLabel.textContent = 'Money You Are Giving';
+        amountLabel.style.cssText = 'text-[10px] font-bold uppercase tracking-wider mb-1; color: #C75B39;';
+        amountBox.style.cssText = 'p-4 rounded-xl text-center transition-colors; background-color: #FDF0EB; border: 1px solid #E8B8A8;';
+        previewAmount.style.cssText = 'text-3xl font-bold; color: #C75B39;';
+        impactIndicator.style.cssText = 'mt-5 p-3 rounded-xl text-center text-sm font-semibold transition-colors; background-color: #FDF0EB; color: #8B3A1F; border: 1px solid #E8B8A8;';
+        impactIndicator.innerHTML = '<i class="fas fa-arrow-up mr-1.5"></i> This takes money out of your pocket';
+    } else if (type === 'RECEIPT') {
+        amountLabel.textContent = 'Money You Are Receiving';
+        amountLabel.style.cssText = 'text-[10px] font-bold uppercase tracking-wider mb-1; color: #6B8E23;';
+        amountBox.style.cssText = 'p-4 rounded-xl text-center transition-colors; background-color: #F0F5E8; border: 1px solid #C5D9A0;';
+        previewAmount.style.cssText = 'text-3xl font-bold; color: #6B8E23;';
+        impactIndicator.style.cssText = 'mt-5 p-3 rounded-xl text-center text-sm font-semibold transition-colors; background-color: #F0F5E8; color: #4A6B1A; border: 1px solid #C5D9A0;';
+        impactIndicator.innerHTML = '<i class="fas fa-arrow-down mr-1.5"></i> This puts money in your pocket';
+    } else {
+        amountLabel.textContent = 'Amount';
+        amountLabel.style.cssText = 'text-[10px] font-bold uppercase tracking-wider mb-1; color: #8D6E63;';
+        amountBox.style.cssText = 'p-4 rounded-xl text-center transition-colors; background-color: #F5EFE6;';
+        previewAmount.style.cssText = 'text-3xl font-bold; color: #4E342E;';
+        impactIndicator.style.cssText = 'mt-5 p-3 rounded-xl text-center text-sm font-semibold transition-colors; background-color: #F5EFE6; color: #8D6E63;';
+        impactIndicator.innerHTML = '<i class="fas fa-info-circle mr-1.5"></i> Fill in the form to see preview';
+    }
+
+    // Partner preview
+    previewPartner.textContent = userOption && userSelect.value ? userOption.text : '—';
+
+    // Date preview
+    previewDate.textContent = dateInput?.value ? new Date(dateInput.value).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—';
+
+    renderAllocationPreview();
+}
+
+async function fetchOutstandingBatches() {
+    const userId = userSelect?.value;
+    const txType = typeSelect?.value;
+
+    if (!userId || !txType) {
+        outstandingBatches = [];
+        renderAllocationPreview();
+        return;
+    }
+
+    allocationPreview.innerHTML = `
+        <div class="text-center py-4 text-xs" style="color: #A1887F;">
+            <i class="fas fa-circle-notch fa-spin mr-1.5"></i> Loading unpaid loads...
+        </div>
+    `;
+
+    try {
+        const response = await fetch(
+            `{% url 'ajax_outstanding_batches' %}?user_id=${userId}&transaction_type=${txType}`
+        );
+        const data = await response.json();
+        outstandingBatches = data.batches || [];
+        renderAllocationPreview();
+    } catch (err) {
+        outstandingBatches = [];
+        allocationPreview.innerHTML = `
+            <div class="text-center py-4 text-xs" style="color: #C75B39;">
+                <i class="fas fa-exclamation-circle mr-1.5"></i> Could not load loads
+            </div>
+        `;
+    }
+}
+
+function renderAllocationPreview() {
+    const amount = parseMoney(amountInput?.value);
+    const selectedBatchId = batchSelect?.value ? parseInt(batchSelect.value) : null;
+    const type = typeSelect?.value || '';
+
+    if (!userSelect?.value || !type || amount <= 0) {
+        allocationPreview.innerHTML = `
+            <div class="text-center py-8 text-sm rounded-xl border border-dashed" style="background-color: #F5EFE6; color: #A1887F; border-color: #E8DCC8;">
+                <i class="fas fa-route text-2xl mb-2 block opacity-40"></i>
+                Pick a person, direction, and amount to see which loads get paid
+            </div>
+        `;
+        allocationSummary.classList.add('hidden');
+        return;
+    }
+
+    if (outstandingBatches.length === 0) {
+        allocationPreview.innerHTML = `
+            <div class="text-center py-6 text-sm rounded-xl border" style="background-color: #F0F5E8; color: #4A6B1A; border-color: #C5D9A0;">
+                <i class="fas fa-check-circle text-xl mb-2 block" style="color: #6B8E23;"></i>
+                <p class="font-bold">No Unpaid Loads</p>
+                <p class="text-[11px] mt-1" style="color: #6B8E23;">This person has no unpaid loads. All the money will be saved as credit for next time.</p>
+            </div>
+        `;
+        allocationSummary.classList.add('hidden');
+        return;
+    }
+
+    let remaining = amount;
+    let totalDebt = 0;
+    let totalAllocated = 0;
+    let html = '';
+
+    const sorted = [...outstandingBatches].sort((a, b) => {
+        if (selectedBatchId) {
+            if (a.id === selectedBatchId) return -1;
+            if (b.id === selectedBatchId) return 1;
+        }
+        return new Date(a.transaction_date) - new Date(b.transaction_date);
+    });
+
+    sorted.forEach((batch, index) => {
+        const balanceDue = parseFloat(batch.balance_due);
+        totalDebt += balanceDue;
+
+        if (remaining <= 0) {
+            html += `
+                <div class="flex items-center gap-3 p-3 rounded-xl opacity-60" style="background-color: #F5EFE6; border-left: 4px solid #D7CCC8;">
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center gap-2">
+                            <p class="text-xs font-bold" style="color: #A1887F;">${batch.batch_code}</p>
+                            ${batch.id === selectedBatchId ? '<span class="text-[9px] px-1.5 py-0.5 rounded font-bold" style="background-color: #FDF6E3; color: #8B6914;">PRIORITY</span>' : ''}
+                        </div>
+                        <p class="text-[10px]" style="color: #A1887F;">${batch.product__name || 'Product'} • ${new Date(batch.transaction_date).toLocaleDateString()}</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-xs font-bold" style="color: #A1887F;">₦${balanceDue.toLocaleString()}</p>
+                        <p class="text-[10px] font-medium" style="color: #A1887F;">Skipped</p>
+                    </div>
+                </div>
+            `;
+            return;
+        }
+
+        const alloc = Math.min(remaining, balanceDue);
+        remaining -= alloc;
+        totalAllocated += alloc;
+
+        let statusBadge, borderColor, bgClass;
+        if (alloc >= balanceDue) {
+            statusBadge = '<span class="text-[10px] px-2 py-0.5 rounded-full font-bold" style="background-color: #F0F5E8; color: #4A6B1A;"><i class="fas fa-check mr-1" style="color: #6B8E23;"></i>Fully Paid</span>';
+            borderColor = '#6B8E23';
+            bgClass = 'background-color: rgba(107,142,35,0.05);';
+        } else {
+            statusBadge = `<span class="text-[10px] px-2 py-0.5 rounded-full font-bold" style="background-color: #FDF6E3; color: #8B6914;"><i class="fas fa-adjust mr-1" style="color: #C9952C;"></i>Part Paid — ₦${(balanceDue - alloc).toLocaleString()} still owed</span>`;
+            borderColor = '#C9952C';
+            bgClass = 'background-color: rgba(201,149,44,0.05);';
+        }
+
+        html += `
+            <div class="flex items-center gap-3 p-3 rounded-xl" style="${bgClass} border-left: 4px solid ${borderColor};">
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2">
+                        <p class="text-xs font-bold" style="color: #4E342E;">${batch.batch_code}</p>
+                        ${batch.id === selectedBatchId ? '<span class="text-[9px] px-1.5 py-0.5 rounded font-bold" style="background-color: #FDF6E3; color: #8B6914;">PRIORITY</span>' : ''}
+                        ${index === 0 && batch.id !== selectedBatchId ? '<span class="text-[9px] px-1.5 py-0.5 rounded font-bold" style="background-color: #F5EFE6; color: #8D6E63;">OLDEST</span>' : ''}
+                    </div>
+                    <p class="text-[10px]" style="color: #A1887F;">${batch.product__name || 'Product'} • ${new Date(batch.transaction_date).toLocaleDateString()}</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-xs font-bold" style="color: #4E342E;">₦${alloc.toLocaleString()}</p>
+                    <p class="text-[10px]" style="color: #8D6E63;">of ₦${balanceDue.toLocaleString()}</p>
+                    ${statusBadge}
+                </div>
+            </div>
+        `;
+    });
+
+    if (remaining > 0) {
+        html += `
+            <div class="flex items-center gap-3 p-3 rounded-xl" style="background-color: #F5F0E8; border-left: 4px solid #C9952C;">
+                <div class="flex-1 min-w-0">
+                    <p class="text-xs font-bold" style="color: #8B6914;">Money Left Over</p>
+                    <p class="text-[10px]" style="color: #A1887F;">Stays on the person's account for next load</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-xs font-bold" style="color: #8B6914;">₦${remaining.toLocaleString()}</p>
+                </div>
+            </div>
+        `;
+    }
+
+    allocationPreview.innerHTML = html;
+    document.getElementById('summaryTotalDebt').textContent = formatMoney(totalDebt);
+    document.getElementById('summaryCovers').textContent = formatMoney(totalAllocated);
+    document.getElementById('summaryRemaining').textContent = formatMoney(remaining);
+    allocationSummary.classList.remove('hidden');
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    updatePreview();
+});
+
+typeSelect?.addEventListener('change', () => { updatePreview(); fetchOutstandingBatches(); });
+methodSelect?.addEventListener('change', updatePreview);
+amountInput?.addEventListener('input', updatePreview);
+userSelect?.addEventListener('change', () => { updatePreview(); fetchOutstandingBatches(); });
+batchSelect?.addEventListener('change', renderAllocationPreview);
+dateInput?.addEventListener('change', updatePreview);
+
+/* ===== AUTO-GENERATE REFERENCE CODE ===== */
+const refInput = document.getElementById('id_reference_code');
+
+function generateReferenceCode() {
+    const now = new Date();
+    const dateStr = now.getFullYear().toString().slice(-2) + 
+                   String(now.getMonth() + 1).padStart(2, '0') + 
+                   String(now.getDate()).padStart(2, '0');
+    const randomStr = Math.floor(1000 + Math.random() * 9000);
+    const type = typeSelect?.value || 'TXN';
+    const prefix = type === 'DISBURSEMENT' ? 'OUT' : (type === 'RECEIPT' ? 'IN' : 'TXN');
+    return prefix + '-' + dateStr + '-' + randomStr;
+}
+
+// Fill on first load if empty (new record only)
+if (refInput && !refInput.value.trim()) {
+    refInput.value = generateReferenceCode();
+}
+
+// Update prefix if user changes direction and field still looks auto-generated
+typeSelect?.addEventListener('change', () => {
+    if (refInput && /^[A-Z]+-\d{6}-\d{4}$/.test(refInput.value)) {
+        refInput.value = generateReferenceCode();
+    }
+});
+
+</script>
+{% endblock %}

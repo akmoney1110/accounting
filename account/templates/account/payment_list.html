@@ -1,0 +1,223 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block title %}Farm Money Log — AgroLedger{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 bg-[#FAF6F0] bg-[radial-gradient(#4E342E_0.75px,transparent_0.75px)] [background-size:16px_16px] rounded-3xl text-[#4E342E]">
+
+    <!-- Header -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-[#4E342E]">Farm Money Log</h1>
+        <p class="mt-1 text-sm text-[#4E342E]/70">See every naira that came into the farm and every naira paid out.</p>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <!-- Money Buyers Paid You -->
+        <div class="bg-[#FAF6F0] rounded-2xl shadow-sm border border-[#4E342E]/15 p-6 relative overflow-hidden group">
+            <div class="flex items-center justify-between relative z-10">
+                <div>
+                    <p class="text-sm font-medium text-[#4E342E]/80">Money Buyers Paid You</p>
+                    <p class="mt-2 text-2xl font-bold text-[#6B8E23]">
+                        ₦{{ total_receipts|intcomma }}
+                    </p>
+                </div>
+                <div class="p-3 bg-[#6B8E23]/20 rounded-xl">
+                    <svg class="w-6 h-6 text-[#6B8E23]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12"/>
+                    </svg>
+                </div>
+            </div>
+            <!-- Explain Box -->
+            <div class="mt-4 p-2.5 bg-[#6B8E23]/10 rounded-xl border border-[#6B8E23]/20 text-[11px] text-[#4E342E] relative z-10">
+                💡 <strong>What this means:</strong> Total cash or transfers collected directly from crop buyers.
+            </div>
+        </div>
+
+        <!-- Money Paid Out -->
+        <div class="bg-[#FAF6F0] rounded-2xl shadow-sm border border-[#4E342E]/15 p-6 relative overflow-hidden group">
+            <div class="flex items-center justify-between relative z-10">
+                <div>
+                    <p class="text-sm font-medium text-[#4E342E]/80">Money Farm Paid Out</p>
+                    <p class="mt-2 text-2xl font-bold text-[#C75B39]">
+                        ₦{{ total_disbursements|intcomma }}
+                    </p>
+                </div>
+                <div class="p-3 bg-[#C75B39]/20 rounded-xl">
+                    <svg class="w-6 h-6 text-[#C75B39]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 13l-5 5m0 0l-5-5m5 5V6"/>
+                    </svg>
+                </div>
+            </div>
+            <!-- Explain Box -->
+            <div class="mt-4 p-2.5 bg-[#C75B39]/10 rounded-xl border border-[#C75B39]/20 text-[11px] text-[#4E342E] relative z-10">
+                💡 <strong>What this means:</strong> Cash spent on wages, seeds, fuel, or settlements.
+            </div>
+        </div>
+
+        <!-- Net Cash Left -->
+        <div class="bg-[#FAF6F0] rounded-2xl shadow-sm border border-[#4E342E]/15 p-6 relative overflow-hidden group">
+            <div class="flex items-center justify-between relative z-10">
+                <div>
+                    <p class="text-sm font-medium text-[#4E342E]/80">Cash Left in Hand</p>
+                    <p class="mt-2 text-2xl font-bold {% if net_flow >= 0 %}text-[#6B8E23]{% else %}text-[#C75B39]{% endif %}">
+                        ₦{{ net_flow|intcomma }}
+                    </p>
+                </div>
+                <div class="p-3 {% if net_flow >= 0 %}bg-[#6B8E23]/20{% else %}bg-[#C75B39]/20{% endif %} rounded-xl">
+                    <svg class="w-6 h-6 {% if net_flow >= 0 %}text-[#6B8E23]{% else %}text-[#C75B39]{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+            </div>
+            <!-- Explain Box -->
+            <div class="mt-4 p-2.5 bg-[#4E342E]/5 rounded-xl border border-[#4E342E]/10 text-[11px] text-[#4E342E]/80 relative z-10">
+                💡 <strong>What this means:</strong> Money in minus money out (positive harvest balance).
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="bg-[#FAF6F0] rounded-2xl shadow-sm border border-[#4E342E]/15 p-6 mb-6">
+        <form method="get" class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
+            <div>
+                <label class="block text-sm font-medium text-[#4E342E] mb-1">Money Action</label>
+                <select name="transaction_type" class="w-full rounded-xl border-[#4E342E]/20 bg-white text-[#4E342E] shadow-sm focus:border-[#C9952C] focus:ring-[#C9952C]">
+                    <option value="">All Money Actions</option>
+                    {% for value, label in txn_type_choices %}
+                        <option value="{{ value }}" {% if selected_txn_type == value|stringformat:"s" %}selected{% endif %}>
+                            {{ label }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-[#4E342E] mb-1">Farm Person</label>
+                <select name="user_id" class="w-full rounded-xl border-[#4E342E]/20 bg-white text-[#4E342E] shadow-sm focus:border-[#C9952C] focus:ring-[#C9952C]">
+                    <option value="">Everyone on Farm</option>
+                    {% for user in users %}
+                        <option value="{{ user.id }}" {% if selected_user == user.id|stringformat:"s" %}selected{% endif %}>
+                            {{ user.username }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-[#4E342E] mb-1">From Date</label>
+                <input type="date" name="date_from" value="{{ date_from }}" 
+                    class="w-full rounded-xl border-[#4E342E]/20 bg-white text-[#4E342E] shadow-sm focus:border-[#C9952C] focus:ring-[#C9952C]">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-[#4E342E] mb-1">To Date</label>
+                <input type="date" name="date_to" value="{{ date_to }}" 
+                    class="w-full rounded-xl border-[#4E342E]/20 bg-white text-[#4E342E] shadow-sm focus:border-[#C9952C] focus:ring-[#C9952C]">
+            </div>
+
+            <div class="flex gap-2">
+                <div class="flex-1">
+                    <label class="block text-sm font-medium text-[#4E342E] mb-1">Find Record</label>
+                    <input type="text" name="search" value="{{ search_query }}" placeholder="Receipt, note, buyer..."
+                        class="w-full rounded-xl border-[#4E342E]/20 bg-white text-[#4E342E] shadow-sm focus:border-[#C9952C] focus:ring-[#C9952C]">
+                </div>
+                <button type="submit" class="px-4 py-2 bg-[#C9952C] text-[#4E342E] font-bold rounded-xl hover:bg-[#C9952C]/90 transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                </button>
+                <a href="{% url 'payment_list' %}" class="px-4 py-2 bg-[#4E342E]/10 text-[#4E342E] rounded-xl hover:bg-[#4E342E]/20 transition-colors flex items-center">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                    </svg>
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Transactions Table -->
+    <div class="bg-[#FAF6F0] rounded-2xl shadow-sm border border-[#4E342E]/15 overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-[#4E342E]/10">
+                <thead class="bg-[#4E342E]/10">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-[#4E342E] uppercase tracking-wider">Date</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-[#4E342E] uppercase tracking-wider">Money In/Out</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-[#4E342E] uppercase tracking-wider">Paper Code</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-[#4E342E] uppercase tracking-wider">Buyer / Farm Worker</th>
+                        <th class="px-6 py-3 text-right text-xs font-semibold text-[#4E342E] uppercase tracking-wider">Total Cash Amount</th>
+                        <th class="px-6 py-3 text-right text-xs font-semibold text-[#4E342E] uppercase tracking-wider">Matched to Crop Load</th>
+                        <th class="px-6 py-3 text-right text-xs font-semibold text-[#4E342E] uppercase tracking-wider">Unmatched Cash</th>
+                        <th class="px-6 py-3 text-center text-xs font-semibold text-[#4E342E] uppercase tracking-wider">Status</th>
+                        <th class="px-6 py-3 text-center text-xs font-semibold text-[#4E342E] uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-[#FAF6F0] divide-y divide-[#4E342E]/10">
+                    {% for item in txn_data %}
+                    <tr class="hover:bg-[#4E342E]/5 transition-colors">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-[#4E342E]">
+                            {{ item.txn.transaction_date|date:"M d, Y" }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            {% if item.txn.transaction_type == 'RECEIPT' %}
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#6B8E23]/20 text-[#6B8E23] border border-[#6B8E23]/30">
+                                    Paid To Farm
+                                </span>
+                            {% else %}
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#C75B39]/20 text-[#C75B39] border border-[#C75B39]/30">
+                                    Paid Out
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-[#4E342E] font-mono">
+                            {{ item.txn.reference_code|default:"—" }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-[#4E342E] font-medium">
+                            {{ item.txn.user.username }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-[#4E342E] text-right font-bold font-mono">
+                            ₦{{ item.txn.amount|intcomma }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-[#6B8E23] text-right font-mono">
+                            ₦{{ item.allocated|intcomma }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-mono {% if item.unallocated > 0 %}text-[#C75B39] font-bold{% else %}text-[#4E342E]/50{% endif %}">
+                            ₦{{ item.unallocated|intcomma }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-center">
+                            {% if item.is_fully_allocated %}
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#6B8E23]/20 text-[#6B8E23] border border-[#6B8E23]/30">
+                                    Fully Tied to Crop
+                                </span>
+                            {% else %}
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#C9952C]/20 text-[#C9952C] border border-[#C9952C]/30">
+                                    Some Cash Floating
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                            <a href="{% url 'payment_detail' item.txn.pk %}" 
+                                class="text-[#4E342E] font-bold hover:text-[#C9952C] bg-[#4E342E]/10 hover:bg-[#4E342E]/20 px-3 py-1.5 rounded-xl transition-colors">
+                                Open Details
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="9" class="px-6 py-12 text-center text-[#4E342E]/70">
+                            <svg class="mx-auto h-12 w-12 text-[#4E342E]/40 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                            <p class="text-lg font-bold text-[#4E342E]">No cash entries recorded</p>
+                            <p class="text-sm mt-1">Try changing your search date or log a new payment.</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

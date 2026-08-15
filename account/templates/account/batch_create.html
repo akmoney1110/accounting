@@ -1,0 +1,436 @@
+{% extends 'base.html' %}
+
+{% block title %}Record Farm Transaction — AgroLedger{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4">
+    <div class="bg-[#FAF6F0] rounded-2xl border border-[#D4C5A9] shadow-sm p-6 md:p-10" style="background-image: url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23D4C5A9" fill-opacity="0.12"%3E%3Cpath d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');">
+        
+        <!-- Header -->
+        <div class="text-center mb-10 pb-6 border-b border-[#D4C5A9]">
+            <div class="text-5xl mb-3">🌾</div>
+            <h1 class="text-2xl md:text-3xl font-bold text-[#4E342E]">Record Your Farm Deal</h1>
+            <p class="text-sm text-[#8D6E63] mt-2 max-w-2xl mx-auto">Fill in the details below — we'll keep track of everything for you.</p>
+        </div>
+
+        <form method="post" id="batchForm">
+            {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+            <div class="bg-[#FDE8E0] border border-[#C75B39] text-[#C75B39] px-4 py-3 rounded-xl text-sm mb-6">
+                {{ form.non_field_errors }}
+            </div>
+            {% endif %}
+
+            <!-- ===== STEP 1: WHAT'S HAPPENING? ===== -->
+            <div class="bg-white rounded-xl border border-[#D4C5A9] p-6 mb-6 shadow-sm">
+                <div class="flex items-center gap-3 mb-5">
+                    <span class="bg-[#6B8E23] text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0">1</span>
+                    <h2 class="text-lg font-bold text-[#4E342E]">What's happening today?</h2>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-semibold text-[#4E342E] mb-2">I am...</label>
+                        {{ form.transaction_type }}
+                        {% if form.transaction_type.errors %}
+                        <p class="text-xs text-[#C75B39] mt-1">{{ form.transaction_type.errors.0 }}</p>
+                        {% endif %}
+                        <p class="text-xs text-[#8D6E63] mt-2">👆 Pick one — are you buying or selling?</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-[#4E342E] mb-2">
+                            <span id="user-label">Who with?</span>
+                        </label>
+                        {{ form.user }}
+                        {% if form.user.errors %}
+                        <p class="text-xs text-[#C75B39] mt-1">{{ form.user.errors.0 }}</p>
+                        {% endif %}
+                        <p class="text-xs text-[#8D6E63] mt-2">👤 Choose the person you're dealing with</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== STEP 2: WHAT ARE YOU TRADING? ===== -->
+            <div class="bg-white rounded-xl border border-[#D4C5A9] p-6 mb-6 shadow-sm">
+                <div class="flex items-center gap-3 mb-5">
+                    <span class="bg-[#6B8E23] text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0">2</span>
+                    <h2 class="text-lg font-bold text-[#4E342E]">What are you trading?</h2>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-semibold text-[#4E342E] mb-2">Product</label>
+                    {{ form.product }}
+                    {% if form.product.errors %}
+                    <p class="text-xs text-[#C75B39] mt-1">{{ form.product.errors.0 }}</p>
+                    {% endif %}
+                    <p class="text-xs text-[#8D6E63] mt-2">🌱 What's being weighed today?</p>
+                </div>
+            </div>
+
+            <!-- ===== STEP 3: WEIGHT & PRICE ===== -->
+            <div class="bg-white rounded-xl border border-[#D4C5A9] p-6 mb-6 shadow-sm">
+                <div class="flex items-center gap-3 mb-5">
+                    <span class="bg-[#6B8E23] text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0">3</span>
+                    <h2 class="text-lg font-bold text-[#4E342E]">Weight & Price</h2>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-semibold text-[#4E342E] mb-2">⚖️ Total weight (kg)</label>
+                        <div class="relative">
+                            {{ form.weight }}
+                            <span class="absolute right-4 top-1/2 -translate-y-1/2 text-[#8D6E63] text-sm font-semibold">kg</span>
+                        </div>
+                        {% if form.weight.errors %}
+                        <p class="text-xs text-[#C75B39] mt-1">{{ form.weight.errors.0 }}</p>
+                        {% endif %}
+                        <p class="text-xs text-[#8D6E63] mt-2">📦 Put everything on the scale</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-[#4E342E] mb-2">💰 Price per kg (₦)</label>
+                        {{ form.applied_rate }}
+                        {% if form.applied_rate.errors %}
+                        <p class="text-xs text-[#C75B39] mt-1">{{ form.applied_rate.errors.0 }}</p>
+                        {% endif %}
+                        <p class="text-xs text-[#8D6E63] mt-2">💡 This fills itself when you pick the person above</p>
+                    </div>
+                </div>
+
+                <!-- Dry Weight - optional -->
+                <div class="mt-5 pt-4 border-t border-[#EFE8DE]">
+                    <details class="text-sm">
+                        <summary class="cursor-pointer text-[#6B8E23] font-semibold hover:text-[#5C7A1E]">
+                            <i class="fas fa-chevron-right mr-1"></i> Optional: Dry weight
+                        </summary>
+                        <div class="mt-3">
+                            <label class="block text-sm font-semibold text-[#4E342E] mb-2">🌾 Dry weight (kg)</label>
+                            {{ form.dry_weight }}
+                            {% if form.dry_weight.errors %}
+                            <p class="text-xs text-[#C75B39] mt-1">{{ form.dry_weight.errors.0 }}</p>
+                            {% endif %}
+                            <p class="text-xs text-[#8D6E63] mt-2">This is the weight after removing moisture — better for pricing</p>
+                        </div>
+                    </details>
+                </div>
+
+                <!-- Live Total -->
+                <div class="mt-5 bg-[#EFE8DE] rounded-xl p-5 border border-[#D4C5A9]">
+                    <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
+                        <span class="text-sm text-[#8D6E63] font-semibold">💰 Total value of this load</span>
+                        <span id="total-amount-display" class="text-3xl font-bold text-[#4E342E]">₦0.00</span>
+                    </div>
+                    <p class="text-xs text-[#8D6E63] mt-2 text-center sm:text-left">Weight × Price per kg = What it's all worth</p>
+                </div>
+            </div>
+
+            <!-- ===== STEP 4: PAYMENT ===== -->
+            <div class="bg-white rounded-xl border border-[#D4C5A9] p-6 mb-6 shadow-sm">
+                <div class="flex items-center gap-3 mb-5">
+                    <span class="bg-[#6B8E23] text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0">4</span>
+                    <h2 class="text-lg font-bold text-[#4E342E]">Payment</h2>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-semibold text-[#4E342E] mb-2">💵 How much was paid today?</label>
+                    {{ form.amount_paid_now }}
+                    {% if form.amount_paid_now.errors %}
+                    <p class="text-xs text-[#C75B39] mt-1">{{ form.amount_paid_now.errors.0 }}</p>
+                    {% endif %}
+                    <p class="text-xs text-[#8D6E63] mt-2">If money changed hands today, put it here. If not, leave it zero.</p>
+                </div>
+
+                <div class="mt-4">
+                    <label class="block text-sm font-semibold text-[#4E342E] mb-2">📅 When did this happen?</label>
+                    {{ form.transaction_date }}
+                    {% if form.transaction_date.errors %}
+                    <p class="text-xs text-[#C75B39] mt-1">{{ form.transaction_date.errors.0 }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- ===== STEP 5: EXPENSES ===== -->
+            <div class="bg-white rounded-xl border border-[#D4C5A9] p-6 mb-6 shadow-sm">
+                <div class="flex items-center gap-3 mb-5">
+                    <span class="bg-[#6B8E23] text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0">5</span>
+                    <h2 class="text-lg font-bold text-[#4E342E]">Costs & Expenses</h2>
+                </div>
+                
+                <p class="text-sm text-[#8D6E63] mb-4">What did you spend on transport, bags, fuel, or labour?</p>
+
+                {{ expense_formset.management_form }}
+
+                <div class="space-y-4" id="expense-rows">
+                    {% for exp_form in expense_formset %}
+                    <div class="expense-row grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 p-4 bg-[#EFE8DE] rounded-xl border border-[#D4C5A9] items-end">
+                        <div class="lg:col-span-1">
+                            <label class="block text-xs font-semibold text-[#4E342E] mb-1">What for?</label>
+                            {{ exp_form.category }}
+                            {% if exp_form.category.errors %}
+                            <p class="text-xs text-[#C75B39] mt-1">{{ exp_form.category.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                        <div class="lg:col-span-2">
+                            <label class="block text-xs font-semibold text-[#4E342E] mb-1">Details</label>
+                            {{ exp_form.title }}
+                            {% if exp_form.title.errors %}
+                            <p class="text-xs text-[#C75B39] mt-1">{{ exp_form.title.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-[#4E342E] mb-1">Amount (₦)</label>
+                            {{ exp_form.amount }}
+                            {% if exp_form.amount.errors %}
+                            <p class="text-xs text-[#C75B39] mt-1">{{ exp_form.amount.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-[#4E342E] mb-1">Date</label>
+                            {{ exp_form.expense_date }}
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="flex-1">
+                                <label class="block text-xs font-semibold text-[#4E342E] mb-1">Receipt #</label>
+                                {{ exp_form.receipt_reference }}
+                            </div>
+                            {% if expense_formset.can_delete %}
+                            <label class="flex items-center gap-1 text-xs text-[#C75B39] cursor-pointer select-none mt-1 flex-shrink-0">
+                                {{ exp_form.DELETE }} <i class="fas fa-trash"></i>
+                            </label>
+                            {% endif %}
+                        </div>
+                        {{ exp_form.id }}
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Hidden template for new rows -->
+                <div id="empty-expense-template" class="hidden">
+                    <div class="expense-row grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 p-4 bg-[#EFE8DE] rounded-xl border border-[#D4C5A9] items-end">
+                        <div class="lg:col-span-1">
+                            <label class="block text-xs font-semibold text-[#4E342E] mb-1">What for?</label>
+                            __CATEGORY__
+                        </div>
+                        <div class="lg:col-span-2">
+                            <label class="block text-xs font-semibold text-[#4E342E] mb-1">Details</label>
+                            __TITLE__
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-[#4E342E] mb-1">Amount (₦)</label>
+                            __AMOUNT__
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-[#4E342E] mb-1">Date</label>
+                            __DATE__
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="flex-1">
+                                <label class="block text-xs font-semibold text-[#4E342E] mb-1">Receipt #</label>
+                                __REF__
+                            </div>
+                            <button type="button" onclick="removeExpenseRow(this)" class="text-[#C75B39] hover:text-[#A84D2F] text-xs mt-1 flex-shrink-0">
+                                <i class="fas fa-times-circle text-lg"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="button" onclick="addExpenseRow()" class="mt-4 inline-flex items-center gap-2 px-5 py-2.5 bg-[#EFE8DE] hover:bg-[#E4DBCE] text-[#4E342E] rounded-lg text-sm font-semibold border border-[#D4C5A9] transition-colors">
+                    <i class="fas fa-plus"></i> Add another cost
+                </button>
+
+                {% if expense_formset.non_form_errors %}
+                <div class="bg-[#FDE8E0] border border-[#C75B39] text-[#C75B39] px-4 py-3 rounded-xl text-sm mt-4">
+                    {{ expense_formset.non_form_errors.0 }}
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- ===== SAVE BUTTONS ===== -->
+            <div class="flex flex-col sm:flex-row items-center gap-4 pt-4 border-t border-[#D4C5A9]">
+                <button type="submit" class="w-full sm:w-auto px-10 py-4 bg-[#6B8E23] hover:bg-[#5C7A1E] text-white font-bold rounded-xl transition-colors shadow-sm text-base">
+                    <i class="fas fa-save mr-2"></i> Save Transaction
+                </button>
+                <a href="{% url 'admin_dashboard' %}" class="w-full sm:w-auto px-10 py-4 bg-[#EFE8DE] hover:bg-[#E4DBCE] text-[#4E342E] font-semibold rounded-xl transition-colors text-center">
+                    Cancel
+                </a>
+            </div>
+
+            <!-- ===== SUMMARY TIP ===== -->
+            <div class="mt-6 text-center text-xs text-[#8D6E63] bg-[#EFE8DE] rounded-xl p-4 border border-[#D4C5A9]">
+                <span class="font-semibold text-[#4E342E]">🔒 Your data is safe</span> — we keep track of all your farm records so you don't have to remember everything.
+            </div>
+
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// ===== YOUR EXISTING AJAX (UNCHANGED) =====
+(function() {
+    const txType = document.getElementById('id_transaction_type');
+    const userSelect = document.getElementById('id_user');
+    const productSelect = document.getElementById('id_product');
+    const rateInput = document.getElementById('id_applied_rate');
+    const weightInput = document.getElementById('id_weight');
+    const totalDisplay = document.getElementById('total-amount-display');
+    const userLabel = document.getElementById('user-label');
+
+    function formatMoney(num) {
+        return '₦' + parseFloat(num).toLocaleString('en-NG', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    }
+
+    function updateTotal() {
+        const w = parseFloat(weightInput.value) || 0;
+        const r = parseFloat(rateInput.value) || 0;
+        totalDisplay.textContent = formatMoney((w * r).toFixed(2));
+    }
+
+    function clearOptions(select, placeholder) {
+        select.innerHTML = '<option value="">' + placeholder + '</option>';
+    }
+
+    txType.addEventListener('change', function() {
+        const type = this.value;
+        clearOptions(userSelect, 'Loading...');
+        clearOptions(productSelect, 'Select product');
+        rateInput.value = '';
+        updateTotal();
+
+        if (type === 'BUY') {
+            userLabel.textContent = 'Who are you buying from?';
+        } else if (type === 'SELL') {
+            userLabel.textContent = 'Who are you selling to?';
+        } else {
+            userLabel.textContent = 'Who with?';
+        }
+
+        fetch(`/ajax/users-by-type/?transaction_type=${type}`)
+            .then(r => r.json())
+            .then(data => {
+                clearOptions(userSelect, '---------');
+                data.users.forEach(u => {
+                    const opt = document.createElement('option');
+                    opt.value = u.id;
+                    opt.textContent = u.label;
+                    userSelect.appendChild(opt);
+                });
+            });
+    });
+
+    userSelect.addEventListener('change', function() {
+        const userId = this.value;
+        clearOptions(productSelect, 'Loading...');
+        rateInput.value = '';
+        updateTotal();
+
+        if (!userId) {
+            clearOptions(productSelect, '---------');
+            return;
+        }
+
+        fetch(`/ajax/products-by-user/?user_id=${userId}`)
+            .then(r => r.json())
+            .then(data => {
+                clearOptions(productSelect, '---------');
+                data.products.forEach(p => {
+                    const opt = document.createElement('option');
+                    opt.value = p.id;
+                    opt.textContent = `${p.name} (${p.unit})`;
+                    productSelect.appendChild(opt);
+                });
+            });
+    });
+
+    productSelect.addEventListener('change', function() {
+        const userId = userSelect.value;
+        const productId = this.value;
+        if (!userId || !productId) {
+            rateInput.value = '';
+            updateTotal();
+            return;
+        }
+
+        fetch(`/ajax/user-product-rate/?user_id=${userId}&product_id=${productId}`)
+            .then(r => r.json())
+            .then(data => {
+                rateInput.value = data.rate;
+                updateTotal();
+            });
+    });
+
+    weightInput.addEventListener('input', updateTotal);
+    rateInput.addEventListener('input', updateTotal);
+
+    updateTotal();
+})();
+
+// ===== NEW: EXPENSE FORMSET DYNAMIC ROWS =====
+function addExpenseRow() {
+    const totalForms = document.querySelector('input[name="expenses-TOTAL_FORMS"]');
+    const currentCount = parseInt(totalForms.value, 10);
+    const container = document.getElementById('expense-rows');
+    const template = document.getElementById('empty-expense-template').innerHTML;
+    
+    let html = template
+        .replace(/__CATEGORY__/g, generateExpenseField('category', currentCount, 'select'))
+        .replace(/__TITLE__/g, generateExpenseField('title', currentCount, 'text'))
+        .replace(/__AMOUNT__/g, generateExpenseField('amount', currentCount, 'number'))
+        .replace(/__DATE__/g, generateExpenseField('expense_date', currentCount, 'date'))
+        .replace(/__REF__/g, generateExpenseField('receipt_reference', currentCount, 'text'));
+    
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = html.trim();
+    container.appendChild(wrapper.firstElementChild);
+    
+    totalForms.value = currentCount + 1;
+}
+
+function generateExpenseField(fieldName, index, inputType) {
+    const name = `expenses-${index}-${fieldName}`;
+    const id = `id_${name}`;
+    const baseClass = "w-full px-4 py-3 rounded-xl border border-[#D4C5A9] text-[#4E342E] bg-white focus:outline-none focus:ring-2 focus:ring-[#C9952C] focus:border-transparent text-sm transition-all";
+    
+    if (inputType === 'select') {
+        const firstSelect = document.querySelector('select[name="expenses-0-category"]');
+        let options = '';
+        if (firstSelect) {
+            firstSelect.querySelectorAll('option').forEach(opt => {
+                options += `<option value="${opt.value}">${opt.textContent}</option>`;
+            });
+        }
+        return `<select name="${name}" id="${id}" class="${baseClass}">${options}</select>`;
+    }
+    
+    if (inputType === 'date') {
+        const today = new Date().toISOString().split('T')[0];
+        return `<input type="date" name="${name}" id="${id}" value="${today}" class="${baseClass}">`;
+    }
+    
+    if (inputType === 'number') {
+        return `<input type="number" name="${name}" id="${id}" placeholder="0.00" step="0.01" class="${baseClass}">`;
+    }
+    
+    const placeholder = fieldName === 'title' ? 'e.g. 50L Diesel' : 'Receipt #';
+    return `<input type="text" name="${name}" id="${id}" placeholder="${placeholder}" class="${baseClass}">`;
+}
+
+function removeExpenseRow(btn) {
+    const row = btn.closest('.expense-row');
+    const deleteCb = row.querySelector('input[type="checkbox"][name*="DELETE"]');
+    
+    if (deleteCb) {
+        deleteCb.checked = true;
+        row.style.display = 'none';
+    } else {
+        row.remove();
+        const totalForms = document.querySelector('input[name="expenses-TOTAL_FORMS"]');
+        if (totalForms) {
+            totalForms.value = Math.max(0, parseInt(totalForms.value, 10) - 1);
+        }
+    }
+}
+</script>
+{% endblock %}

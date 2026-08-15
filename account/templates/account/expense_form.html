@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{% if expense %}Fix Spending Record{% else %}Log Farm Spending{% endif %} — AgroLedger{% endblock %}
+{% block page_title %}{% if expense %}Fix Spending Record{% else %}Log Farm Spending{% endif %}{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto px-4 py-8 bg-[#FAF6F0] bg-[radial-gradient(#4E342E_0.75px,transparent_0.75px)] [background-size:16px_16px] rounded-3xl text-[#4E342E]">
+    
+    <div class="bg-[#FAF6F0] rounded-2xl border border-[#4E342E]/15 shadow-sm p-6 lg:p-8">
+        <div class="flex items-center gap-3 mb-6">
+            <div class="w-10 h-10 bg-[#C75B39]/20 rounded-xl flex items-center justify-center text-[#C75B39] border border-[#C75B39]/30">
+                <i class="fas fa-{% if expense %}edit{% else %}plus{% endif %}"></i>
+            </div>
+            <div>
+                <h2 class="text-lg font-bold text-[#4E342E]">
+                    {% if expense %}Fix Spending Record{% else %}Write Down Money Spent{% endif %}
+                </h2>
+                <p class="text-xs text-[#4E342E]/70">
+                    {% if expense %}Correct details of farm expenses previously recorded{% else %}Log cash spent on diesel, trucks, loading bags, or farm supplies{% endif %}
+                </p>
+            </div>
+        </div>
+
+        <form method="post" class="space-y-5">
+            {% csrf_token %}
+            
+            <div class="space-y-4">
+                <!-- Linked Batch -->
+                <div class="hidden">
+                    <label class="block text-sm font-bold text-[#4E342E] mb-1.5">
+                        <i class="fas fa-link text-[#C9952C] mr-1"></i> Tied to Specific Harvest Load <span class="text-[#4E342E]/60 font-normal">(Optional)</span>
+                    </label>
+                    <div class="[&>select]:w-full [&>select]:rounded-xl [&>select]:border-[#4E342E]/20 [&>select]:bg-white [&>select]:text-[#4E342E] [&>select]:shadow-sm [&>select]:focus:border-[#C9952C] [&>select]:focus:ring-[#C9952C]">
+                        {{ form.batch }}
+                    </div>
+                    <!-- Explain Box -->
+                    <div class="mt-2 p-2.5 bg-[#4E342E]/5 rounded-xl border border-[#4E342E]/10 text-[11px] text-[#4E342E]/80">
+                        💡 <strong>What this means:</strong> Leave empty for general farm costs like store generator fuel or repairs. Select a load only if this cash was spent specifically to haul or pack that exact crop delivery.
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <!-- Category -->
+                    <div>
+                        <label class="block text-sm font-bold text-[#4E342E] mb-1.5">What Was Money Spent On?</label>
+                        <div class="[&>select]:w-full [&>select]:rounded-xl [&>select]:border-[#4E342E]/20 [&>select]:bg-white [&>select]:text-[#4E342E] [&>select]:shadow-sm [&>select]:focus:border-[#C9952C] [&>select]:focus:ring-[#C9952C]">
+                            {{ form.category }}
+                        </div>
+                        {% if form.category.errors %}
+                        <p class="text-xs text-[#C75B39] font-bold mt-1">{{ form.category.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Date -->
+                    <div>
+                        <label class="block text-sm font-bold text-[#4E342E] mb-1.5">Date Paid</label>
+                        <div class="[&>input]:w-full [&>input]:rounded-xl [&>input]:border-[#4E342E]/20 [&>input]:bg-white [&>input]:text-[#4E342E] [&>input]:shadow-sm [&>input]:focus:border-[#C9952C] [&>input]:focus:ring-[#C9952C]">
+                            {{ form.expense_date }}
+                        </div>
+                        {% if form.expense_date.errors %}
+                        <p class="text-xs text-[#C75B39] font-bold mt-1">{{ form.expense_date.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Description / Title -->
+                <div>
+                    <label class="block text-sm font-bold text-[#4E342E] mb-1.5">Explanation of Spending</label>
+                    <div class="[&>input]:w-full [&>input]:rounded-xl [&>input]:border-[#4E342E]/20 [&>input]:bg-white [&>input]:text-[#4E342E] [&>input]:shadow-sm [&>input]:focus:border-[#C9952C] [&>input]:focus:ring-[#C9952C]">
+                        {{ form.title }}
+                    </div>
+                    {% if form.title.errors %}
+                    <p class="text-xs text-[#C75B39] font-bold mt-1">{{ form.title.errors.0 }}</p>
+                    {% endif %}
+                    <!-- Explain Box -->
+                    <div class="mt-2 p-2 bg-[#4E342E]/5 rounded-lg border border-[#4E342E]/10 text-[11px] text-[#4E342E]/80">
+                        💡 <strong>Example:</strong> Simple note like "50 Liters fuel for scale generator" or "100 jute sacks for bag packaging".
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <!-- Amount -->
+                    <div>
+                        <label class="block text-sm font-bold text-[#4E342E] mb-1.5">Cash Paid Out (₦)</label>
+                        <div class="[&>input]:w-full [&>input]:rounded-xl [&>input]:border-[#4E342E]/20 [&>input]:bg-white [&>input]:text-[#4E342E] [&>input]:font-mono [&>input]:shadow-sm [&>input]:focus:border-[#C9952C] [&>input]:focus:ring-[#C9952C]">
+                            {{ form.amount }}
+                        </div>
+                        {% if form.amount.errors %}
+                        <p class="text-xs text-[#C75B39] font-bold mt-1">{{ form.amount.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Receipt Reference -->
+                    <div>
+                        <label class="block text-sm font-bold text-[#4E342E] mb-1.5">Receipt / Paper Code <span class="text-[#4E342E]/60 font-normal">(Optional)</span></label>
+                        <div class="[&>input]:w-full [&>input]:rounded-xl [&>input]:border-[#4E342E]/20 [&>input]:bg-white [&>input]:text-[#4E342E] [&>input]:font-mono [&>input]:shadow-sm [&>input]:focus:border-[#C9952C] [&>input]:focus:ring-[#C9952C]">
+                            {{ form.receipt_reference }}
+                        </div>
+                        {% if form.receipt_reference.errors %}
+                        <p class="text-xs text-[#C75B39] font-bold mt-1">{{ form.receipt_reference.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="flex items-center gap-3 pt-4 border-t border-[#4E342E]/10">
+                <button type="submit" class="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-[#6B8E23] hover:bg-[#6B8E23]/90 text-[#FAF6F0] rounded-xl text-sm font-bold shadow-sm transition-colors border border-[#6B8E23]">
+                    <i class="fas fa-save"></i> {% if expense %}Save Changes{% else %}Write Into Farm Book{% endif %}
+                </button>
+                <a href="{% url 'expense_list' %}" class="inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-[#4E342E]/10 hover:bg-[#4E342E]/20 text-[#4E342E] rounded-xl text-sm font-bold transition-colors">
+                    <i class="fas fa-times"></i> Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block title %}Payment Details #{{ txn.reference_code }} — AgroLedger{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 bg-[#FAF6F0] bg-[radial-gradient(#4E342E_0.75px,transparent_0.75px)] [background-size:16px_16px] rounded-3xl text-[#4E342E] space-y-6">
+
+  <!-- Navigation & Header -->
+  <div>
+    <a href="{% url 'payment_list' %}" class="inline-flex items-center text-xs font-bold text-[#4E342E] hover:text-[#C9952C] uppercase tracking-wider transition-colors mb-2">
+      <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+      </svg>
+      Back to Money Log
+    </a>
+    <div class="flex justify-between items-center mt-1">
+      <div>
+        <h1 class="text-2xl font-bold text-[#4E342E]">Receipt Paper #{{ txn.reference_code }}</h1>
+        <p class="text-xs text-[#4E342E]/70 mt-0.5">Detailed cash tracking record for farm bookkeeping.</p>
+      </div>
+      <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold border 
+            {% if txn.transaction_type == 'RECEIPT' %}bg-[#6B8E23]/20 text-[#6B8E23] border-[#6B8E23]/30{% else %}bg-[#C75B39]/20 text-[#C75B39] border-[#C75B39]/30{% endif %}">
+        {% if txn.transaction_type == 'RECEIPT' %}Paid To Farm{% else %}Paid Out{% endif %}
+      </span>
+    </div>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+    <!-- Total Cash Handed Over -->
+    <div class="bg-[#FAF6F0] p-4 rounded-2xl border border-[#4E342E]/15 shadow-sm">
+      <p class="text-xs font-bold uppercase tracking-wider text-[#4E342E]/70">Total Cash Handed Over</p>
+      <p class="text-xl font-bold font-mono text-[#4E342E] mt-1">₦{{ txn.amount|intcomma }}</p>
+      <p class="text-[11px] text-[#4E342E]/60 mt-1">💡 Total physical note or transfer value</p>
+    </div>
+
+    <!-- Linked to Harvest Loads -->
+    <div class="bg-[#FAF6F0] p-4 rounded-2xl border border-[#4E342E]/15 shadow-sm">
+      <p class="text-xs font-bold uppercase tracking-wider text-[#4E342E]/70">Tied to Crop Loads</p>
+      <p class="text-xl font-bold font-mono text-[#6B8E23] mt-1">₦{{ allocated_total|intcomma }}</p>
+      <p class="text-[11px] text-[#4E342E]/60 mt-1">💡 Settled directly against crop batches</p>
+    </div>
+
+    <!-- Cash Floating Free -->
+    <div class="bg-[#FAF6F0] p-4 rounded-2xl border border-[#4E342E]/15 shadow-sm">
+      <p class="text-xs font-bold uppercase tracking-wider text-[#4E342E]/70">Cash Floating Free</p>
+      <p class="text-xl font-bold font-mono {% if unallocated > 0 %}text-[#C9952C]{% else %}text-[#4E342E]/40{% endif %} mt-1">
+        ₦{{ unallocated|intcomma }}
+      </p>
+      <p class="text-[11px] text-[#4E342E]/60 mt-1">💡 Balance left waiting to match crops</p>
+    </div>
+
+    <!-- Farm Worker / Date -->
+    <div class="bg-[#FAF6F0] p-4 rounded-2xl border border-[#4E342E]/15 shadow-sm">
+      <p class="text-xs font-bold uppercase tracking-wider text-[#4E342E]/70">Buyer / Farm Worker</p>
+      <p class="text-sm font-bold text-[#4E342E] mt-1">{{ txn.user.username }}</p>
+      <p class="text-xs text-[#4E342E]/70 mt-0.5">Recorded: {{ txn.transaction_date|date:"M d, Y" }}</p>
+    </div>
+  </div>
+
+  <!-- Allocated Table -->
+  <div class="bg-[#FAF6F0] rounded-2xl border border-[#4E342E]/15 shadow-sm overflow-hidden">
+    <div class="px-5 py-4 border-b border-[#4E342E]/10 bg-[#4E342E]/5 flex items-center justify-between">
+      <div>
+        <h3 class="text-sm font-bold text-[#4E342E]">How This Cash Was Divided</h3>
+        <p class="text-xs text-[#4E342E]/70">Breakdown of crop loads settled using this payment record.</p>
+      </div>
+      <span class="text-xs text-[#4E342E]/60 bg-[#FAF6F0] px-2.5 py-1 rounded-lg border border-[#4E342E]/10">
+        💡 Match Record
+      </span>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-sm text-[#4E342E]">
+        <thead class="bg-[#4E342E]/10 text-xs font-bold text-[#4E342E] uppercase tracking-wider border-b border-[#4E342E]/10">
+          <tr>
+            <th class="px-5 py-3">Date Marked</th>
+            <th class="px-5 py-3">Target Harvest Load</th>
+            <th class="px-5 py-3">Recorded By</th>
+            <th class="px-5 py-3 text-right">Amount Applied</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-[#4E342E]/10">
+          {% for alloc in allocations %}
+          <tr class="hover:bg-[#4E342E]/5 transition-colors">
+            <td class="px-5 py-3.5 whitespace-nowrap text-xs text-[#4E342E]/80">
+              {{ alloc.allocated_at|date:"Y-m-d H:i" }}
+            </td>
+            <td class="px-5 py-3.5 font-mono text-xs font-bold text-[#4E342E]">
+              {% if alloc.batch %}
+                Crop Load #{{ alloc.batch.id }} ({{ alloc.batch.get_transaction_type_display }})
+              {% else %}
+                <span class="text-[#4E342E]/50">Direct Cash Payment</span>
+              {% endif %}
+            </td>
+            <td class="px-5 py-3.5 font-medium text-xs">
+              {{ alloc.allocated_by.username|default:"System Log" }}
+            </td>
+            <td class="px-5 py-3.5 text-right font-mono font-bold text-[#6B8E23]">
+              ₦{{ alloc.amount|intcomma }}
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="4" class="px-5 py-8 text-center text-[#4E342E]/60">
+              <p class="font-bold text-sm">No funds linked to crops yet</p>
+              <p class="text-xs mt-0.5">This cash is floating and available to match unpaid harvest loads below.</p>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Outstanding Batches section (if unallocated funds exist) -->
+  {% if unallocated > 0 %}
+  <div class="bg-[#C9952C]/10 rounded-2xl border border-[#C9952C]/30 p-5 space-y-3">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+      <div>
+        <h3 class="text-sm font-bold text-[#4E342E]">Unpaid Harvest Loads Waiting for Cash</h3>
+        <p class="text-xs text-[#4E342E]/80">Crop batches that still owe money and can be cleared with your floating cash.</p>
+      </div>
+      <span class="text-xs font-bold text-[#4E342E] bg-[#C9952C]/20 border border-[#C9952C]/40 px-3 py-1 rounded-xl w-fit">
+        Floating Balance: ₦{{ unallocated|intcomma }}
+      </span>
+    </div>
+
+    <div class="bg-[#FAF6F0] rounded-xl border border-[#4E342E]/15 overflow-hidden shadow-sm">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-sm text-[#4E342E]">
+          <thead class="bg-[#C9952C]/20 text-xs font-bold text-[#4E342E] uppercase tracking-wider border-b border-[#4E342E]/10">
+            <tr>
+              <th class="px-4 py-2.5">Harvest Date</th>
+              <th class="px-4 py-2.5">Load ID</th>
+              <th class="px-4 py-2.5 text-right">Total Load Value</th>
+              <th class="px-4 py-2.5 text-right">Still Owed to Farm</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-[#4E342E]/10">
+            {% for b in outstanding %}
+            <tr class="hover:bg-[#4E342E]/5 transition-colors">
+              <td class="px-4 py-2.5 text-xs">{{ b.transaction_date|date:"Y-m-d" }}</td>
+              <td class="px-4 py-2.5 font-mono text-xs font-bold text-[#4E342E]">Crop Load #{{ b.id }}</td>
+              <td class="px-4 py-2.5 text-right font-mono text-xs">₦{{ b.total_amount|intcomma }}</td>
+              <td class="px-4 py-2.5 text-right font-mono font-bold text-[#C75B39]">₦{{ b.due|intcomma }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="4" class="px-4 py-6 text-center text-[#4E342E]/60 text-xs">
+                No unpaid crop loads found for this person.
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

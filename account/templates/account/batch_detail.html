@@ -1,0 +1,796 @@
+{% extends 'base.html' %}
+
+{% block title %}Batch {{ batch.batch_code }} — AgroLedger{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto space-y-6" style="background-color: #FAF6F0; min-height: 100vh; padding: 1.5rem;">
+
+    <!-- ====== BATCH HEADER ====== -->
+    <div class="rounded-2xl border p-6 relative overflow-hidden" style="background-color: #FFFDF8; border-color: #E8DCC8; box-shadow: 0 1px 3px rgba(78,52,46,0.08);">
+        <div class="absolute top-0 right-0 w-32 h-32 
+            {% if batch.transaction_type == 'BUY' %}bg-amber-50{% else %}bg-emerald-50{% endif %} 
+            rounded-bl-full -mr-8 -mt-8 opacity-60" style="background-color: {% if batch.transaction_type == 'BUY' %}#FDF6E3{% else %}#F0F5E8{% endif %}"></div>
+
+        <div class="relative flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <div class="flex items-center gap-4">
+                <div class="w-16 h-16 rounded-2xl 
+                    {% if batch.transaction_type == 'BUY' %}bg-gradient-to-br from-amber-400 to-orange-500 shadow-orange-500/20{% else %}bg-gradient-to-br from-emerald-400 to-teal-500 shadow-emerald-500/20{% endif %} 
+                    flex items-center justify-center text-white text-2xl shadow-lg" style="{% if batch.transaction_type == 'BUY' %}background: linear-gradient(135deg, #C9952C, #B87333); box-shadow: 0 4px 12px rgba(201,149,44,0.25);{% else %}background: linear-gradient(135deg, #6B8E23, #556B2F); box-shadow: 0 4px 12px rgba(107,142,35,0.25);{% endif %}">
+                    <i class="fas {% if batch.transaction_type == 'BUY' %}fa-shopping-basket{% else %}fa-arrow-trend-up{% endif %}"></i>
+                </div>
+                <div>
+                    <div class="flex flex-wrap items-center gap-2 mb-1">
+                        <h1 class="text-2xl font-bold" style="color: #4E342E;">Batch {{ batch.batch_code }}</h1>
+                        {% if batch.transaction_type == 'BUY' %}
+                        <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide border" style="background-color: #FDF6E3; color: #8B6914; border-color: #E8D5A3;">
+                            <i class="fas fa-arrow-down text-[10px]"></i> You Bought This
+                        </span>
+                        {% else %}
+                        <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide border" style="background-color: #F0F5E8; color: #4A6B1A; border-color: #C5D9A0;">
+                            <i class="fas fa-arrow-up text-[10px]"></i> You Sold This
+                        </span>
+                        {% endif %}
+
+                        {% if batch.payment_status == 'FULL_PAYMENT' %}
+                        <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide border" style="background-color: #F0F5E8; color: #4A6B1A; border-color: #C5D9A0;">
+                            <span class="w-1.5 h-1.5 rounded-full" style="background-color: #6B8E23;"></span> Money Done
+                        </span>
+                        {% elif batch.payment_status == 'PARTIAL_PAYMENT' %}
+                        <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide border" style="background-color: #FDF6E3; color: #8B6914; border-color: #E8D5A3;">
+                            <span class="w-1.5 h-1.5 rounded-full animate-pulse" style="background-color: #C9952C;"></span> Some Money Paid
+                        </span>
+                        {% else %}
+                        <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide border" style="background-color: #FDF0EB; color: #8B3A1F; border-color: #E8B8A8;">
+                            <span class="w-1.5 h-1.5 rounded-full" style="background-color: #C75B39;"></span> No Money Yet
+                        </span>
+                        {% endif %}
+                    </div>
+                    <p class="text-sm flex items-center gap-3 flex-wrap" style="color: #8D6E63;">
+                        <span><i class="far fa-calendar-alt mr-1"></i> {{ batch.transaction_date|date:"F d, Y" }}</span>
+                        <span class="hidden sm:inline" style="color: #D7CCC8;">|</span>
+                        <span><i class="far fa-clock mr-1"></i> Recorded {{ batch.created_at|date:"M d, Y · H:i" }}</span>
+                        <span class="hidden sm:inline" style="color: #D7CCC8;">|</span>
+                        <span><i class="fas fa-box mr-1"></i> {{ batch.product.name }}</span>
+                    </p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <a href="{% url 'admin_dashboard' %}" class="px-4 py-2.5 text-sm font-semibold rounded-xl transition-colors" style="background-color: #F5EFE6; color: #5D4037;">
+                    <i class="fas fa-arrow-left mr-1"></i> Back to Farm Board
+                </a>
+                {% if user.role == 'ADMIN' %}
+                <a href="{% url 'batch_create' %}" class="px-4 py-2.5 text-white text-sm font-semibold rounded-xl transition-colors shadow-sm" style="background-color: #6B8E23;">
+                    <i class="fas fa-plus mr-1"></i> New Batch
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    {% if batch.transaction_type == 'BUY' %}
+    <!-- ====== WEIGHT & DRYING ANALYSIS CARDS (BUY ONLY) ====== -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <!-- Received Weight (Wet) -->
+        <div class="rounded-2xl p-5 border shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group" style="background-color: #FFFDF8; border-color: #E8DCC8;">
+            <div class="absolute top-0 right-0 w-20 h-20 rounded-bl-full -mr-3 -mt-3 group-hover:scale-110 transition-transform" style="background-color: #F5EFE6;"></div>
+            <div class="relative">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background-color: #F5EFE6;">
+                        <i class="fas fa-weight-hanging" style="color: #8B6914;"></i>
+                    </div>
+                    <span class="text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wider" style="background-color: #FDF6E3; color: #8B6914;">Fresh Off Field</span>
+                </div>
+                <p class="text-sm font-medium" style="color: #8D6E63;">How Heavy When It Came</p>
+                <h3 class="text-2xl font-bold mt-1" style="color: #4E342E;">{{ batch.weight|default:"0.00" }} <span class="text-sm font-normal" style="color: #A1887F;">kg</span></h3>
+                <div class="mt-2 p-2 rounded-lg text-xs" style="background-color: #F5EFE6; color: #6D4C41;">
+                    <i class="fas fa-lightbulb mr-1" style="color: #C9952C;"></i> This is the weight straight from the farm — still wet with water.
+                </div>
+            </div>
+        </div>
+
+        <!-- Dry Weight -->
+        <div class="rounded-2xl p-5 border shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group" style="background-color: #FFFDF8; border-color: #E8DCC8;">
+            <div class="absolute top-0 right-0 w-20 h-20 rounded-bl-full -mr-3 -mt-3 group-hover:scale-110 transition-transform" style="background-color: #F0F5E8;"></div>
+            <div class="relative">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background-color: #F0F5E8;">
+                        <i class="fas fa-wind" style="color: #4A6B1A;"></i>
+                    </div>
+                    <span class="text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wider" style="background-color: #F0F5E8; color: #4A6B1A;">After Drying</span>
+                </div>
+                <p class="text-sm font-medium" style="color: #8D6E63;">How Heavy After Sun Dry</p>
+                {% if batch.dry_weight %}
+                <h3 class="text-2xl font-bold mt-1" style="color: #6B8E23;">{{ batch.dry_weight }} <span class="text-sm font-normal" style="color: #A1887F;">kg</span></h3>
+                <p class="text-xs font-medium mt-2" style="color: #C75B39;">{{ batch.moisture_loss }}kg water dried away</p>
+                {% else %}
+                <h3 class="text-2xl font-bold mt-1" style="color: #D7CCC8;">—</h3>
+                <div class="mt-2 p-2 rounded-lg text-xs" style="background-color: #FDF6E3; color: #8B6914;">
+                    <i class="fas fa-clock mr-1" style="color: #C9952C;"></i> Takes about 3 days in the sun. Weigh again when dry.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Moisture Loss -->
+        <div class="rounded-2xl p-5 border shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group" style="background-color: #FFFDF8; border-color: #E8DCC8;">
+            <div class="absolute top-0 right-0 w-20 h-20 rounded-bl-full -mr-3 -mt-3 group-hover:scale-110 transition-transform" style="background-color: #FDF0EB;"></div>
+            <div class="relative">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background-color: #FDF0EB;">
+                        <i class="fas fa-tint" style="color: #C75B39;"></i>
+                    </div>
+                    <span class="text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wider" style="background-color: #FDF0EB; color: #8B3A1F;">Water Lost</span>
+                </div>
+                <p class="text-sm font-medium" style="color: #8D6E63;">Weight That Turned to Air</p>
+                {% if batch.dry_weight %}
+                <h3 class="text-2xl font-bold mt-1" style="color: #C75B39;">{{ batch.moisture_loss }} <span class="text-sm font-normal" style="color: #A1887F;">kg</span></h3>
+                <p class="text-xs font-medium mt-2" style="color: #C75B39;">{{ batch.moisture_loss_percent }}% of what you first received</p>
+                <div class="mt-2 p-2 rounded-lg text-xs" style="background-color: #FDF0EB; color: #6D4C41;">
+                    <i class="fas fa-info-circle mr-1" style="color: #C75B39;"></i> This water weight is normal — every crop loses some when drying.
+                </div>
+                {% else %}
+                <h3 class="text-2xl font-bold mt-1" style="color: #D7CCC8;">—</h3>
+                <div class="mt-2 p-2 rounded-lg text-xs" style="background-color: #F5EFE6; color: #6D4C41;">
+                    <i class="fas fa-info-circle mr-1" style="color: #8D6E63;"></i> Enter dry weight above and we will calculate how much water left.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Effective Rate (Dry) -->
+        <div class="rounded-2xl p-5 border shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group" style="background-color: #FFFDF8; border-color: #E8DCC8;">
+            <div class="absolute top-0 right-0 w-20 h-20 rounded-bl-full -mr-3 -mt-3 group-hover:scale-110 transition-transform" style="background-color: #F5F0E8;"></div>
+            <div class="relative">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background-color: #F5F0E8;">
+                        <i class="fas fa-calculator" style="color: #8B6914;"></i>
+                    </div>
+                    <span class="text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wider" style="background-color: #F5F0E8; color: #8B6914;">True Price</span>
+                </div>
+                <p class="text-sm font-medium" style="color: #8D6E63;">What Each Kg Really Cost You</p>
+                {% if batch.dry_weight %}
+                <h3 class="text-2xl font-bold mt-1" style="color: #8B6914;">₦{{ batch.effective_rate }}</h3>
+                <div class="mt-2 p-2 rounded-lg text-xs" style="background-color: #FDF6E3; color: #6D4C41;">
+                    <i class="fas fa-lightbulb mr-1" style="color: #C9952C;"></i> This is the real price per kg after drying — use this to know your true cost.
+                </div>
+                {% else %}
+                <h3 class="text-2xl font-bold mt-1" style="color: #D7CCC8;">—</h3>
+                <div class="mt-2 p-2 rounded-lg text-xs" style="background-color: #F5EFE6; color: #6D4C41;">
+                    <i class="fas fa-info-circle mr-1" style="color: #8D6E63;"></i> Needs dry weight first. Then we show you the true cost per kg.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== ADMIN: ENTER DRY WEIGHT FORM (BUY ONLY) ====== -->
+    {% if user.role == 'ADMIN' %}
+    <div class="rounded-2xl border p-6" style="background: linear-gradient(135deg, #FDF6E3, #F5EFE6); border-color: #E8D5A3;">
+        <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-xl flex items-center justify-center" style="background-color: #FDF6E3;">
+                    <i class="fas fa-weight text-lg" style="color: #8B6914;"></i>
+                </div>
+                <div>
+                    <h3 class="font-bold" style="color: #4E342E;">Enter Dry Weight</h3>
+                    <p class="text-sm" style="color: #8D6E63;">
+                        {% if batch.dry_weight %}
+                            Dry weight already written down. Change it below if needed.
+                        {% else %}
+                            The crop takes about 3 days to dry in sun. Write the final dry weight here when ready.
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+            <form method="post" action="{% url 'update_dry_weight' batch.pk %}" class="flex items-end gap-3 w-full md:w-auto">
+                {% csrf_token %}
+                <div class="flex-1 md:w-48">
+                    <label class="block text-xs font-semibold mb-1" style="color: #5D4037;">Dry Weight (kg)</label>
+                    <input type="number" name="dry_weight" step="0.01" min="0" max="{{ batch.weight }}"
+                        value="{{ batch.dry_weight|default:'' }}"
+                        placeholder="e.g. 850.00"
+                        class="w-full px-3.5 py-2.5 rounded-xl border text-sm transition-all focus:outline-none focus:ring-2"
+                        style="border-color: #E8D5A3; color: #4E342E; background-color: #FFFDF8;"
+                        required>
+                </div>
+                <button type="submit" class="px-5 py-2.5 text-white text-sm font-semibold rounded-xl transition-colors shadow-sm whitespace-nowrap" style="background-color: #C9952C;">
+                    <i class="fas fa-save mr-1"></i> {% if batch.dry_weight %}Update{% else %}Save{% endif %}
+                </button>
+            </form>
+        </div>
+        {% if batch.dry_weight %}
+        <div class="mt-4 pt-4 border-t grid grid-cols-2 md:grid-cols-4 gap-4 text-sm" style="border-color: #E8D5A3;">
+            <div>
+                <p class="text-xs uppercase font-bold tracking-wider" style="color: #8D6E63;">Fresh Weight</p>
+                <p class="font-mono font-semibold" style="color: #4E342E;">{{ batch.weight }} kg</p>
+            </div>
+            <div>
+                <p class="text-xs uppercase font-bold tracking-wider" style="color: #8D6E63;">Dry Weight</p>
+                <p class="font-mono font-semibold" style="color: #6B8E23;">{{ batch.dry_weight }} kg</p>
+            </div>
+            <div>
+                <p class="text-xs uppercase font-bold tracking-wider" style="color: #8D6E63;">Water Lost</p>
+                <p class="font-mono font-semibold" style="color: #C75B39;">{{ batch.moisture_loss }} kg ({{ batch.moisture_loss_percent }}%)</p>
+            </div>
+            <div>
+                <p class="text-xs uppercase font-bold tracking-wider" style="color: #8D6E63;">True Price per Kg</p>
+                <p class="font-mono font-semibold" style="color: #8B6914;">₦{{ batch.effective_rate }}/kg</p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+    {% endif %}
+
+    {% if batch.transaction_type == 'SELL' %}
+    <!-- ====== SIMPLE WEIGHT DISPLAY (SELL ONLY) ====== -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+        <div class="rounded-2xl p-5 border shadow-sm" style="background-color: #FFFDF8; border-color: #E8DCC8;">
+            <div class="flex items-center gap-3 mb-3">
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background-color: #F0F5E8;">
+                    <i class="fas fa-weight-hanging" style="color: #4A6B1A;"></i>
+                </div>
+                <span class="text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wider" style="background-color: #F0F5E8; color: #4A6B1A;">Sold</span>
+            </div>
+            <p class="text-sm font-medium" style="color: #8D6E63;">How Much You Gave Buyer</p>
+            <h3 class="text-2xl font-bold mt-1" style="color: #4E342E;">{{ batch.weight|default:"0.00" }} <span class="text-sm font-normal" style="color: #A1887F;">kg</span></h3>
+            <div class="mt-2 p-2 rounded-lg text-xs" style="background-color: #F0F5E8; color: #4A6B1A;">
+                <i class="fas fa-lightbulb mr-1" style="color: #6B8E23;"></i> Total kilograms the buyer carried away.
+            </div>
+        </div>
+        <div class="rounded-2xl p-5 border shadow-sm" style="background-color: #FFFDF8; border-color: #E8DCC8;">
+            <div class="flex items-center gap-3 mb-3">
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background-color: #F5EFE6;">
+                    <i class="fas fa-tag" style="color: #8B6914;"></i>
+                </div>
+                <span class="text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wider" style="background-color: #F5EFE6; color: #8B6914;">Price</span>
+            </div>
+            <p class="text-sm font-medium" style="color: #8D6E63;">Price Per Kg You Charged</p>
+            <h3 class="text-2xl font-bold mt-1" style="color: #4E342E;">₦{{ batch.applied_rate|default:"0.00" }} <span class="text-sm font-normal" style="color: #A1887F;">/kg</span></h3>
+            <div class="mt-2 p-2 rounded-lg text-xs" style="background-color: #FDF6E3; color: #6D4C41;">
+                <i class="fas fa-lightbulb mr-1" style="color: #C9952C;"></i> What you and buyer agreed per kilogram.
+            </div>
+        </div>
+        <div class="rounded-2xl p-5 border shadow-sm" style="background-color: #FFFDF8; border-color: #E8DCC8;">
+            <div class="flex items-center gap-3 mb-3">
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background-color: #F5F0E8;">
+                    <i class="fas fa-receipt" style="color: #8B6914;"></i>
+                </div>
+                <span class="text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wider" style="background-color: #F5F0E8; color: #8B6914;">Costs</span>
+            </div>
+            <p class="text-sm font-medium" style="color: #8D6E63;">Money You Spent on This Load</p>
+            <h3 class="text-2xl font-bold mt-1" style="color: #8B6914;">₦{{ batch.total_batch_expenses|default:"0.00" }}</h3>
+            <div class="mt-2 p-2 rounded-lg text-xs" style="background-color: #F5EFE6; color: #6D4C41;">
+                <i class="fas fa-lightbulb mr-1" style="color: #C9952C;"></i> Transport, fuel, labour — everything that cost you money.
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- ====== FINANCIAL SUMMARY CARDS ====== -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <!-- Total Value -->
+        <div class="rounded-2xl p-5 border shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group" style="background-color: #FFFDF8; border-color: #E8DCC8;">
+            <div class="absolute top-0 right-0 w-20 h-20 rounded-bl-full -mr-3 -mt-3 group-hover:scale-110 transition-transform" style="background-color: #F5EFE6;"></div>
+            <div class="relative">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background-color: #F5EFE6;">
+                        <i class="fas fa-file-invoice-dollar" style="color: #8B6914;"></i>
+                    </div>
+                    <span class="text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wider" style="background-color: #F5EFE6; color: #8B6914;">Total</span>
+                </div>
+                <p class="text-sm font-medium" style="color: #8D6E63;">{% if batch.transaction_type == 'BUY' %}Money You Paid Farmer{% else %}Money Buyer Owes You{% endif %}</p>
+                <h3 class="text-2xl font-bold mt-1" style="color: #4E342E;">₦{{ batch.total_amount|default:"0.00" }}</h3>
+                <p class="text-xs mt-2" style="color: #A1887F;">{{ batch.weight }} kg × ₦{{ batch.applied_rate|default:"0.00" }}/kg</p>
+                <div class="mt-2 p-2 rounded-lg text-xs" style="background-color: #F5EFE6; color: #6D4C41;">
+                    <i class="fas fa-lightbulb mr-1" style="color: #C9952C;"></i> {% if batch.transaction_type == 'BUY' %}Total cash you gave the farmer for this load.{% else %}Total the buyer should pay you for this batch.{% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Amount Paid -->
+        <div class="rounded-2xl p-5 border shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group" style="background-color: #FFFDF8; border-color: #E8DCC8;">
+            <div class="absolute top-0 right-0 w-20 h-20 rounded-bl-full -mr-3 -mt-3 group-hover:scale-110 transition-transform" style="background-color: #F0F5E8;"></div>
+            <div class="relative">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background-color: #F0F5E8;">
+                        <i class="fas fa-hand-holding-dollar" style="color: #4A6B1A;"></i>
+                    </div>
+                    <span class="text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wider" style="background-color: #F0F5E8; color: #4A6B1A;">Paid</span>
+                </div>
+                <p class="text-sm font-medium" style="color: #8D6E63;">{% if batch.transaction_type == 'BUY' %}Money You Already Gave{% else %}Money Buyer Already Paid{% endif %}</p>
+                <h3 class="text-2xl font-bold mt-1" style="color: #6B8E23;">₦{{ batch.amount_paid|default:"0.00" }}</h3>
+                <p class="text-xs mt-2" style="color: #A1887F;">{{ batch.transactions.count }} payment record{{ batch.transactions.count|pluralize }}</p>
+                <div class="mt-2 p-2 rounded-lg text-xs" style="background-color: #F0F5E8; color: #4A6B1A;">
+                    <i class="fas fa-lightbulb mr-1" style="color: #6B8E23;"></i> Cash already exchanged — bank transfer, cash, or cheque.
+                </div>
+            </div>
+        </div>
+
+        <!-- Balance Due -->
+        <div class="rounded-2xl p-5 border shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group" style="background-color: #FFFDF8; border-color: #E8DCC8;">
+            <div class="absolute top-0 right-0 w-20 h-20 rounded-bl-full -mr-3 -mt-3 group-hover:scale-110 transition-transform" style="background-color: #FDF0EB;"></div>
+            <div class="relative">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background-color: #FDF0EB;">
+                        <i class="fas fa-wallet" style="color: #C75B39;"></i>
+                    </div>
+                    <span class="text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wider" style="background-color: #FDF0EB; color: #8B3A1F;">Still Owed</span>
+                </div>
+                <p class="text-sm font-medium" style="color: #8D6E63;">{% if batch.transaction_type == 'BUY' %}Money You Still Owe Farmer{% else %}Money Buyer Still Owes You{% endif %}</p>
+                <h3 class="text-2xl font-bold mt-1" style="{% if batch.balance_due > 0 %}color: #C75B39;{% else %}color: #6B8E23;{% endif %}">₦{{ batch.balance_due|default:"0.00" }}</h3>
+                <p class="text-xs mt-2" style="color: #A1887F;">{% if batch.balance_due > 0 %}Outstanding amount — chase it up!{% else %}All square — nobody owes nothing.{% endif %}</p>
+                {% if batch.balance_due > 0 %}
+                <div class="mt-2 p-2 rounded-lg text-xs" style="background-color: #FDF0EB; color: #6D4C41;">
+                    <i class="fas fa-exclamation-circle mr-1" style="color: #C75B39;"></i> This money is still out there — follow up before it gets forgotten.
+                </div>
+                {% else %}
+                <div class="mt-2 p-2 rounded-lg text-xs" style="background-color: #F0F5E8; color: #4A6B1A;">
+                    <i class="fas fa-check-circle mr-1" style="color: #6B8E23;"></i> Good work — this batch is fully paid up.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Total Expenses -->
+        <div class="rounded-2xl p-5 border shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group" style="background-color: #FFFDF8; border-color: #E8DCC8;">
+            <div class="absolute top-0 right-0 w-20 h-20 rounded-bl-full -mr-3 -mt-3 group-hover:scale-110 transition-transform" style="background-color: #F5F0E8;"></div>
+            <div class="relative">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background-color: #F5F0E8;">
+                        <i class="fas fa-receipt" style="color: #8B6914;"></i>
+                    </div>
+                    <span class="text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wider" style="background-color: #F5F0E8; color: #8B6914;">Costs</span>
+                </div>
+                <p class="text-sm font-medium" style="color: #8D6E63;">Money You Spent Moving This Load</p>
+                <h3 class="text-2xl font-bold mt-1" style="color: #8B6914;">₦{{ batch.total_batch_expenses|default:"0.00" }}</h3>
+                <p class="text-xs mt-2" style="color: #A1887F;">{{ batch.expenses.count }} expense entry{{ batch.expenses.count|pluralize }}</p>
+                <div class="mt-2 p-2 rounded-lg text-xs" style="background-color: #F5EFE6; color: #6D4C41;">
+                    <i class="fas fa-lightbulb mr-1" style="color: #C9952C;"></i> Every naira spent on transport, fuel, labour, storage, etc.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== PAYMENT PROGRESS BAR ====== -->
+    <div class="rounded-2xl border shadow-sm p-6" style="background-color: #FFFDF8; border-color: #E8DCC8;">
+        <div class="flex items-center justify-between mb-3">
+            <div>
+                <h3 class="font-bold flex items-center gap-2" style="color: #4E342E;">
+                    <i class="fas fa-chart-line" style="color: #C9952C;"></i> How Much of the Money is In
+                </h3>
+                <p class="text-xs" style="color: #8D6E63;">See what part of the total has been collected</p>
+            </div>
+            <span class="text-sm font-bold" style="{% if batch.payment_status == 'FULL_PAYMENT' %}color: #6B8E23;{% elif batch.payment_status == 'PARTIAL_PAYMENT' %}color: #C9952C;{% else %}color: #C75B39;{% endif %}">
+                {{ payment_percentage }}% Collected
+            </span>
+        </div>
+        <div class="w-full rounded-full h-4 overflow-hidden shadow-inner" style="background-color: #F5EFE6;">
+            <div class="h-full rounded-full transition-all duration-1000 ease-out relative"
+                style="width: {{ payment_percentage }}%; {% if batch.payment_status == 'FULL_PAYMENT' %}background: linear-gradient(90deg, #6B8E23, #8FBC3F);{% elif batch.payment_status == 'PARTIAL_PAYMENT' %}background: linear-gradient(90deg, #C9952C, #D4A84B);{% else %}background: linear-gradient(90deg, #C75B39, #D97B5D);{% endif %}">
+                <div class="absolute inset-0 bg-white/20 animate-pulse"></div>
+            </div>
+        </div>
+        <div class="flex justify-between mt-2 text-xs font-medium" style="color: #8D6E63;">
+            <span>₦0.00</span>
+            <span class="font-mono">₦{{ batch.total_amount|default:"0.00" }}</span>
+        </div>
+        <div class="mt-3 p-2 rounded-lg text-xs" style="background-color: #F5EFE6; color: #6D4C41;">
+            <i class="fas fa-info-circle mr-1" style="color: #C9952C;"></i> 
+            {% if batch.payment_status == 'FULL_PAYMENT' %}All the money is in your hand. No chasing needed.{% elif batch.payment_status == 'PARTIAL_PAYMENT' %}Some money came in, but there is still more to collect. Keep following up.{% else %}Nothing received yet — this is all still owing. Time to remind them.{% endif %}
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        <!-- ====== TRANSACTION DETAILS ====== -->
+        <div class="rounded-2xl border shadow-sm p-6" style="background-color: #FFFDF8; border-color: #E8DCC8;">
+            <h3 class="font-bold mb-5 flex items-center gap-2" style="color: #4E342E;">
+                <i class="fas fa-info-circle" style="color: #C9952C;"></i> What Happened Here
+            </h3>
+            <div class="space-y-4">
+                <div class="flex items-center justify-between py-3 border-b" style="border-color: #F5EFE6;">
+                    <span class="text-sm" style="color: #8D6E63;">Deal Type</span>
+                    <span class="text-sm font-bold px-2 py-1 rounded-lg" style="{% if batch.transaction_type == 'BUY' %}background-color: #FDF6E3; color: #8B6914;{% else %}background-color: #F0F5E8; color: #4A6B1A;{% endif %}">
+                        {% if batch.transaction_type == 'BUY' %}You Bought From Farmer{% else %}You Sold To Buyer{% endif %}
+                    </span>
+                </div>
+                <div class="flex items-center justify-between py-3 border-b" style="border-color: #F5EFE6;">
+                    <span class="text-sm" style="color: #8D6E63;">Who You Dealt With</span>
+                    <div class="flex items-center gap-2">
+                        <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white" style="background: linear-gradient(135deg, #8D6E63, #6D4C41);">
+                            {{ batch.user.username|first|upper }}
+                        </div>
+                        <span class="text-sm font-semibold" style="color: #4E342E;">{{ batch.user.username }}</span>
+                        <span class="text-[10px] px-1.5 py-0.5 rounded" style="background-color: #F5EFE6; color: #8D6E63;">{{ batch.user.get_role_display }}</span>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between py-3 border-b" style="border-color: #F5EFE6;">
+                    <span class="text-sm" style="color: #8D6E63;">Crop / Product</span>
+                    <span class="text-sm font-semibold" style="color: #4E342E;">{{ batch.product.name }} ({{ batch.product.unit }})</span>
+                </div>
+                <div class="flex items-center justify-between py-3 border-b" style="border-color: #F5EFE6;">
+                    <span class="text-sm" style="color: #8D6E63;">{% if batch.transaction_type == 'BUY' %}Weight You Received{% else %}Weight Buyer Took{% endif %}</span>
+                    <span class="text-sm font-mono font-semibold" style="color: #4E342E;">{{ batch.weight }} kg</span>
+                </div>
+                {% if batch.transaction_type == 'BUY' %}
+                <div class="flex items-center justify-between py-3 border-b" style="border-color: #F5EFE6;">
+                    <span class="text-sm" style="color: #8D6E63;">Weight After Drying</span>
+                    {% if batch.dry_weight %}
+                    <span class="text-sm font-mono font-semibold" style="color: #6B8E23;">{{ batch.dry_weight }} kg</span>
+                    {% else %}
+                    <span class="text-sm italic" style="color: #A1887F;">Not weighed yet</span>
+                    {% endif %}
+                </div>
+                {% if batch.dry_weight %}
+                <div class="flex items-center justify-between py-3 border-b -mx-2 px-2 rounded-lg" style="border-color: #F5EFE6; background-color: #F5F0E8;">
+                    <span class="text-sm font-medium" style="color: #8B6914;">True Cost Per Kg (Dry)</span>
+                    <span class="text-sm font-mono font-bold" style="color: #8B6914;">₦{{ batch.effective_rate }}/kg</span>
+                </div>
+                {% endif %}
+                {% endif %}
+                <div class="flex items-center justify-between py-3 border-b" style="border-color: #F5EFE6;">
+                    <span class="text-sm" style="color: #8D6E63;">Price Per Kg Agreed</span>
+                    <span class="text-sm font-mono font-semibold" style="color: #4E342E;">₦{{ batch.applied_rate|default:"0.00" }}/kg</span>
+                </div>
+                <div class="flex items-center justify-between py-3 border-b" style="border-color: #F5EFE6;">
+                    <span class="text-sm" style="color: #8D6E63;">Day of the Deal</span>
+                    <span class="text-sm font-semibold" style="color: #4E342E;">{{ batch.transaction_date|date:"F d, Y" }}</span>
+                </div>
+                <div class="flex items-center justify-between py-3">
+                    <span class="text-sm" style="color: #8D6E63;">Batch Number</span>
+                    <span class="font-mono text-sm font-bold px-2 py-1 rounded" style="background-color: #F5EFE6; color: #4E342E;">{{ batch.batch_code }}</span>
+                </div>
+            </div>
+            <div class="mt-4 p-3 rounded-lg text-xs" style="background-color: #F5EFE6; color: #6D4C41;">
+                <i class="fas fa-lightbulb mr-1" style="color: #C9952C;"></i> <strong>Tip:</strong> The batch code is like a farm ID card — use it to find this exact load anytime.
+            </div>
+        </div>
+
+        <!-- ====== EXPENSES SECTION ====== -->
+        <div class="lg:col-span-2 rounded-2xl border shadow-sm overflow-hidden" style="background-color: #FFFDF8; border-color: #E8DCC8;">
+            <div class="px-6 py-4 border-b flex items-center justify-between" style="border-color: #F5EFE6;">
+                <div>
+                    <h3 class="font-bold flex items-center gap-2" style="color: #4E342E;">
+                        <i class="fas fa-receipt" style="color: #C9952C;"></i> What It Cost You to Move This Load
+                    </h3>
+                    <p class="text-xs" style="color: #8D6E63;">Every naira spent — transport, fuel, labour, bags, storage, etc.</p>
+                </div>
+                {% if user.role == 'ADMIN' %}
+                <button onclick="toggleExpenseForm()" class="text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors" style="background-color: #FDF6E3; color: #8B6914;">
+                    <i class="fas fa-plus mr-1"></i> Add Cost
+                </button>
+                {% endif %}
+            </div>
+
+            {% if user.role == 'ADMIN' %}
+            <!-- Inline Expense Form -->
+            <div id="expenseForm" class="hidden px-6 py-4 border-b" style="background-color: #FDF6E3; border-color: #E8D5A3;">
+                <form method="post" action="{% url 'add_expense' batch.pk %}" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {% csrf_token %}
+                    <div>
+                        <label class="block text-xs font-semibold mb-1" style="color: #5D4037;">What Kind of Cost</label>
+                        {{ expense_form.category }}
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold mb-1" style="color: #5D4037;">Describe It</label>
+                        {{ expense_form.title }}
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold mb-1" style="color: #5D4037;">How Much (₦)</label>
+                        {{ expense_form.amount }}
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold mb-1" style="color: #5D4037;">When</label>
+                        {{ expense_form.expense_date }}
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold mb-1" style="color: #5D4037;">Receipt Number</label>
+                        {{ expense_form.receipt_reference }}
+                    </div>
+                    <div class="flex items-end">
+                        <button type="submit" class="w-full text-white font-semibold py-2.5 rounded-xl transition-colors shadow-sm" style="background-color: #C9952C;">
+                            <i class="fas fa-save mr-1"></i> Save Cost
+                        </button>
+                    </div>
+                </form>
+            </div>
+            {% endif %}
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="text-xs uppercase tracking-wider" style="background-color: #F5EFE6; color: #8D6E63;">
+                            <th class="px-5 py-3 text-left font-semibold">Type of Cost</th>
+                            <th class="px-5 py-3 text-left font-semibold">What It Was For</th>
+                            <th class="px-5 py-3 text-right font-semibold">Amount</th>
+                            <th class="px-5 py-3 text-center font-semibold">Day</th>
+                            <th class="px-5 py-3 text-left font-semibold">Receipt</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y" style="border-color: #F5EFE6;">
+                        {% for expense in expenses %}
+                        <tr class="hover:bg-amber-50/30 transition-colors">
+                            <td class="px-5 py-4">
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold border"
+                                    style="{% if expense.category == 'TRANSPORT' %}background-color: #F5EFE6; color: #6D4C41; border-color: #E8DCC8;{% elif expense.category == 'FUEL' %}background-color: #FDF6E3; color: #8B6914; border-color: #E8D5A3;{% elif expense.category == 'LABOR' %}background-color: #F0F5E8; color: #4A6B1A; border-color: #C5D9A0;{% elif expense.category == 'PACKAGING' %}background-color: #FDF0F5; color: #8B3A5C; border-color: #E8C8D8;{% elif expense.category == 'STORAGE' %}background-color: #F0F0F5; color: #4A4A6B; border-color: #C8C8D9;{% elif expense.category == 'QUALITY' %}background-color: #F0F8F8; color: #3A6B6B; border-color: #C8D9D9;{% elif expense.category == 'SECURITY' %}background-color: #FDF0EB; color: #8B5A1F; border-color: #E8D0B8;{% elif expense.category == 'LEVIES' %}background-color: #FDF0EB; color: #8B3A1F; border-color: #E8B8A8;{% else %}background-color: #F5EFE6; color: #6D4C41; border-color: #E8DCC8;{% endif %}">
+                                    <i class="fas 
+                                        {% if expense.category == 'TRANSPORT' %}fa-truck
+                                        {% elif expense.category == 'FUEL' %}fa-gas-pump
+                                        {% elif expense.category == 'LABOR' %}fa-users
+                                        {% elif expense.category == 'PACKAGING' %}fa-box
+                                        {% elif expense.category == 'STORAGE' %}fa-warehouse
+                                        {% elif expense.category == 'QUALITY' %}fa-microscope
+                                        {% elif expense.category == 'SECURITY' %}fa-shield-alt
+                                        {% elif expense.category == 'LEVIES' %}fa-file-invoice-dollar
+                                        {% else %}fa-ellipsis-h{% endif %} text-[10px]"></i>
+                                    {{ expense.get_category_display }}
+                                </span>
+                            </td>
+                            <td class="px-5 py-4 font-medium" style="color: #4E342E;">{{ expense.title }}</td>
+                            <td class="px-5 py-4 text-right font-mono font-bold" style="color: #4E342E;">₦{{ expense.amount|default:"0.00" }}</td>
+                            <td class="px-5 py-4 text-center text-xs" style="color: #8D6E63;">{{ expense.expense_date|date:"M d, Y" }}</td>
+                            <td class="px-5 py-4 text-xs font-mono" style="color: #8D6E63;">{{ expense.receipt_reference|default:"—" }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="px-5 py-10 text-center">
+                                <div class="mb-3">
+                                    <div class="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto" style="background-color: #F5EFE6;">
+                                        <i class="fas fa-receipt text-2xl" style="color: #D7CCC8;"></i>
+                                    </div>
+                                </div>
+                                <p class="font-medium text-sm" style="color: #8D6E63;">No costs recorded yet</p>
+                                <p class="text-xs mt-1" style="color: #A1887F;">Transport, fuel, labour and other costs will show here once added.</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    {% if expenses %}
+                    <tfoot>
+                        <tr class="font-semibold border-t-2" style="background-color: #F5EFE6; border-color: #E8DCC8;">
+                            <td colspan="2" class="px-5 py-3 text-right" style="color: #6D4C41;">Total Money Spent:</td>
+                            <td class="px-5 py-3 text-right font-mono text-lg" style="color: #8B6914;">₦{{ batch.total_batch_expenses|default:"0.00" }}</td>
+                            <td colspan="2"></td>
+                        </tr>
+                    </tfoot>
+                    {% endif %}
+                </table>
+            </div>
+            {% if expenses %}
+            <div class="px-6 py-3 text-xs" style="background-color: #F5EFE6; color: #6D4C41;">
+                <i class="fas fa-lightbulb mr-1" style="color: #C9952C;"></i> <strong>Tip:</strong> These costs eat into your profit. The lower they are, the more money stays in your pocket.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- ====== PAYMENT HISTORY ====== -->
+    <div class="rounded-2xl border shadow-sm overflow-hidden" style="background-color: #FFFDF8; border-color: #E8DCC8;">
+        <div class="px-6 py-4 border-b flex items-center justify-between" style="border-color: #F5EFE6;">
+            <div>
+                <h3 class="font-bold flex items-center gap-2" style="color: #4E342E;">
+                    <i class="fas fa-money-bill-transfer" style="color: #6B8E23;"></i> Money In and Out
+                </h3>
+                <p class="text-xs" style="color: #8D6E63;">Every payment made or received for this batch</p>
+            </div>
+            {% if user.role == 'ADMIN' %}
+            <a href="{% url 'transaction_add' %}" class="text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors" style="background-color: #F0F5E8; color: #4A6B1A;">
+                <i class="fas fa-plus mr-1"></i> Record Payment
+            </a>
+            {% endif %}
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="text-xs uppercase tracking-wider" style="background-color: #F5EFE6; color: #8D6E63;">
+                        <th class="px-5 py-3 text-left font-semibold">Reference</th>
+                        <th class="px-5 py-3 text-left font-semibold">Direction</th>
+                        <th class="px-5 py-3 text-left font-semibold">How Paid</th>
+                        <th class="px-5 py-3 text-right font-semibold">Amount</th>
+                        <th class="px-5 py-3 text-left font-semibold">Note</th>
+                        <th class="px-5 py-3 text-center font-semibold">Day</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y" style="border-color: #F5EFE6;">
+                    {% for tx in transactions %}
+                    <tr class="hover:bg-amber-50/30 transition-colors">
+                        <td class="px-5 py-4">
+                            <span class="font-mono text-xs px-2 py-1 rounded" style="background-color: #F5EFE6; color: #6D4C41;">{{ tx.reference_code|default:"—" }}</span>
+                        </td>
+                        <td class="px-5 py-4">
+                            {% if tx.transaction_type == 'DISBURSEMENT' %}
+                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide border" style="background-color: #FDF0EB; color: #8B3A1F; border-color: #E8B8A8;">
+                                <i class="fas fa-arrow-up text-[10px]"></i> Money Went Out
+                            </span>
+                            {% else %}
+                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide border" style="background-color: #F0F5E8; color: #4A6B1A; border-color: #C5D9A0;">
+                                <i class="fas fa-arrow-down text-[10px]"></i> Money Came In
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td class="px-5 py-4">
+                            <span class="inline-flex items-center gap-1.5 text-xs" style="color: #6D4C41;">
+                                {% if tx.payment_method == 'BANK_TRANSFER' %}<i class="fas fa-university" style="color: #8B6914;"></i>{% elif tx.payment_method == 'CASH' %}<i class="fas fa-money-bill" style="color: #6B8E23;"></i>{% elif tx.payment_method == 'CHEQUE' %}<i class="fas fa-file-invoice" style="color: #C9952C;"></i>{% else %}<i class="fas fa-mobile-alt" style="color: #8B6914;"></i>{% endif %}
+                                {{ tx.get_payment_method_display }}
+                            </span>
+                        </td>
+                        <td class="px-5 py-4 text-right font-mono font-bold" style="color: #4E342E;">₦{{ tx.amount|default:"0.00" }}</td>
+                        <td class="px-5 py-4 text-xs max-w-xs truncate" style="color: #6D4C41;">{{ tx.notes|default:"—" }}</td>
+                        <td class="px-5 py-4 text-center text-xs" style="color: #8D6E63;">{{ tx.transaction_date|date:"M d, Y" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="px-5 py-10 text-center">
+                            <div class="mb-3">
+                                <div class="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto" style="background-color: #F5EFE6;">
+                                    <i class="fas fa-money-bill-wave text-2xl" style="color: #D7CCC8;"></i>
+                                </div>
+                            </div>
+                            <p class="font-medium text-sm" style="color: #8D6E63;">No payments recorded yet</p>
+                            <p class="text-xs mt-1" style="color: #A1887F;">When money moves, write it down here so nothing gets lost.</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% if transactions %}
+        <div class="px-6 py-3 text-xs" style="background-color: #F5EFE6; color: #6D4C41;">
+            <i class="fas fa-lightbulb mr-1" style="color: #C9952C;"></i> <strong>Tip:</strong> "Money Went Out" means you paid someone. "Money Came In" means someone paid you. Keep both straight.
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- ====== NET POSITION & DRY ANALYSIS SUMMARY ====== -->
+    <div class="rounded-2xl p-6 text-white shadow-xl" style="background: linear-gradient(135deg, #4E342E, #3E2723, #4E342E);">
+        <!-- Row 1: Net Position -->
+        <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+            <div>
+                <h3 class="font-bold text-lg flex items-center gap-2">
+                    <i class="fas fa-calculator" style="color: #C9952C;"></i> Where You Stand on This Batch
+                </h3>
+                <p class="text-sm" style="color: #D7CCC8;">Total deal value minus everything you spent moving it</p>
+            </div>
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 rounded-2xl p-4 md:p-5 w-full lg:w-auto" style="background-color: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);">
+                <div class="text-center flex-1">
+                    <p class="text-[10px] uppercase font-bold tracking-wider" style="color: #D7CCC8;">Total Deal Value</p>
+                    <p class="text-xl font-bold text-white">₦{{ batch.total_amount|default:"0.00" }}</p>
+                </div>
+                <div class="hidden sm:block text-xl font-light" style="color: #8D6E63;">−</div>
+                <div class="text-center flex-1">
+                    <p class="text-[10px] uppercase font-bold tracking-wider" style="color: #D7CCC8;">What You Spent</p>
+                    <p class="text-xl font-bold" style="color: #E8A090;">₦{{ batch.total_batch_expenses|default:"0.00" }}</p>
+                </div>
+                <div class="hidden sm:block text-xl font-light" style="color: #8D6E63;">=</div>
+                <div class="text-center flex-1 px-4 py-2 rounded-xl" style="background-color: rgba(107,142,35,0.2); border: 1px solid rgba(107,142,35,0.3);">
+                    <p class="text-[10px] uppercase font-bold tracking-wider" style="color: #A8C66C;">What Is Left For You</p>
+                    <p class="text-2xl font-bold" style="color: #A8C66C;">₦{{ batch.net_position }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="mt-4 p-3 rounded-lg text-xs" style="background-color: rgba(255,255,255,0.05); color: #D7CCC8;">
+            <i class="fas fa-lightbulb mr-1" style="color: #C9952C;"></i> <strong>Tip:</strong> This is your real profit after all costs. If this number is small, your costs are too high or your price is too low.
+        </div>
+
+        {% if batch.transaction_type == 'BUY' and batch.dry_weight %}
+        <!-- Row 2: Weight Comparison (BUY ONLY) -->
+        <div class="mt-6 pt-6 border-t" style="border-color: rgba(255,255,255,0.1);">
+            <h4 class="text-sm font-bold mb-4 flex items-center gap-2" style="color: #D7CCC8;">
+                <i class="fas fa-balance-scale" style="color: #C9952C;"></i> Fresh vs Dry — What the Sun Took Away
+            </h4>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="rounded-xl p-4 text-center border" style="background-color: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.05);">
+                    <p class="text-[10px] uppercase font-bold tracking-wider mb-1" style="color: #A1887F;">Weight From Field</p>
+                    <p class="text-xl font-bold text-white">{{ batch.weight }} <span class="text-sm font-normal" style="color: #A1887F;">kg</span></p>
+                    <p class="text-xs mt-1" style="color: #8D6E63;">As it came — still wet</p>
+                </div>
+                <div class="rounded-xl p-4 text-center border" style="background-color: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.05);">
+                    <p class="text-[10px] uppercase font-bold tracking-wider mb-1" style="color: #A8C66C;">Weight After Sun</p>
+                    <p class="text-xl font-bold" style="color: #A8C66C;">{{ batch.dry_weight }} <span class="text-sm font-normal" style="color: #A1887F;">kg</span></p>
+                    <p class="text-xs mt-1" style="color: #8D6E63;">After 3 days drying</p>
+                </div>
+                <div class="rounded-xl p-4 text-center border" style="background-color: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.05);">
+                    <p class="text-[10px] uppercase font-bold tracking-wider mb-1" style="color: #E8A090;">Water That Left</p>
+                    <p class="text-xl font-bold" style="color: #E8A090;">{{ batch.moisture_loss }} <span class="text-sm font-normal" style="color: #A1887F;">kg</span></p>
+                    <p class="text-xs mt-1" style="color: #8D6E63;">{{ batch.moisture_loss_percent }}% less weight</p>
+                </div>
+                <div class="rounded-xl p-4 text-center border" style="background-color: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.05);">
+                    <p class="text-[10px] uppercase font-bold tracking-wider mb-1" style="color: #C9A8D8;">What Is Left (%)</p>
+                    <p class="text-xl font-bold" style="color: #C9A8D8;">
+                        {% if batch.weight > 0 %}
+                            {% widthratio batch.dry_weight batch.weight 100 %}%
+                        {% else %}
+                            —
+                        {% endif %}
+                    </p>
+                    <p class="text-xs mt-1" style="color: #8D6E63;">Dry weight divided by Fresh weight</p>
+                </div>
+            </div>
+            <div class="mt-4 p-3 rounded-lg text-xs" style="background-color: rgba(255,255,255,0.05); color: #D7CCC8;">
+                <i class="fas fa-lightbulb mr-1" style="color: #C9952C;"></i> <strong>Tip:</strong> The sun always takes some weight. If you lose more than 15-20%, the crop was too wet when bought — next time, check moisture before paying.
+            </div>
+        </div>
+
+        <!-- Row 3: Expense-Inclusive Rate Breakdown (BUY ONLY) -->
+        <div class="mt-6 pt-6 border-t" style="border-color: rgba(255,255,255,0.1);">
+            <h4 class="text-sm font-bold mb-4 flex items-center gap-2" style="color: #D7CCC8;">
+                <i class="fas fa-file-invoice-dollar" style="color: #C9A8D8;"></i> The Real Price You Paid (After All Costs)
+            </h4>
+            <div class="rounded-xl p-5 border" style="background-color: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.05);">
+                <div class="flex flex-col md:flex-row items-center justify-center gap-3 md:gap-6 text-sm">
+                    <div class="text-center">
+                        <p class="text-[10px] uppercase font-bold tracking-wider" style="color: #A1887F;">What You Paid Farmer</p>
+                        <p class="text-lg font-bold text-white">₦{{ batch.total_amount|default:"0.00" }}</p>
+                    </div>
+                    <span class="text-lg font-light hidden md:block" style="color: #8D6E63;">+</span>
+                    <div class="text-center">
+                        <p class="text-[10px] uppercase font-bold tracking-wider" style="color: #A1887F;">Extra Costs</p>
+                        <p class="text-lg font-bold" style="color: #E8A090;">₦{{ batch.total_batch_expenses|default:"0.00" }}</p>
+                    </div>
+                    <span class="text-lg font-light hidden md:block" style="color: #8D6E63;">=</span>
+                    <div class="text-center px-4 py-2 rounded-xl" style="background-color: rgba(139,105,20,0.2); border: 1px solid rgba(139,105,20,0.3);">
+                        <p class="text-[10px] uppercase font-bold tracking-wider" style="color: #D4B87A;">Total Money In This Load</p>
+                        <p class="text-lg font-bold" style="color: #D4B87A;">₦{{ batch.total_amount|add:batch.total_batch_expenses }}</p>
+                    </div>
+                    <span class="text-lg font-light hidden md:block" style="color: #8D6E63;">÷</span>
+                    <div class="text-center">
+                        <p class="text-[10px] uppercase font-bold tracking-wider" style="color: #A1887F;">Dry Weight</p>
+                        <p class="text-lg font-bold" style="color: #A8C66C;">{{ batch.dry_weight }} kg</p>
+                    </div>
+                    <span class="text-lg font-light hidden md:block" style="color: #8D6E63;">=</span>
+                    <div class="text-center px-4 py-2 rounded-xl" style="background-color: rgba(201,149,44,0.2); border: 1px solid rgba(201,149,44,0.3);">
+                        <p class="text-[10px] uppercase font-bold tracking-wider" style="color: #D4B87A;">True Cost Per Kg</p>
+                        <p class="text-xl font-bold" style="color: #D4B87A;">₦{{ batch.effective_rate }}/kg</p>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-4 p-3 rounded-lg text-xs" style="background-color: rgba(255,255,255,0.05); color: #D7CCC8;">
+                <i class="fas fa-lightbulb mr-1" style="color: #C9952C;"></i> <strong>Tip:</strong> This is the number that matters. When you sell later, make sure your selling price is higher than this true cost — or you are losing money.
+            </div>
+        </div>
+
+        <!-- Row 4: Cost Comparison (BUY ONLY) -->
+        <div class="mt-6 pt-6 border-t grid grid-cols-1 sm:grid-cols-3 gap-4" style="border-color: rgba(255,255,255,0.1);">
+            <div class="rounded-xl p-4 text-center border" style="background-color: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.05);">
+                <p class="text-[10px] uppercase font-bold tracking-wider mb-1" style="color: #A1887F;">Price Per Kg (Fresh)</p>
+                <p class="text-lg font-bold text-white">₦{{ batch.applied_rate|default:"0.00" }}</p>
+                <p class="text-xs" style="color: #8D6E63;">Based on weight when it arrived</p>
+            </div>
+            <div class="rounded-xl p-4 text-center border" style="background-color: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.05);">
+                <p class="text-[10px] uppercase font-bold tracking-wider mb-1" style="color: #A8C66C;">True Price Per Kg (Dry)</p>
+                <p class="text-lg font-bold" style="color: #A8C66C;">₦{{ batch.effective_rate }}</p>
+                <p class="text-xs" style="color: #8D6E63;">Includes drying loss and all costs</p>
+            </div>
+            <div class="rounded-xl p-4 text-center border" style="background-color: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.05);">
+                <p class="text-[10px] uppercase font-bold tracking-wider mb-1" style="color: #D4B87A;">How Much More It Really Cost</p>
+                <p class="text-lg font-bold" style="color: #D4B87A;">
+                    {% if cost_increase_percent is not None %}
+                        {{ cost_increase_percent }}%
+                    {% else %}
+                        —
+                    {% endif %}
+                </p>
+                <p class="text-xs" style="color: #8D6E63;">Because of water loss and expenses</p>
+            </div>
+        </div>
+        <div class="mt-4 p-3 rounded-lg text-xs" style="background-color: rgba(255,255,255,0.05); color: #D7CCC8;">
+            <i class="fas fa-lightbulb mr-1" style="color: #C9952C;"></i> <strong>Tip:</strong> The "fresh price" looks cheap. But after drying and costs, the true price is always higher. Use the true price when deciding your selling price.
+        </div>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function toggleExpenseForm() {
+    const form = document.getElementById('expenseForm');
+    form.classList.toggle('hidden');
+    if (!form.classList.contains('hidden')) {
+        form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+}
+</script>
+{% endblock %}

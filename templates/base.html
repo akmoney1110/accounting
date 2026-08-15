@@ -1,0 +1,489 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Dikubs Cashew{% endblock %}</title>
+
+    <!-- External Libraries & Fonts -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Tailwind Configuration -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        sand: { 50: '#FAF6F0', 100: '#F5EFE6', 200: '#E8DDD0', 300: '#D4C4B0', 400: '#B8A898' },
+                        soil: { 50: '#F5EFE6', 100: '#E8DDD0', 800: '#5D4037', 900: '#4E342E', 950: '#3E2723' },
+                        harvest: { 400: '#D4A843', 500: '#C9952C', 600: '#B8860B' },
+                        crop: { 500: '#6B8E23', 600: '#556B2F' },
+                        clay: { 500: '#C75B39', 600: '#A64A2E' }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Custom Styles -->
+    <style>
+        :root {
+            --sand-bg: #FAF6F0;
+            --sand-light: #F5EFE6;
+            --sand-border: #E8DDD0;
+            --soil-dark: #4E342E;
+            --soil-text: #5D4037;
+            --harvest-gold: #C9952C;
+            --harvest-light: #F9F1E0;
+            --crop-green: #6B8E23;
+            --crop-light: #F0F5E0;
+            --terracotta: #C75B39;
+            --terracotta-light: #FDEDE8;
+            --wheat: #D4A843;
+            --cashew-cream: #F5E6C8;
+            --dry-brown: #8B5E3C;
+            --leaf-green: #4A7C2A;
+        }
+
+        body { font-family: 'Inter', sans-serif; }
+        .sidebar-link { transition: all 0.2s ease; border-right: 3px solid transparent; }
+        .sidebar-link:hover, .sidebar-link.active { background: rgba(201, 149, 44, 0.1); color: #D4A843; border-right: 3px solid #C9952C; }
+        .kpi-card { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+        .kpi-card:hover { transform: translateY(-2px); box-shadow: 0 10px 40px -10px rgba(78,52,46,0.12); }
+        .fade-in { animation: fadeIn 0.5s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .status-badge { padding: 0.25rem 0.625rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.025em; text-transform: uppercase; }
+        .table-row-hover { transition: background-color 0.15s ease; }
+        .table-row-hover:hover { background-color: #F5EFE6; }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #F5EFE6; }
+        ::-webkit-scrollbar-thumb { background: #D4C4B0; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #B8A898; }
+
+        .chart-container { position: relative; height: 300px; width: 100%; }
+        .grain-pattern {
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23d4a843' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        .farm-card {
+            background: white;
+            border: 1px solid var(--sand-border);
+            border-radius: 1rem;
+            box-shadow: 0 1px 3px rgba(78,52,46,0.04);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .farm-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px -10px rgba(78,52,46,0.12);
+        }
+        .farm-page-bg { background-color: var(--sand-bg); }
+        .explain-box {
+            background: var(--sand-bg);
+            border-left: 3px solid var(--harvest-gold);
+            padding: 0.75rem;
+            border-radius: 0 8px 8px 0;
+            margin-top: 0.5rem;
+        }
+        .explain-box p {
+            font-size: 0.8rem;
+            color: #6D5E52;
+            line-height: 1.4;
+            margin: 0;
+        }
+        .simple-math-box {
+            background: var(--crop-light);
+            border: 1px dashed var(--crop-green);
+            border-radius: 12px;
+            padding: 1rem;
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="bg-[#FAF6F0] text-[#4E342E] antialiased grain-pattern">
+
+    <!-- Mobile Sidebar Overlay -->
+    <div id="mobile-overlay" class="fixed inset-0 bg-[#3E2723]/50 z-40 hidden lg:hidden" onclick="toggleSidebar()"></div>
+
+    <div class="flex h-screen overflow-hidden">
+        
+        <!-- Sidebar Navigation -->
+        <aside id="sidebar" class="fixed lg:static inset-y-0 left-0 z-50 w-72 bg-gradient-to-b from-[#4E342E] to-[#3E2723] text-white transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col shadow-2xl">
+            <!-- Brand Header -->
+            <div class="h-16 flex items-center px-6 border-b border-[#5D4037]">
+                <div class="w-10 h-10 bg-gradient-to-br from-[#C9952C] to-[#D4A843] rounded-xl flex items-center justify-center shadow-lg shadow-[#C9952C]/20 mr-3">
+                    <i class="fas fa-leaf text-white text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg tracking-tight">Dikubs Cashew</h1>
+                    <p class="text-xs text-[#D7CCC8]">Commodity Management</p>
+                </div>
+            </div>
+
+            <!-- User Profile Summary -->
+            <div class="px-5 py-4 border-b border-[#5D4037]">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-[#5D4037] to-[#6D4C41] flex items-center justify-center text-sm font-bold border-2 border-[#C9952C]/30">
+                        {{ request.user.username|first|upper }}
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-semibold truncate">{{ request.user.username }}</p>
+                        <p class="text-xs text-[#D4A843] truncate">{{ request.user.get_role_display }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Nav Links -->
+            <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-1">
+                {% if request.user.role == 'ADMIN' %}
+                    <a href="{% url 'admin_dashboard' %}" class="sidebar-link {% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %} flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-[#D7CCC8]">
+                        <i class="fas fa-chart-line w-5 text-center"></i> Dashboard
+                    </a>
+                    <a href="{% url 'batch_create' %}" class="sidebar-link {% if request.resolver_match.url_name == 'batch_create' %}active{% endif %} flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-[#D7CCC8]">
+                        <i class="fas fa-plus-circle w-5 text-center"></i> New Batch
+                    </a>
+                    <a href="{% url 'batch_list' %}" class="sidebar-link {% if request.resolver_match.url_name == 'batch_list' %}active{% endif %} flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-[#D7CCC8]">
+                        <i class="fas fa-list w-5 text-center"></i> View All Batches
+                    </a>
+                    <a href="{% url 'transaction_add' %}" class="sidebar-link {% if request.resolver_match.url_name == 'transaction_add' %}active{% endif %} flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-[#D7CCC8]">
+                        <i class="fas fa-money-bill-transfer w-5 text-center"></i> Record Payment
+                    </a>
+                    <a href="{% url 'payment_list' %}" class="sidebar-link {% if request.resolver_match.url_name == 'payment_list' or request.resolver_match.url_name == 'payment_detail' %}active{% endif %} flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-[#D7CCC8]">
+                        <i class="fas fa-money-bill-wave w-5 text-center"></i> All Payments
+                    </a>
+                    <a href="{% url 'expense_create' %}" class="sidebar-link {% if request.resolver_match.url_name == 'expense_create' %}active{% endif %} flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-[#D7CCC8]">
+                        <i class="fas fa-receipt w-5 text-center"></i> Record Expense
+                    </a>
+
+                    <div class="pt-4 pb-2 px-4 text-xs font-bold text-[#8D7B6B] uppercase tracking-wider">Management</div>
+
+                    <a href="{% url 'user_list' %}" class="sidebar-link {% if request.resolver_match.url_name == 'user_list' %}active{% endif %} flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-[#D7CCC8]">
+                        <i class="fas fa-users w-5 text-center"></i> Partners & Rates
+                    </a>
+                    <a href="{% url 'product_list' %}" class="sidebar-link {% if request.resolver_match.url_name == 'product_list' or request.resolver_match.url_name == 'product_create' or request.resolver_match.url_name == 'product_edit' %}active{% endif %} flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-[#D7CCC8]">
+                        <i class="fas fa-boxes w-5 text-center"></i> Products
+                    </a>
+                    <a href="{% url 'expense_list' %}" class="sidebar-link {% if request.resolver_match.url_name == 'expense_list' or request.resolver_match.url_name == 'expense_edit' %}active{% endif %} flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-[#D7CCC8]">
+                        <i class="fas fa-receipt w-5 text-center"></i> Expenses
+                    </a>
+                    <a href="{% url 'user_create' %}" class="sidebar-link {% if request.resolver_match.url_name == 'user_create' %}active{% endif %} flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-[#D7CCC8]">
+                        <i class="fas fa-user-plus w-5 text-center"></i> Add Partner
+                    </a>
+
+                {% elif request.user.role == 'VENDOR' %}
+                    <a href="{% url 'vendor_portal' %}" class="sidebar-link {% if request.resolver_match.url_name == 'vendor_portal' %}active{% endif %} flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-[#D7CCC8]">
+                        <i class="fas fa-warehouse w-5 text-center"></i> My Portal
+                    </a>
+                {% elif request.user.role == 'CLIENT' %}
+                    <a href="{% url 'client_portal' %}" class="sidebar-link {% if request.resolver_match.url_name == 'client_portal' %}active{% endif %} flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-[#D7CCC8]">
+                        <i class="fas fa-shopping-cart w-5 text-center"></i> My Portal
+                    </a>
+                {% endif %}
+            </nav>
+
+            <!-- Bottom Actions -->
+            <div class="p-4 border-t border-[#5D4037]">
+                <a href="{% url 'logout' %}" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-[#FFCCBC] hover:bg-[#C75B39]/10 transition-colors">
+                    <i class="fas fa-sign-out-alt w-5 text-center"></i> Sign Out
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Workspace Area -->
+        <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+            
+            <!-- Top App Header -->
+            <header class="h-16 bg-white border-b border-[#E8DDD0] flex items-center justify-between px-4 lg:px-8 shadow-sm z-30">
+                <div class="flex items-center gap-4">
+                    <button onclick="toggleSidebar()" class="lg:hidden p-2 rounded-lg hover:bg-[#F5EFE6] text-[#6D5E52]">
+                        <i class="fas fa-bars text-lg"></i>
+                    </button>
+                    <h2 class="text-lg font-semibold text-[#4E342E] hidden sm:block">{% block page_title %}Dashboard{% endblock %}</h2>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    {% if request.user.role == 'ADMIN' %}
+                        <a href="/admin/" target="_blank" class="hidden md:inline-flex items-center gap-2 px-3 py-1.5 bg-[#F5EFE6] hover:bg-[#E8DDD0] text-[#5D4037] rounded-full text-xs font-semibold border border-[#E8DDD0] transition-colors">
+                            <i class="fas fa-cog text-[10px]"></i> Admin Page
+                        </a>
+                    {% endif %}
+
+                    <span class="hidden md:inline-flex items-center gap-2 px-3 py-1.5 bg-[#F0F5E0] text-[#556B2F] rounded-full text-xs font-semibold border border-[#E8F0D0]">
+                        <span class="w-2 h-2 bg-[#6B8E23] rounded-full animate-pulse"></span>
+                        System Online
+                    </span>
+
+                    <!-- User Profile Dropdown -->
+                    <div class="relative" id="userDropdownContainer">
+                        <button onclick="toggleUserDropdown()" class="flex items-center gap-2 hover:bg-[#F5EFE6] rounded-full pl-1 pr-3 py-1 transition-colors border border-transparent hover:border-[#E8DDD0]">
+                            {% if user.profile_picture %}
+                                <img src="{{ user.profile_picture.url }}" class="w-8 h-8 rounded-full object-cover border border-[#E8DDD0]" alt="Profile">
+                            {% else %}
+                                <div class="w-8 h-8 rounded-full bg-gradient-to-br from-[#5D4037] to-[#6D4C41] flex items-center justify-center text-white text-xs font-bold">
+                                    {{ request.user.username|first|upper }}
+                                </div>
+                            {% endif %}
+                            <span class="hidden sm:block text-sm font-medium text-[#5D4037]">{{ request.user.username }}</span>
+                            <i class="fas fa-chevron-down text-[10px] text-[#8D7B6B]"></i>
+                        </button>
+                        
+                        <div id="userDropdownMenu" class="hidden absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-[#E8DDD0] py-2 z-50">
+                            <div class="px-4 py-2 border-b border-[#F5EFE6]">
+                                <p class="text-sm font-semibold text-[#4E342E]">{{ request.user.username }}</p>
+                                <p class="text-xs text-[#8D7B6B]">{{ request.user.get_role_display }}</p>
+                            </div>
+                            <a href="{% url 'my_profile' %}" class="flex items-center gap-3 px-4 py-2.5 text-sm text-[#5D4037] hover:bg-[#F5EFE6] transition-colors">
+                                <i class="fas fa-user w-4 text-center text-[#8D7B6B]"></i> My Profile
+                            </a>
+                            <a href="{% url 'profile_edit' %}" class="flex items-center gap-3 px-4 py-2.5 text-sm text-[#5D4037] hover:bg-[#F5EFE6] transition-colors">
+                                <i class="fas fa-edit w-4 text-center text-[#8D7B6B]"></i> Edit Profile
+                            </a>
+                            <div class="border-t border-[#F5EFE6] my-1"></div>
+                            <a href="{% url 'logout' %}" class="flex items-center gap-3 px-4 py-2.5 text-sm text-[#C75B39] hover:bg-[#FDEDE8] transition-colors">
+                                <i class="fas fa-sign-out-alt w-4 text-center"></i> Logout
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dynamic Messages Bar -->
+            {% if messages %}
+                <div class="px-4 lg:px-8 pt-4 space-y-2">
+                    {% for message in messages %}
+                        <div class="fade-in flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium 
+                            {% if message.tags == 'success' %}bg-[#F0F5E0] text-[#2E7D32] border border-[#C8E6C9]
+                            {% elif message.tags == 'error' %}bg-[#FDEDE8] text-[#C75B39] border border-[#FFCCBC]
+                            {% elif message.tags == 'warning' %}bg-[#FFF8E1] text-[#B8860B] border border-[#FFE082]
+                            {% else %}bg-[#E3F2FD] text-[#1565C0] border border-[#90CAF9]{% endif %}">
+                            <i class="fas {% if message.tags == 'success' %}fa-check-circle{% elif message.tags == 'error' %}fa-exclamation-circle{% elif message.tags == 'warning' %}fa-exclamation-triangle{% else %}fa-info-circle{% endif %}"></i>
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <!-- Dynamic Body Content -->
+            <main class="flex-1 overflow-y-auto p-4 lg:p-8">
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+    </div>
+
+    <!-- Floating Calculator Trigger Button -->
+    <button id="calcToggleBtn" type="button" onclick="toggleCalculator()"
+            style="position: fixed; bottom: 24px; right: 24px; z-index: 9999;"
+            class="p-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full shadow-2xl transition-transform transform hover:scale-110 focus:outline-none flex items-center justify-center cursor-pointer border-2 border-white">
+        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" 
+                  d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+        </svg>
+    </button>
+
+    <!-- Draggable Calculator Widget -->
+    <div id="calcModal" 
+         style="position: fixed; bottom: 90px; right: 24px; z-index: 9999; display: none; width: 340px;"
+         class="bg-slate-900 rounded-2xl shadow-2xl border border-slate-700 overflow-hidden font-sans text-slate-100 select-none">
+      
+        <!-- Header -->
+        <div id="calcHeader" class="bg-slate-800 px-4 py-3 flex justify-between items-center cursor-move border-b border-slate-700 active:bg-slate-700/80">
+            <div class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-slate-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M7 2a2 2 0 10.001 4.001A2 2 0 007 2zm0 6a2 2 0 10.001 4.001A2 2 0 007 8zm0 6a2 2 0 10.001 4.001A2 2 0 007 14zm6-12a2 2 0 10.001 4.001A2 2 0 0013 2zm0 6a2 2 0 10.001 4.001A2 2 0 0013 8zm0 6a2 2 0 10.001 4.001A2 2 0 0013 14z"/>
+                </svg>
+                <div class="flex gap-2 text-xs font-bold uppercase tracking-wider">
+                    <button id="tabCalcBtn" onclick="switchCalcTab('calc')" class="text-indigo-400 border-b-2 border-indigo-400 pb-0.5">Basic Calc</button>
+                    <button id="tabKgBtn" onclick="switchCalcTab('kg')" class="text-slate-400 hover:text-white pb-0.5">Kg / Bag Unit</button>
+                </div>
+            </div>
+            <button onclick="toggleCalculator()" class="text-slate-400 hover:text-white text-xl font-bold leading-none p-1 hover:bg-slate-700 rounded">&times;</button>
+        </div>
+
+        <!-- Calculator Tab -->
+        <div id="tabCalc" class="p-4 space-y-3">
+            <input id="calcDisplay" type="text" readonly placeholder="0" 
+                   class="w-full text-right text-3xl font-mono bg-black text-emerald-400 px-4 py-3 rounded-lg border border-slate-700 focus:outline-none tracking-wider font-bold shadow-inner" />
+            
+            <div class="grid grid-cols-4 gap-2 font-mono text-base font-bold">
+                <button onclick="clearCalc()" class="col-span-2 bg-rose-600 hover:bg-rose-500 text-white p-3 rounded-lg active:scale-95 transition shadow">C</button>
+                <button onclick="appendCalc('/')" class="bg-indigo-600 hover:bg-indigo-500 text-white p-3 rounded-lg active:scale-95 transition shadow">÷</button>
+                <button onclick="appendCalc('*')" class="bg-indigo-600 hover:bg-indigo-500 text-white p-3 rounded-lg active:scale-95 transition shadow">×</button>
+                
+                <button onclick="appendCalc('7')" class="bg-slate-800 hover:bg-slate-700 text-white p-3 rounded-lg border border-slate-700 active:scale-95 transition shadow">7</button>
+                <button onclick="appendCalc('8')" class="bg-slate-800 hover:bg-slate-700 text-white p-3 rounded-lg border border-slate-700 active:scale-95 transition shadow">8</button>
+                <button onclick="appendCalc('9')" class="bg-slate-800 hover:bg-slate-700 text-white p-3 rounded-lg border border-slate-700 active:scale-95 transition shadow">9</button>
+                <button onclick="appendCalc('-')" class="bg-indigo-600 hover:bg-indigo-500 text-white p-3 rounded-lg active:scale-95 transition shadow">-</button>
+                
+                <button onclick="appendCalc('4')" class="bg-slate-800 hover:bg-slate-700 text-white p-3 rounded-lg border border-slate-700 active:scale-95 transition shadow">4</button>
+                <button onclick="appendCalc('5')" class="bg-slate-800 hover:bg-slate-700 text-white p-3 rounded-lg border border-slate-700 active:scale-95 transition shadow">5</button>
+                <button onclick="appendCalc('6')" class="bg-slate-800 hover:bg-slate-700 text-white p-3 rounded-lg border border-slate-700 active:scale-95 transition shadow">6</button>
+                <button onclick="appendCalc('+')" class="bg-indigo-600 hover:bg-indigo-500 text-white p-3 rounded-lg active:scale-95 transition shadow">+</button>
+                
+                <button onclick="appendCalc('1')" class="bg-slate-800 hover:bg-slate-700 text-white p-3 rounded-lg border border-slate-700 active:scale-95 transition shadow">1</button>
+                <button onclick="appendCalc('2')" class="bg-slate-800 hover:bg-slate-700 text-white p-3 rounded-lg border border-slate-700 active:scale-95 transition shadow">2</button>
+                <button onclick="appendCalc('3')" class="bg-slate-800 hover:bg-slate-700 text-white p-3 rounded-lg border border-slate-700 active:scale-95 transition shadow">3</button>
+                <button onclick="calculateResult()" class="row-span-2 bg-emerald-600 hover:bg-emerald-500 text-white p-3 rounded-lg active:scale-95 transition shadow flex items-center justify-center font-extrabold text-xl">=</button>
+                
+                <button onclick="appendCalc('0')" class="col-span-2 bg-slate-800 hover:bg-slate-700 text-white p-3 rounded-lg border border-slate-700 active:scale-95 transition shadow">0</button>
+                <button onclick="appendCalc('.')" class="bg-slate-800 hover:bg-slate-700 text-white p-3 rounded-lg border border-slate-700 active:scale-95 transition shadow">.</button>
+            </div>
+        </div>
+
+        <!-- Converter Tab -->
+        <div id="tabKg" class="p-4 space-y-4" style="display: none;">
+            <div>
+                <label class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Weight in Kg</label>
+                <input id="inputKg" type="number" oninput="convertKg()" placeholder="Enter total Kg..." 
+                       class="w-full text-lg font-mono bg-black text-emerald-400 px-3 py-2 rounded-lg border border-slate-700 focus:outline-none mt-1 font-bold" />
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Bag Size (Kg)</label>
+                    <input id="bagWeight" type="number" value="50" oninput="convertKg()" 
+                           class="w-full text-base font-mono bg-slate-800 text-white px-3 py-2 rounded-lg border border-slate-700 focus:outline-none mt-1 font-bold" />
+                </div>
+                <div>
+                    <label class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Bags</label>
+                    <input id="outputBags" type="text" readonly placeholder="0" 
+                           class="w-full text-base font-mono bg-slate-800 text-indigo-400 px-3 py-2 rounded-lg border border-slate-700 mt-1 font-bold" />
+                </div>
+            </div>
+
+            <div class="pt-3 border-t border-slate-800 space-y-2 text-xs font-mono">
+                <div class="flex justify-between items-center bg-slate-800 p-2.5 rounded-lg border border-slate-700">
+                    <span class="text-slate-400">Metric Tons (MT):</span>
+                    <span id="outputTons" class="font-bold text-white text-sm">0.00 MT</span>
+                </div>
+                <div class="flex justify-between items-center bg-slate-800 p-2.5 rounded-lg border border-slate-700">
+                    <span class="text-slate-400">Pounds (Lbs):</span>
+                    <span id="outputLbs" class="font-bold text-white text-sm">0.00 lbs</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script Implementations -->
+    <script>
+        // Sidebar Mobile Toggle
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobile-overlay');
+            sidebar.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        }
+
+        window.addEventListener('resize', () => {
+            if (window.innerWidth >= 1024) {
+                document.getElementById('mobile-overlay').classList.add('hidden');
+                document.getElementById('sidebar').classList.remove('-translate-x-full');
+            }
+        });
+
+        // User Dropdown Toggle
+        function toggleUserDropdown() {
+            const menu = document.getElementById('userDropdownMenu');
+            menu.classList.toggle('hidden');
+        }
+
+        document.addEventListener('click', function(e) {
+            const container = document.getElementById('userDropdownContainer');
+            if (container && !container.contains(e.target)) {
+                const menu = document.getElementById('userDropdownMenu');
+                if (menu) menu.classList.add('hidden');
+            }
+        });
+
+        // Calculator Modal Logic
+        function toggleCalculator() {
+            const modal = document.getElementById('calcModal');
+            modal.style.display = (modal.style.display === 'none' || modal.style.display === '') ? 'block' : 'none';
+        }
+
+        function switchCalcTab(tab) {
+            const calcTab = document.getElementById('tabCalc');
+            const kgTab = document.getElementById('tabKg');
+            const calcBtn = document.getElementById('tabCalcBtn');
+            const kgBtn = document.getElementById('tabKgBtn');
+
+            if (tab === 'calc') {
+                calcTab.style.display = 'block';
+                kgTab.style.display = 'none';
+                calcBtn.className = "text-indigo-400 border-b-2 border-indigo-400 pb-0.5";
+                kgBtn.className = "text-slate-400 hover:text-white pb-0.5";
+            } else {
+                calcTab.style.display = 'none';
+                kgTab.style.display = 'block';
+                kgBtn.className = "text-indigo-400 border-b-2 border-indigo-400 pb-0.5";
+                calcBtn.className = "text-slate-400 hover:text-white pb-0.5";
+            }
+        }
+
+        const display = document.getElementById('calcDisplay');
+        function appendCalc(val) { display.value += val; }
+        function clearCalc() { display.value = ''; }
+        function calculateResult() {
+            try {
+                if (display.value) {
+                    display.value = Function('"use strict";return (' + display.value + ')')();
+                }
+            } catch (e) {
+                display.value = 'Error';
+            }
+        }
+
+        function convertKg() {
+            const kg = parseFloat(document.getElementById('inputKg').value) || 0;
+            const bagSize = parseFloat(document.getElementById('bagWeight').value) || 50;
+
+            document.getElementById('outputBags').value = (kg / bagSize).toFixed(2);
+            document.getElementById('outputTons').innerText = (kg / 1000).toFixed(3) + ' MT';
+            document.getElementById('outputLbs').innerText = (kg * 2.20462).toFixed(2) + ' lbs';
+        }
+
+        // Drag Handler
+        (function makeModalDraggable() {
+            const modal = document.getElementById("calcModal");
+            const header = document.getElementById("calcHeader");
+            let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+
+            header.onmousedown = dragMouseDown;
+
+            function dragMouseDown(e) {
+                e = e || window.event;
+                e.preventDefault();
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                document.onmouseup = closeDragElement;
+                document.onmousemove = elementDrag;
+            }
+
+            function elementDrag(e) {
+                e = e || window.event;
+                e.preventDefault();
+                pos1 = pos3 - e.clientX;
+                pos2 = pos4 - e.clientY;
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                modal.style.top = (modal.offsetTop - pos2) + "px";
+                modal.style.left = (modal.offsetLeft - pos1) + "px";
+                modal.style.bottom = "auto";
+                modal.style.right = "auto";
+            }
+
+            function closeDragElement() {
+                document.onmouseup = null;
+                document.onmousemove = null;
+            }
+        })();
+    </script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

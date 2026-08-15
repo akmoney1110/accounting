@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Products — Dikubs Cashew{% endblock %}
+{% block page_title %}Farm Products{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto space-y-6">
+
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+            <h2 class="text-xl font-bold text-[#4E342E]">Your Farm Products</h2>
+            <p class="text-xs text-[#8D7B6B]">Manage everything you buy and sell</p>
+        </div>
+        <a href="{% url 'product_create' %}" class="inline-flex items-center gap-2 px-4 py-2.5 bg-[#6B8E23] hover:bg-[#556B2F] text-white rounded-xl text-sm font-semibold shadow-sm transition-colors">
+            <i class="fas fa-plus"></i> Add New Product
+        </a>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-white rounded-xl p-4 border border-[#E8DDD0] text-center">
+            <p class="text-2xl font-bold text-[#4E342E]">{{ total_products }}</p>
+            <p class="text-xs text-[#8D7B6B] font-medium">Total Products</p>
+        </div>
+        <div class="bg-white rounded-xl p-4 border border-[#E8DDD0] text-center">
+            <p class="text-2xl font-bold text-[#6B8E23]">{{ active_products }}</p>
+            <p class="text-xs text-[#8D7B6B] font-medium">Active</p>
+        </div>
+        <div class="bg-white rounded-xl p-4 border border-[#E8DDD0] text-center">
+            <p class="text-2xl font-bold text-[#C75B39]">{{ inactive_products }}</p>
+            <p class="text-xs text-[#8D7B6B] font-medium">Inactive</p>
+        </div>
+        <div class="bg-white rounded-xl p-4 border border-[#E8DDD0] text-center">
+            <p class="text-2xl font-bold text-[#C9952C]">{{ products_with_batches }}</p>
+            <p class="text-xs text-[#8D7B6B] font-medium">Used in Loads</p>
+        </div>
+    </div>
+
+    <!-- Products Table -->
+    <div class="bg-white rounded-2xl border border-[#E8DDD0] shadow-sm overflow-hidden">
+        <div class="px-6 py-4 border-b border-[#F5EFE6]">
+            <h3 class="font-bold text-[#4E342E] flex items-center gap-2">
+                <i class="fas fa-boxes text-[#C9952C]"></i> All Products
+            </h3>
+        </div>
+        
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="bg-[#F5EFE6] text-[#8D7B6B] text-xs uppercase tracking-wider">
+                        <th class="px-6 py-3 text-left font-semibold">Product Name</th>
+                        <th class="px-6 py-3 text-left font-semibold">Unit</th>
+                        <th class="px-6 py-3 text-center font-semibold">Status</th>
+                        <th class="px-6 py-3 text-center font-semibold">Farmers/Buyers Using</th>
+                        <th class="px-6 py-3 text-center font-semibold">Loads Recorded</th>
+                        <th class="px-6 py-3 text-right font-semibold">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-[#F5EFE6]">
+                    {% for product in products %}
+                    <tr class="table-row-hover">
+                        <td class="px-6 py-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-9 h-9 rounded-lg bg-[#F0F5E0] flex items-center justify-center text-[#6B8E23]">
+                                    <i class="fas fa-seedling"></i>
+                                </div>
+                                <span class="font-semibold text-[#4E342E]">{{ product.name }}</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 text-[#5D4037]">
+                            <span class="bg-[#F5EFE6] px-2 py-1 rounded-md text-xs font-mono">{{ product.unit }}</span>
+                        </td>
+                        <td class="px-6 py-4 text-center">
+                            {% if product.is_active %}
+                            <span class="status-badge bg-[#E8F5E9] text-[#2E7D32] border border-[#C8E6C9]">Active</span>
+                            {% else %}
+                            <span class="status-badge bg-[#F5EFE6] text-[#8D7B6B] border border-[#E8DDD0]">Inactive</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 text-center font-bold text-[#5D4037]">
+                            {{ product.user_count }}
+                        </td>
+                        <td class="px-6 py-4 text-center font-bold text-[#5D4037]">
+                            {{ product.batch_count }}
+                        </td>
+                        <td class="px-6 py-4 text-right">
+                            <a href="{% url 'product_edit' product.pk %}" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#F9F1E0] hover:bg-[#F5E6C8] text-[#C9952C] rounded-lg text-xs font-semibold transition-colors">
+                                <i class="fas fa-edit"></i> Edit
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="px-6 py-12 text-center text-[#A89B8C]">
+                            <i class="fas fa-boxes text-4xl text-[#E8DDD0] mb-3"></i>
+                            <p class="font-medium">No products yet</p>
+                            <p class="text-xs mt-1">Add your first product to start recording cashew, cocoa, or any farm produce</p>
+                            <a href="{% url 'product_create' %}" class="inline-flex items-center gap-2 mt-3 px-4 py-2 bg-[#6B8E23] text-white rounded-lg text-sm font-semibold hover:bg-[#556B2F] transition-colors">
+                                <i class="fas fa-plus"></i> Add Product
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Quick Tip -->
+    <div class="bg-[#FFF8E1] border border-[#F5E6C8] rounded-xl p-4 flex items-start gap-3">
+        <i class="fas fa-lightbulb text-[#C9952C] mt-0.5"></i>
+        <div>
+            <p class="text-sm font-semibold text-[#4E342E]">Tip</p>
+            <p class="text-xs text-[#8D7B6B]">Only <strong>Active</strong> products show up when you create new batches. If you no longer trade a product, set it to Inactive instead of deleting it — this keeps your old records safe.</p>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

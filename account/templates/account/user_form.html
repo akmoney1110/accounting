@@ -1,0 +1,258 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Register Farm Partner — AgroLedger{% endblock %}
+{% block page_title %}Add New Partner{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto px-4 py-8 bg-[#FAF6F0] bg-[radial-gradient(#4E342E_0.75px,transparent_0.75px)] [background-size:16px_16px] rounded-3xl text-[#4E342E]">
+    
+    <div class="bg-[#FAF6F0] rounded-2xl border border-[#4E342E]/15 shadow-sm p-6 lg:p-8">
+        <!-- Header -->
+        <div class="flex items-center gap-3 mb-6">
+            <div class="w-10 h-10 bg-[#6B8E23]/20 rounded-xl flex items-center justify-center text-[#6B8E23] border border-[#6B8E23]/30">
+                <i class="fas fa-user-plus"></i>
+            </div>
+            <div>
+                <h2 class="text-lg font-bold text-[#4E342E]">Register Farm Partner</h2>
+                <p class="text-xs text-[#4E342E]/70">Add a new farmer, crop buyer, or farm manager to your book.</p>
+            </div>
+        </div>
+
+        <form method="post" class="space-y-6" id="partnerForm">
+            {% csrf_token %}
+            
+            <!-- BASIC INFO -->
+            <div class="space-y-4">
+                <h3 class="text-sm font-bold text-[#4E342E] uppercase tracking-wider border-b border-[#4E342E]/10 pb-2">
+                    <i class="fas fa-id-card mr-1 text-[#C9952C]"></i> Person Details
+                </h3>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-bold text-[#4E342E] mb-1.5">Role on Farm</label>
+                        <div class="[&>select]:w-full [&>select]:rounded-xl [&>select]:border-[#4E342E]/20 [&>select]:bg-white [&>select]:text-[#4E342E] [&>select]:shadow-sm [&>select]:focus:border-[#C9952C] [&>select]:focus:ring-[#C9952C]">
+                            {{ form.role }}
+                        </div>
+                        {% if form.role.errors %}
+                        <p class="text-xs text-[#C75B39] font-bold mt-1">{{ form.role.errors.0 }}</p>
+                        {% endif %}
+                        <!-- Explain Box -->
+                        <div class="mt-2 p-2 bg-[#4E342E]/5 rounded-lg border border-[#4E342E]/10 text-[11px] text-[#4E342E]/80">
+                            💡 <strong>Farmer</strong> brings crops to you. <strong>Buyer</strong> takes crops and pays you.
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-[#4E342E] mb-1.5">System Username</label>
+                        <div class="[&>input]:w-full [&>input]:rounded-xl [&>input]:border-[#4E342E]/20 [&>input]:bg-white [&>input]:text-[#4E342E] [&>input]:shadow-sm [&>input]:focus:border-[#C9952C] [&>input]:focus:ring-[#C9952C]">
+                            {{ form.username }}
+                        </div>
+                        {% if form.username.errors %}
+                        <p class="text-xs text-[#C75B39] font-bold mt-1">{{ form.username.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-bold text-[#4E342E] mb-1.5">First Name</label>
+                        <div class="[&>input]:w-full [&>input]:rounded-xl [&>input]:border-[#4E342E]/20 [&>input]:bg-white [&>input]:text-[#4E342E] [&>input]:shadow-sm [&>input]:focus:border-[#C9952C] [&>input]:focus:ring-[#C9952C]">
+                            {{ form.first_name }}
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-[#4E342E] mb-1.5">Last Name</label>
+                        <div class="[&>input]:w-full [&>input]:rounded-xl [&>input]:border-[#4E342E]/20 [&>input]:bg-white [&>input]:text-[#4E342E] [&>input]:shadow-sm [&>input]:focus:border-[#C9952C] [&>input]:focus:ring-[#C9952C]">
+                            {{ form.last_name }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-bold text-[#4E342E] mb-1.5">Email Address</label>
+                        <div class="[&>input]:w-full [&>input]:rounded-xl [&>input]:border-[#4E342E]/20 [&>input]:bg-white [&>input]:text-[#4E342E] [&>input]:shadow-sm [&>input]:focus:border-[#C9952C] [&>input]:focus:ring-[#C9952C]">
+                            {{ form.email }}
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-[#4E342E] mb-1.5">Phone Number</label>
+                        <div class="[&>input]:w-full [&>input]:rounded-xl [&>input]:border-[#4E342E]/20 [&>input]:bg-white [&>input]:text-[#4E342E] [&>input]:shadow-sm [&>input]:focus:border-[#C9952C] [&>input]:focus:ring-[#C9952C]">
+                            {{ form.phone }}
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-bold text-[#4E342E] mb-1.5">Home/Farm Address</label>
+                    <div class="[&>input]:w-full [&>input]:rounded-xl [&>input]:border-[#4E342E]/20 [&>input]:bg-white [&>input]:text-[#4E342E] [&>input]:shadow-sm [&>input]:focus:border-[#C9952C] [&>input]:focus:ring-[#C9952C] [&>textarea]:w-full [&>textarea]:rounded-xl [&>textarea]:border-[#4E342E]/20 [&>textarea]:bg-white [&>textarea]:text-[#4E342E] [&>textarea]:shadow-sm [&>textarea]:focus:border-[#C9952C] [&>textarea]:focus:ring-[#C9952C]">
+                        {{ form.address }}
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-bold text-[#4E342E] mb-1.5">Password</label>
+                        <div class="[&>input]:w-full [&>input]:rounded-xl [&>input]:border-[#4E342E]/20 [&>input]:bg-white [&>input]:text-[#4E342E] [&>input]:shadow-sm [&>input]:focus:border-[#C9952C] [&>input]:focus:ring-[#C9952C]">
+                            {{ form.password }}
+                        </div>
+                        {% if form.password.errors %}
+                        <p class="text-xs text-[#C75B39] font-bold mt-1">{{ form.password.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-[#4E342E] mb-1.5">Confirm Password</label>
+                        <div class="[&>input]:w-full [&>input]:rounded-xl [&>input]:border-[#4E342E]/20 [&>input]:bg-white [&>input]:text-[#4E342E] [&>input]:shadow-sm [&>input]:focus:border-[#C9952C] [&>input]:focus:ring-[#C9952C]">
+                            {{ form.confirm_password }}
+                        </div>
+                        {% if form.confirm_password.errors %}
+                        <p class="text-xs text-[#C75B39] font-bold mt-1">{{ form.confirm_password.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- CREDIT LIMIT (CLIENT ONLY) -->
+            <div id="credit-limit-box" class="hidden space-y-4 pt-2">
+                <h3 class="text-sm font-bold text-[#4E342E] uppercase tracking-wider border-b border-[#4E342E]/10 pb-2">
+                    <i class="fas fa-credit-card mr-1 text-[#C9952C]"></i> Borrowing Limit
+                </h3>
+                <div class="p-4 bg-[#C9952C]/10 border border-[#C9952C]/30 rounded-2xl shadow-sm">
+                    <label class="block text-sm font-bold text-[#4E342E] mb-1.5">Maximum Owe Amount (₦)</label>
+                    <div class="[&>input]:w-full [&>input]:rounded-xl [&>input]:border-[#4E342E]/20 [&>input]:bg-white [&>input]:text-[#4E342E] [&>input]:font-mono [&>input]:shadow-sm [&>input]:focus:border-[#C9952C] [&>input]:focus:ring-[#C9952C]">
+                        {{ form.credit_limit }}
+                    </div>
+                    <p class="text-[11px] text-[#4E342E]/80 mt-2">💡 <strong>Limit Guard:</strong> Maximum money this buyer can owe you before the system stops them from taking more crops.</p>
+                    {% if form.credit_limit.errors %}
+                    <p class="text-xs text-[#C75B39] font-bold mt-1">{{ form.credit_limit.errors.0 }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- PRODUCT ASSIGNMENT (VENDOR & CLIENT ONLY) -->
+            <div id="product-assignment-box" class="hidden space-y-4 pt-2">
+                <h3 class="text-sm font-bold text-[#4E342E] uppercase tracking-wider border-b border-[#4E342E]/10 pb-2">
+                    <i class="fas fa-boxes mr-1 text-[#C9952C]"></i> Set Crop Prices
+                </h3>
+                <p class="text-xs text-[#4E342E]/70 mb-2">Set the standard agreed price per bag/kg for this specific person. You can add multiple crop types.</p>
+                
+                {{ product_formset.management_form }}
+                
+                <div class="space-y-3" id="product-rows-container">
+                    {% for prod_form in product_formset %}
+                    <div class="product-row grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 bg-[#FAF6F0] rounded-2xl border border-[#4E342E]/15 shadow-sm">
+                        <div>
+                            <label class="block text-xs font-bold text-[#4E342E] mb-1">Crop Type</label>
+                            <div class="[&>select]:w-full [&>select]:rounded-xl [&>select]:border-[#4E342E]/20 [&>select]:bg-white [&>select]:text-[#4E342E] [&>select]:shadow-sm [&>select]:focus:border-[#C9952C] [&>select]:focus:ring-[#C9952C]">
+                                {{ prod_form.product }}
+                            </div>
+                            {% if prod_form.product.errors %}
+                            <p class="text-xs text-[#C75B39] font-bold mt-1">{{ prod_form.product.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-[#4E342E] mb-1">Agreed Rate (₦ per unit)</label>
+                            <div class="[&>input]:w-full [&>input]:rounded-xl [&>input]:border-[#4E342E]/20 [&>input]:bg-white [&>input]:text-[#4E342E] [&>input]:font-mono [&>input]:shadow-sm [&>input]:focus:border-[#C9952C] [&>input]:focus:ring-[#C9952C]">
+                                {{ prod_form.rate }}
+                            </div>
+                            {% if prod_form.rate.errors %}
+                            <p class="text-xs text-[#C75B39] font-bold mt-1">{{ prod_form.rate.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                        {% if prod_form.non_field_errors %}
+                        <div class="col-span-1 sm:col-span-2">
+                            <p class="text-xs text-[#C75B39] font-bold">{{ prod_form.non_field_errors.0 }}</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Add More Button -->
+                <button type="button" onclick="addProductRow()" class="inline-flex items-center gap-2 px-4 py-2.5 bg-[#6B8E23]/10 hover:bg-[#6B8E23]/20 text-[#6B8E23] rounded-xl text-sm font-bold border border-[#6B8E23]/30 transition-colors mt-2">
+                    <i class="fas fa-plus"></i> Add Another Crop
+                </button>
+                
+                {% if product_formset.non_form_errors %}
+                <div class="p-3 bg-[#C75B39]/10 border border-[#C75B39]/30 rounded-xl mt-3">
+                    <p class="text-xs text-[#C75B39] font-bold">{{ product_formset.non_form_errors.0 }}</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- ACTIONS -->
+            <div class="flex items-center gap-3 pt-6 border-t border-[#4E342E]/10">
+                <button type="submit" class="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-[#6B8E23] hover:bg-[#6B8E23]/90 text-[#FAF6F0] rounded-xl text-sm font-bold shadow-sm transition-colors border border-[#6B8E23]">
+                    <i class="fas fa-user-plus"></i> Save to Farm Book
+                </button>
+                <a href="{% url 'user_list' %}" class="inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-[#4E342E]/10 hover:bg-[#4E342E]/20 text-[#4E342E] rounded-xl text-sm font-bold transition-colors">
+                    <i class="fas fa-times"></i> Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function toggleRoleFields() {
+    const roleSelect = document.querySelector('select[name="role"]');
+    if (!roleSelect) return;
+    
+    const role = roleSelect.value;
+    const creditBox = document.getElementById('credit-limit-box');
+    const productBox = document.getElementById('product-assignment-box');
+    
+    if (creditBox) {
+        creditBox.style.display = (role === 'CLIENT') ? 'block' : 'none';
+    }
+    if (productBox) {
+        productBox.style.display = (role === 'VENDOR' || role === 'CLIENT') ? 'block' : 'none';
+    }
+}
+
+// Add new product row dynamically
+function addProductRow() {
+    const container = document.getElementById('product-rows-container');
+    const totalFormsInput = document.querySelector('[name="products-TOTAL_FORMS"]');
+    const currentCount = parseInt(totalFormsInput.value, 10);
+    
+    // Get the last row to clone
+    const rows = container.querySelectorAll('.product-row');
+    const lastRow = rows[rows.length - 1];
+    
+    if (!lastRow) return;
+    
+    // Clone it
+    const newRow = lastRow.cloneNode(true);
+    
+    // Update index in all names and ids: products-0- → products-N-
+    const regex = new RegExp('products-' + (currentCount - 1) + '-', 'g');
+    const newHtml = newRow.innerHTML.replace(/products-\d+-/g, 'products-' + currentCount + '-');
+    newRow.innerHTML = newHtml;
+    
+    // Clear the values in the cloned inputs
+    newRow.querySelectorAll('input, select').forEach(input => {
+        if (input.tagName === 'SELECT') {
+            input.selectedIndex = 0;
+        } else {
+            input.value = '';
+        }
+    });
+    
+    // Append to container
+    container.appendChild(newRow);
+    
+    // Increment TOTAL_FORMS
+    totalFormsInput.value = currentCount + 1;
+}
+
+// Run on page load
+document.addEventListener('DOMContentLoaded', toggleRoleFields);
+
+// Run when role changes
+document.querySelector('select[name="role"]')?.addEventListener('change', toggleRoleFields);
+</script>
+{% endblock %}
