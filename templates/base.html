@@ -175,7 +175,10 @@
                     <a href="{% url 'user_create' %}" class="sidebar-link {% if request.resolver_match.url_name == 'user_create' %}active{% endif %} flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-[#D7CCC8]">
                         <i class="fas fa-user-plus w-5 text-center"></i> Add Partner
                     </a>
-
+<a href="{% url 'staff_list' %}" 
+   class="sidebar-link {% if request.resolver_match.url_name == 'staff_list' %}active{% endif %} flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-[#D7CCC8]">
+    <i class="fas fa-user-shield w-5 text-center"></i> Staff Directory
+</a>
                 {% elif request.user.role == 'MANAGER' %}
                     <a href="{% url 'manager_dashboard' %}" class="sidebar-link {% if request.resolver_match.url_name == 'manager_dashboard' %}active{% endif %} flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-[#D7CCC8]">
                         <i class="fas fa-chart-line w-5 text-center"></i> Dashboard

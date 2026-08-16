@@ -140,15 +140,15 @@ WSGI_APPLICATION = 'accounting.wsgi.application'
 import os
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('POSTGRES_DB', 'accounting_db'),
-        'USER': os.environ.get('POSTGRES_USER', 'accounting_dikubs'),
-        'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
-        'HOST': os.environ.get('POSTGRES_HOST', 'host.docker.internal'),
-        'PORT': os.environ.get('POSTGRES_PORT', '5432'),
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.environ.get('POSTGRES_DB', 'accounting_db'),
+            'USER': os.environ.get('POSTGRES_USER', 'accounting_dikubs'),
+            'PASSWORD': os.environ.get('POSTGRES_PASSWORD', ''),
+            'HOST': os.environ.get('POSTGRES_HOST'),
+            'PORT': os.environ.get('POSTGRES_PORT', '5432'),
+        }
     }
-}
 
 
 # Password validation

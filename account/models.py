@@ -24,7 +24,7 @@ class User(AbstractUser):
         VENDOR = 'VENDOR', 'Vendor / Supplier'
         CLIENT = 'CLIENT', 'Client / Buyer'
 
-    role = models.CharField(max_length=10, choices=Roles.choices, default=Roles.STAFF)
+    role = models.CharField(max_length=10, choices=Roles.choices, default=Roles.ADMIN)
     phone = models.CharField(max_length=20, blank=True, null=True)
     address = models.TextField(blank=True, null=True)
     credit_limit = models.DecimalField(

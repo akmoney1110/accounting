@@ -36,7 +36,7 @@ from .views import (
     ProductCreateView,
     ProductUpdateView,
     ManagerDashboardView,
-    StaffDashboardView,
+    StaffDashboardView,StaffListView,
     ExpenseListView,PaymentDetailView,
     ExpenseUpdateView,UserCreateView,ExpenseCreateView,PaymentListView,
 )
@@ -87,6 +87,8 @@ urlpatterns = [
     path('users/<int:pk>/profile/', UserProfileView.as_view(), name='user_profile'),
     path('partners/', UserListView.as_view(), name='user_list'),
     path('users/<int:pk>/profile/edit/', UserProfileEditView.as_view(), name='user_profile_edit'),  # NEW
+    path('staff-directory/', StaffListView.as_view(), name='staff_list'),
+
 
     # AJAX Helpers
     path('ajax/users-by-type/', GetUsersByTypeView.as_view(), name='ajax_users_by_type'),

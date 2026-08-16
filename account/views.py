@@ -2021,70 +2021,71 @@ class RecordPaymentView(LoginRequiredMixin, AdminRequiredMixin, View):
 # ============================================================
 
 class BatchListView(LoginRequiredMixin, StaffRequiredMixin, View):
-    """
-    Display all batches with filtering and search capabilities.
-    ADMIN only view.
-    """
+    """Display all batches with filtering and search capabilities."""
     template_name = "account/batch_list.html"
 
     def get(self, request):
-        # Start with all batches
         batches = Batch.objects.select_related('product', 'user').all()
         
-        # Get filter parameters
+        # ── Filter parameters ──
         transaction_type = request.GET.get('transaction_type', '')
         payment_status = request.GET.get('payment_status', '')
         search_query = request.GET.get('search', '').strip()
         date_from = request.GET.get('date_from', '')
         date_to = request.GET.get('date_to', '')
+        created_by = request.GET.get('created_by', '')
         
-        # Apply filters
+        # ── Look up staff user for display ──
+        created_by_user = None
+        if created_by:
+            try:
+                created_by_user = User.objects.get(pk=created_by)
+            except User.DoesNotExist:
+                pass
+        
+        # ── Apply filters ──
         if transaction_type:
             batches = batches.filter(transaction_type=transaction_type)
-        
         if payment_status:
             batches = batches.filter(payment_status=payment_status)
-        
         if search_query:
             batches = batches.filter(
                 Q(batch_code__icontains=search_query) |
                 Q(product__name__icontains=search_query) |
                 Q(user__username__icontains=search_query)
             )
-        
         if date_from:
             try:
                 batches = batches.filter(transaction_date__gte=date_from)
             except:
                 pass
-        
         if date_to:
             try:
                 batches = batches.filter(transaction_date__lte=date_to)
             except:
                 pass
+        if created_by:
+            batches = batches.filter(created_by_id=created_by)
         
-        # Order by most recent first
+        # ── Order ──
         batches = batches.order_by('-transaction_date', '-created_at')
         
-        # Summary statistics
+        # ── Summary statistics ──
         total_batches = batches.count()
         total_amount = batches.aggregate(total=Sum('total_amount'))['total'] or Decimal('0.00')
         total_weight = batches.aggregate(total=Sum('weight'))['total'] or Decimal('0.00')
         
-        # Payment status breakdown
+        # ── Payment status breakdown ──
         status_breakdown = {
-    'FULL_PAYMENT': batches.filter(payment_status='FULL_PAYMENT').count(),
-    'PARTIAL_PAYMENT': batches.filter(payment_status='PARTIAL_PAYMENT').count(),
-    'NO_PAYMENT': batches.filter(payment_status='NO_PAYMENT').count(),
-    
-    # Combined count using OR (|) in Django QuerySets:
-    'UNPAID_OR_PARTIAL': batches.filter(
-        payment_status__in=['NO_PAYMENT', 'PARTIAL_PAYMENT']
-    ).count(),
-}
+            'FULL_PAYMENT': batches.filter(payment_status='FULL_PAYMENT').count(),
+            'PARTIAL_PAYMENT': batches.filter(payment_status='PARTIAL_PAYMENT').count(),
+            'NO_PAYMENT': batches.filter(payment_status='NO_PAYMENT').count(),
+            'UNPAID_OR_PARTIAL': batches.filter(
+                payment_status__in=['NO_PAYMENT', 'PARTIAL_PAYMENT']
+            ).count(),
+        }
         
-        # Transaction type breakdown
+        # ── Transaction type breakdown ──
         type_breakdown = {
             'BUY': batches.filter(transaction_type='BUY').count(),
             'SELL': batches.filter(transaction_type='SELL').count(),
@@ -2097,18 +2098,20 @@ class BatchListView(LoginRequiredMixin, StaffRequiredMixin, View):
             'total_weight': total_weight,
             'status_breakdown': status_breakdown,
             'type_breakdown': type_breakdown,
-            # Preserve filter values for form
             'selected_transaction_type': transaction_type,
             'selected_payment_status': payment_status,
+            'selected_created_by': created_by,
+            'created_by_user': created_by_user,
             'search_query': search_query,
             'date_from': date_from,
             'date_to': date_to,
-            # Choices for filters
             'transaction_type_choices': Batch.TransactionType.choices,
             'payment_status_choices': Batch.PaymentStatus.choices,
         }
-        
         return render(request, self.template_name, context)
+
+
+
 
 
 
@@ -2611,6 +2614,72 @@ class UserListView(LoginRequiredMixin, ManagerRequiredMixin, View):
 
 
 
+
+
+# ============================================================
+# STAFF DIRECTORY (Admin, Manager, Staff)
+# ============================================================
+
+class StaffListView(LoginRequiredMixin, ManagerRequiredMixin, View):
+    """
+    Directory of all internal staff: ADMIN, MANAGER, STAFF.
+    Excludes Vendors and Clients.
+    Shows creation activity counts.
+    """
+    template_name = "account/staff_list.html"
+
+    def get(self, request):
+        staff_qs = User.objects.filter(
+            role__in=[
+                User.Roles.ADMIN,
+                User.Roles.MANAGER,
+                User.Roles.STAFF,
+            ]
+        ).annotate(
+            batches_created_count=Count('batches_created', distinct=True),
+            expenses_created_count=Count('expenses_created', distinct=True),
+            transactions_created_count=Count('transactions_created', distinct=True),
+        ).order_by('role', 'username')
+
+        # Optional search
+        search = request.GET.get('search', '').strip()
+        if search:
+            staff_qs = staff_qs.filter(
+                Q(username__icontains=search) |
+                Q(first_name__icontains=search) |
+                Q(last_name__icontains=search) |
+                Q(email__icontains=search)
+            )
+
+        # Role filter
+        role_filter = request.GET.get('role', '')
+        if role_filter in [User.Roles.ADMIN, User.Roles.MANAGER, User.Roles.STAFF]:
+            staff_qs = staff_qs.filter(role=role_filter)
+
+        context = {
+            'staff_list': staff_qs,
+            'total_staff': staff_qs.count(),
+            'admin_count': staff_qs.filter(role=User.Roles.ADMIN).count(),
+            'manager_count': staff_qs.filter(role=User.Roles.MANAGER).count(),
+            'staff_count': staff_qs.filter(role=User.Roles.STAFF).count(),
+            'selected_role': role_filter,
+            'search_query': search,
+            'role_choices': [
+                ('', 'All Staff'),
+                (User.Roles.ADMIN, 'Super Admins'),
+                (User.Roles.MANAGER, 'Managers'),
+                (User.Roles.STAFF, 'Operations Staff'),
+            ],
+        }
+        return render(request, self.template_name, context)
+
+
+
+
+
+
+
+
 from django.db.models import F, DecimalField
 from django.db.models.functions import Coalesce
 
@@ -2678,11 +2747,20 @@ class ExpenseListView(LoginRequiredMixin, StaffRequiredMixin, View):
     def get(self, request):
         expenses = Expense.objects.select_related('batch', 'batch__user').all()
 
-        # Filters
+        # ── Filters ──
         category = request.GET.get('category', '')
         date_from = request.GET.get('date_from', '')
         date_to = request.GET.get('date_to', '')
         search = request.GET.get('search', '').strip()
+        created_by = request.GET.get('created_by', '')
+
+        # ── Look up staff user for display ──
+        created_by_user = None
+        if created_by:
+            try:
+                created_by_user = User.objects.get(pk=created_by)
+            except User.DoesNotExist:
+                pass
 
         if category:
             expenses = expenses.filter(category=category)
@@ -2694,10 +2772,12 @@ class ExpenseListView(LoginRequiredMixin, StaffRequiredMixin, View):
             expenses = expenses.filter(
                 Q(title__icontains=search) | Q(batch__batch_code__icontains=search)
             )
+        if created_by:
+            expenses = expenses.filter(created_by_id=created_by)
 
         expenses = expenses.order_by('-expense_date', '-created_at')
 
-        # Totals
+        # ── Totals (after all filters) ──
         total_amount = expenses.aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
         category_breakdown = expenses.values('category').annotate(
             total=Sum('amount'), count=Count('id')
@@ -2709,12 +2789,14 @@ class ExpenseListView(LoginRequiredMixin, StaffRequiredMixin, View):
             'category_breakdown': category_breakdown,
             'category_choices': Expense.ExpenseCategory.choices,
             'selected_category': category,
+            'selected_created_by': created_by,
+            'created_by_user': created_by_user,
             'date_from': date_from,
             'date_to': date_to,
             'search_query': search,
         }
         return render(request, self.template_name, context)
-
+    
 
 class ExpenseUpdateView(LoginRequiredMixin, AdminRequiredMixin, View):
     """Edit an existing expense (fix wrong amount, date, etc)."""
@@ -2773,16 +2855,17 @@ class UserCreateView(LoginRequiredMixin, AdminRequiredMixin, View):
 
             messages.success(
                 request,
-                f"New {user.get_role_display()} '{user.username}' created. "
-                f"Dem fit login now with the password you set."
+                f"New {user.get_role_display()} '{user.username}' created successfully. "
+                f"They can now login with the password you set."
             )
-            return redirect('user_list')
+            
+            # ✅ Redirect to the new user's profile page
+            return redirect('user_profile', pk=user.pk)
 
         return render(request, self.template_name, {
             'form': user_form,
             'product_formset': product_formset,
         })
-
 
 
 class ExpenseCreateView(LoginRequiredMixin, StaffRequiredMixin, View):
@@ -2830,12 +2913,21 @@ class PaymentListView(LoginRequiredMixin, ManagerRequiredMixin, View):
     def get(self, request):
         transactions = Transaction.objects.select_related('user', 'batch').all()
 
-        # Filters
+        # ── Filters ──
         tx_type = request.GET.get('transaction_type', '')
         user_id = request.GET.get('user_id', '')
         date_from = request.GET.get('date_from', '')
         date_to = request.GET.get('date_to', '')
         search = request.GET.get('search', '').strip()
+        created_by = request.GET.get('created_by', '')
+
+        # ── Look up staff user for display ──
+        created_by_user = None
+        if created_by:
+            try:
+                created_by_user = User.objects.get(pk=created_by)
+            except User.DoesNotExist:
+                pass
 
         if tx_type:
             transactions = transactions.filter(transaction_type=tx_type)
@@ -2851,10 +2943,12 @@ class PaymentListView(LoginRequiredMixin, ManagerRequiredMixin, View):
                 Q(notes__icontains=search) |
                 Q(user__username__icontains=search)
             )
+        if created_by:
+            transactions = transactions.filter(created_by_id=created_by)
 
         transactions = transactions.order_by('-transaction_date', '-created_at')
 
-        # Totals
+        # ── Totals (after all filters) ──
         total_receipts = transactions.filter(
             transaction_type=Transaction.TransactionType.RECEIPT
         ).aggregate(t=Sum('amount'))['t'] or Decimal('0.00')
@@ -2863,7 +2957,7 @@ class PaymentListView(LoginRequiredMixin, ManagerRequiredMixin, View):
             transaction_type=Transaction.TransactionType.DISBURSEMENT
         ).aggregate(t=Sum('amount'))['t'] or Decimal('0.00')
 
-        # Pre-calculate unallocated per transaction
+        # ── Pre-calculate unallocated per transaction ──
         txn_data = []
         for txn in transactions:
             allocated = txn.allocations.aggregate(t=Sum('amount'))['t'] or Decimal('0.00')
@@ -2884,12 +2978,13 @@ class PaymentListView(LoginRequiredMixin, ManagerRequiredMixin, View):
             'users': User.objects.exclude(role=User.Roles.ADMIN).order_by('username'),
             'selected_txn_type': tx_type,
             'selected_user': user_id,
+            'selected_created_by': created_by,
+            'created_by_user': created_by_user,
             'date_from': date_from,
             'date_to': date_to,
             'search_query': search,
         }
         return render(request, self.template_name, context)
-
 
 class PaymentDetailView(LoginRequiredMixin, AdminRequiredMixin, View):
     """View one payment and exactly where every naira went."""

@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block title %}Staff Directory{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 py-8">
+    <div class="flex justify-between items-center mb-6">
+        <div>
+            <h1 class="text-2xl font-bold text-slate-800">Staff Directory</h1>
+            <p class="text-slate-500 text-sm mt-1">Internal team members and their activity</p>
+        </div>
+        <a href="{% url 'user_create' %}" 
+           class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+            + Add Staff Member
+        </a>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div class="bg-white rounded-xl border border-slate-200 p-4">
+            <div class="text-2xl font-bold text-purple-700">{{ admin_count }}</div>
+            <div class="text-sm text-slate-500">Super Admins</div>
+        </div>
+        <div class="bg-white rounded-xl border border-slate-200 p-4">
+            <div class="text-2xl font-bold text-orange-600">{{ manager_count }}</div>
+            <div class="text-sm text-slate-500">Managers</div>
+        </div>
+        <div class="bg-white rounded-xl border border-slate-200 p-4">
+            <div class="text-2xl font-bold text-indigo-600">{{ staff_count }}</div>
+            <div class="text-sm text-slate-500">Operations Staff</div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="bg-white rounded-xl border border-slate-200 p-4 mb-6">
+        <form method="get" class="flex flex-wrap gap-4 items-end">
+            <div class="flex-1 min-w-[200px]">
+                <label class="block text-xs font-medium text-slate-500 mb-1">Search</label>
+                <input type="text" name="search" value="{{ search_query }}" 
+                       placeholder="Name, username, or email..."
+                       class="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
+            </div>
+            <div class="w-48">
+                <label class="block text-xs font-medium text-slate-500 mb-1">Role</label>
+                <select name="role" 
+                        class="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
+                    {% for value, label in role_choices %}
+                        <option value="{{ value }}" {% if selected_role == value %}selected{% endif %}>
+                            {{ label }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" 
+                    class="bg-slate-800 hover:bg-slate-900 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                Filter
+            </button>
+            {% if search_query or selected_role %}
+            <a href="{% url 'staff_list' %}" 
+               class="text-slate-500 hover:text-slate-700 text-sm py-2">
+                Clear
+            </a>
+            {% endif %}
+        </form>
+    </div>
+
+    <!-- Staff Table -->
+    <div class="bg-white rounded-xl border border-slate-200 overflow-hidden">
+        <table class="w-full text-sm text-left">
+            <thead class="bg-slate-50 text-slate-600 font-medium border-b border-slate-200">
+                <tr>
+                    <th class="px-4 py-3">Staff Member</th>
+                    <th class="px-4 py-3">Role</th>
+                    <th class="px-4 py-3 text-center">Batches Created</th>
+                    <th class="px-4 py-3 text-center">Expenses Logged</th>
+                    <th class="px-4 py-3 text-center">Payments Recorded</th>
+                    <th class="px-4 py-3 text-right">Joined</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+    {% for staff in staff_list %}
+    <tr class="hover:bg-slate-50 transition-colors">
+        <td class="px-4 py-3">
+            <div class="font-medium text-slate-800">{{ staff.get_full_name|default:staff.username }}</div>
+            <div class="text-xs text-slate-500">@{{ staff.username }}</div>
+            {% if staff.email %}
+            <div class="text-xs text-slate-400">{{ staff.email }}</div>
+            {% endif %}
+        </td>
+        <td class="px-4 py-3">
+            {% if staff.role == 'ADMIN' %}
+                <span class="inline-flex px-2 py-1 rounded-md text-xs font-semibold bg-purple-100 text-purple-700">Super Admin</span>
+            {% elif staff.role == 'MANAGER' %}
+                <span class="inline-flex px-2 py-1 rounded-md text-xs font-semibold bg-orange-100 text-orange-700">Manager</span>
+            {% else %}
+                <span class="inline-flex px-2 py-1 rounded-md text-xs font-semibold bg-indigo-100 text-indigo-700">Staff</span>
+            {% endif %}
+        </td>
+        <td class="px-4 py-3 text-center">
+            {% if staff.batches_created_count > 0 %}
+                <a href="{% url 'batch_list' %}?created_by={{ staff.id }}" 
+                   class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-emerald-100 text-emerald-700 font-bold text-sm hover:bg-emerald-200 transition-colors"
+                   title="View batches created by {{ staff.username }}">
+                    {{ staff.batches_created_count }}
+                </a>
+            {% else %}
+                <span class="text-slate-400 text-sm">0</span>
+            {% endif %}
+        </td>
+        <td class="px-4 py-3 text-center">
+            {% if staff.expenses_created_count > 0 %}
+                <a href="{% url 'expense_list' %}?created_by={{ staff.id }}" 
+                   class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-amber-100 text-amber-700 font-bold text-sm hover:bg-amber-200 transition-colors"
+                   title="View expenses logged by {{ staff.username }}">
+                    {{ staff.expenses_created_count }}
+                </a>
+            {% else %}
+                <span class="text-slate-400 text-sm">0</span>
+            {% endif %}
+        </td>
+        <td class="px-4 py-3 text-center">
+            {% if staff.transactions_created_count > 0 %}
+                <a href="{% url 'payment_list' %}?created_by={{ staff.id }}" 
+                   class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-700 font-bold text-sm hover:bg-blue-200 transition-colors"
+                   title="View payments recorded by {{ staff.username }}">
+                    {{ staff.transactions_created_count }}
+                </a>
+            {% else %}
+                <span class="text-slate-400 text-sm">0</span>
+            {% endif %}
+        </td>
+        <td class="px-4 py-3 text-right text-slate-500 text-xs">
+            {{ staff.date_joined|date:"M d, Y" }}
+        </td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="6" class="px-4 py-8 text-center text-slate-400">
+            No staff members found matching your criteria.
+        </td>
+    </tr>
+    {% endfor %}
+</tbody>
+        </table>
+    </div>
+
+    <div class="mt-4 text-sm text-slate-500">
+        Showing {{ staff_list|length }} of {{ total_staff }} staff member{{ total_staff|pluralize }}
+    </div>
+</div>
+{% endblock %}
