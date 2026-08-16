@@ -103,11 +103,15 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 # For CSRF to work when frontend POSTs to backend
+
 CSRF_TRUSTED_ORIGINS = [
+    'https://dikubs.com',
+    'https://www.dikubs.com',
+    "http://127.0.0.1:8000",
+    'http://69.62.71.166',
+    'http://localhost:8000',
     "http://localhost:3000",
     "http://127.0.0.1:3000",
-    "http://localhost:8000",      # your Django server
-    "http://127.0.0.1:8000",
 ]
 
 ROOT_URLCONF = 'accounting.urls'
@@ -133,10 +137,16 @@ WSGI_APPLICATION = 'accounting.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+import os
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('POSTGRES_DB', 'accounting_db'),
+        'USER': os.environ.get('POSTGRES_USER', 'accounting_dikubs'),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
+        'HOST': os.environ.get('POSTGRES_HOST', 'host.docker.internal'),
+        'PORT': os.environ.get('POSTGRES_PORT', '5432'),
     }
 }
 
