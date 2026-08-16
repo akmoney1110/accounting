@@ -308,7 +308,7 @@
                         <i class="fas fa-arrow-up"></i> You Owe
                     </span>
                 </div>
-                <p class="text-sm text-[#8D7B6B] font-medium">Money You Still Owe Farmers</p>
+                <p class="text-sm text-[#8D7B6B] font-medium">Money You Still Owe supliers</p>
                 <h3 class="text-2xl font-bold text-[#C75B39] mt-1">₦<span class="counter" data-target="{{ amount_owe_vendors|default:'0' }}">{{ amount_owe_vendors|default:"0.00" }}</span></h3>
                 <div class="mt-2 flex items-center gap-2 text-xs">
                     <span class="bg-[#F5EFE6] text-[#5D4037] px-2 py-1 rounded-md font-mono font-semibold">
@@ -321,7 +321,7 @@
                     {% endif %}
                 </div>
                 <div class="explain-box mt-2">
-                    <p>💡 You bought cashew from farmers but haven't finished paying them. This is the remaining money you owe them.</p>
+                    <p>💡 You bought cashew from Suppliers but haven't finished paying them. This is the remaining money you owe them.</p>
                 </div>
             </div>
         </a>
@@ -338,7 +338,7 @@
                         <i class="fas fa-arrow-down"></i> They Will Pay You
                     </span>
                 </div>
-                <p class="text-sm text-[#8D7B6B] font-medium">Farmers Overpaid You (Your Credit)</p>
+                <p class="text-sm text-[#8D7B6B] font-medium">Supplier Yet To Supply</p>
                 <h3 class="text-2xl font-bold text-[#6B8E23] mt-1">₦<span class="counter" data-target="{{ vendors_owe_me|default:'0' }}">{{ vendors_owe_me|default:"0.00" }}</span></h3>
                 <div class="mt-2 flex items-center gap-2 text-xs">
                     <span class="bg-[#F5EFE6] text-[#5D4037] px-2 py-1 rounded-md font-mono font-semibold">
@@ -351,7 +351,7 @@
                     {% endif %}
                 </div>
                 <div class="explain-box mt-2">
-                    <p>💡 Farmers paid you too much money before. This money is in your hands — it is like credit you have with them.</p>
+                    <p>💡 suppliers still owes you {{ vendors_owe_me_kg|default:"0.00" }} kg worth of Goods that are yet to be supplied.</p>
                 </div>
             </div>
         </a>
@@ -368,7 +368,7 @@
                         <i class="fas fa-arrow-down"></i> They Will Pay You
                     </span>
                 </div>
-                <p class="text-sm text-[#8D7B6B] font-medium">Buyers Still Need to Pay You</p>
+                <p class="text-sm text-[#8D7B6B] font-medium">Buyers Still owe</p>
                 <h3 class="text-2xl font-bold text-[#C9952C] mt-1">₦<span class="counter" data-target="{{ clients_owe_me|default:'0' }}">{{ clients_owe_me|default:"0.00" }}</span></h3>
                 <div class="mt-2 flex items-center gap-2 text-xs">
                     <span class="bg-[#F5EFE6] text-[#5D4037] px-2 py-1 rounded-md font-mono font-semibold">
@@ -395,10 +395,10 @@
                         <i class="fas fa-rotate-left text-[#C75B39] text-lg"></i>
                     </div>
                     <span class="text-xs font-semibold text-[#C75B39] bg-[#FDEDE8] px-2.5 py-1 rounded-full flex items-center gap-1">
-                        <i class="fas fa-arrow-up"></i> You Must Refund
+                        <i class="fas fa-arrow-up"></i> Goods Not Supplied
                     </span>
                 </div>
-                <p class="text-sm text-[#8D7B6B] font-medium">Money You Need to Refund Buyers</p>
+                <p class="text-sm text-[#8D7B6B] font-medium">Money/Good You Need to supply/Refund Buyers</p>
                 <h3 class="text-2xl font-bold text-[#C75B39] mt-1">₦<span class="counter" data-target="{{ owe_clients|default:'0' }}">{{ owe_clients|default:"0.00" }}</span></h3>
                 <div class="mt-2 flex items-center gap-2 text-xs">
                     <span class="bg-[#F5EFE6] text-[#5D4037] px-2 py-1 rounded-md font-mono font-semibold">
@@ -411,7 +411,7 @@
                     {% endif %}
                 </div>
                 <div class="explain-box mt-2">
-                    <p>💡 Buyers paid you too much money before. You need to return this remaining money to them.</p>
+                    <p>💡 Buyers paid you too much money before. You need to supply {{ owe_clients_kg|default:"0.00" }} kg worth og goods or return this remaining money to them.</p>
                 </div>
             </div>
         </a>

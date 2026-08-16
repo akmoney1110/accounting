@@ -292,7 +292,7 @@ class AdminDashboardView(LoginRequiredMixin, AdminRequiredMixin, View):
         # Na only cashew seed get wet & dry weight wey need drying
         # ============================================================
         # TODO: Make sure this name match exactly wetin you create for Product table
-        CASHEW_PRODUCT_NAME = "cashew seed"  # <-- Change if your product name different
+        CASHEW_PRODUCT_NAME = "RAW CASHEW NUT (RCN) WET"  # <-- Change if your product name different
 
         vendor_wet_weight = (
             Batch.objects.filter(
