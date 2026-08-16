@@ -1,0 +1,271 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Staff Dashboard — Dikubs Cashew{% endblock %}
+
+{% block extra_css %}
+<style>
+    .card { background: white; border: 1px solid #E6DCCF; border-radius: 1rem; }
+    .stat-card { background: white; border: 1px solid #E6DCCF; border-radius: 1rem; transition: transform 0.2s, box-shadow 0.2s; }
+    .stat-card:hover { transform: translateY(-2px); box-shadow: 0 10px 25px -5px rgba(78, 52, 46, 0.1); }
+    .badge-paid { background: #d1fae5; color: #065f46; }
+    .badge-partial { background: #fef3c7; color: #92400e; }
+    .badge-unpaid { background: #fee2e2; color: #991b1b; }
+    .table-row:hover { background-color: #FAF6F0; }
+    .alert-box { background: linear-gradient(135deg, #C75B39 0%, #A0442A 100%); }
+</style>
+{% endblock %}
+
+{% block page_title %}Operations Dashboard{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto space-y-6">
+
+    <!-- HEADER -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+            <h1 class="text-2xl font-bold text-[#4E342E]">Operations Dashboard</h1>
+            <p class="text-sm text-[#8D6E63] mt-1">
+                <i class="far fa-calendar-alt mr-1"></i> {{ today|date:"F j, Y" }}
+            </p>
+        </div>
+        <div class="flex gap-3">
+            <a href="{% url 'batch_create' %}" class="inline-flex items-center gap-2 bg-[#6B8E23] hover:bg-[#55721C] text-white px-4 py-2.5 rounded-xl text-sm font-semibold transition-colors shadow-lg shadow-[#6B8E23]/20">
+                <i class="fas fa-plus"></i> Log New Batch
+            </a>
+            <a href="{% url 'expense_create' %}" class="inline-flex items-center gap-2 bg-[#C9952C] hover:bg-[#B08020] text-white px-4 py-2.5 rounded-xl text-sm font-semibold transition-colors shadow-lg shadow-[#C9952C]/20">
+                <i class="fas fa-receipt"></i> Add Expense
+            </a>
+        </div>
+    </div>
+
+    <!-- OPERATIONAL STATS -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="stat-card p-5">
+            <div class="flex items-center justify-between mb-3">
+                <span class="text-xs font-semibold text-[#8D6E63] uppercase tracking-wider">Total Batches</span>
+                <div class="w-8 h-8 rounded-lg bg-[#4E342E]/5 flex items-center justify-center text-[#4E342E]">
+                    <i class="fas fa-boxes text-xs"></i>
+                </div>
+            </div>
+            <p class="text-2xl font-bold text-[#4E342E]">{{ total_batches }}</p>
+            <p class="text-xs text-[#8D6E63] mt-1">All time records</p>
+        </div>
+
+        <div class="stat-card p-5">
+            <div class="flex items-center justify-between mb-3">
+                <span class="text-xs font-semibold text-[#8D6E63] uppercase tracking-wider">This Week</span>
+                <div class="w-8 h-8 rounded-lg bg-[#C9952C]/10 flex items-center justify-center text-[#C9952C]">
+                    <i class="fas fa-calendar-week text-xs"></i>
+                </div>
+            </div>
+            <p class="text-2xl font-bold text-[#4E342E]">{{ batches_this_week }}</p>
+            <p class="text-xs text-[#8D6E63] mt-1">Last 7 days</p>
+        </div>
+
+        <div class="stat-card p-5">
+            <div class="flex items-center justify-between mb-3">
+                <span class="text-xs font-semibold text-[#8D6E63] uppercase tracking-wider">Total Weight</span>
+                <div class="w-8 h-8 rounded-lg bg-[#6B8E23]/10 flex items-center justify-center text-[#6B8E23]">
+                    <i class="fas fa-weight-hanging text-xs"></i>
+                </div>
+            </div>
+            <p class="text-2xl font-bold text-[#4E342E]">{{ total_weight|floatformat:2 }} <span class="text-sm font-normal text-[#8D6E63]">kg</span></p>
+            <p class="text-xs text-[#8D6E63] mt-1">Wet weight received</p>
+        </div>
+
+        <div class="stat-card p-5">
+            <div class="flex items-center justify-between mb-3">
+                <span class="text-xs font-semibold text-[#8D6E63] uppercase tracking-wider">Dry Weight</span>
+                <div class="w-8 h-8 rounded-lg bg-[#d1fae5] flex items-center justify-center text-[#065f46]">
+                    <i class="fas fa-wind text-xs"></i>
+                </div>
+            </div>
+            <p class="text-2xl font-bold text-[#4E342E]">{{ total_dry_weight|floatformat:2 }} <span class="text-sm font-normal text-[#8D6E63]">kg</span></p>
+            <p class="text-xs text-[#8D6E63] mt-1">After drying process</p>
+        </div>
+    </div>
+
+    <!-- PAYMENT STATUS MINI CARDS -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="card p-4 flex items-center gap-4 border-l-4 border-l-[#065f46]">
+            <div class="w-10 h-10 rounded-full bg-[#d1fae5] flex items-center justify-center text-[#065f46]">
+                <i class="fas fa-check"></i>
+            </div>
+            <div>
+                <p class="text-lg font-bold text-[#4E342E]">{{ payment_status_counts.full }}</p>
+                <p class="text-xs text-[#8D6E63]">Fully Paid Batches</p>
+            </div>
+        </div>
+        <div class="card p-4 flex items-center gap-4 border-l-4 border-l-[#C9952C]">
+            <div class="w-10 h-10 rounded-full bg-[#fef3c7] flex items-center justify-center text-[#92400e]">
+                <i class="fas fa-adjust"></i>
+            </div>
+            <div>
+                <p class="text-lg font-bold text-[#4E342E]">{{ payment_status_counts.partial }}</p>
+                <p class="text-xs text-[#8D6E63]">Partially Paid</p>
+            </div>
+        </div>
+        <div class="card p-4 flex items-center gap-4 border-l-4 border-l-[#C75B39]">
+            <div class="w-10 h-10 rounded-full bg-[#fee2e2] flex items-center justify-center text-[#991b1b]">
+                <i class="fas fa-hourglass-start"></i>
+            </div>
+            <div>
+                <p class="text-lg font-bold text-[#4E342E]">{{ payment_status_counts.none }}</p>
+                <p class="text-xs text-[#8D6E63]">Unpaid Batches</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- PENDING DRY WEIGHT ALERT -->
+    {% if pending_dry_weight %}
+    <div class="alert-box rounded-2xl p-5 text-white shadow-lg">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-sm font-bold uppercase tracking-wider flex items-center gap-2">
+                <i class="fas fa-exclamation-triangle"></i> Needs Dry Weight
+            </h3>
+            <span class="bg-white/20 px-3 py-1 rounded-lg text-xs font-bold">{{ pending_dry_weight|length }} batch(es)</span>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            {% for batch in pending_dry_weight %}
+            <div class="bg-white/10 backdrop-blur rounded-xl p-3 border border-white/20">
+                <div class="flex items-center justify-between mb-1">
+                    <a href="{% url 'batch_detail' batch.pk %}" class="text-sm font-bold hover:underline">{{ batch.batch_code }}</a>
+                    <span class="text-[10px] bg-white/20 px-2 py-0.5 rounded font-medium">{{ batch.transaction_type }}</span>
+                </div>
+                <p class="text-xs opacity-90">{{ batch.user.username }} — {{ batch.product.name }}</p>
+                <div class="flex items-center justify-between mt-2">
+                    <span class="text-xs font-semibold">{{ batch.weight|floatformat:2 }} {{ batch.product.unit }} wet</span>
+                    <a href="{% url 'batch_detail' batch.pk %}" class="text-xs bg-white text-[#C75B39] px-2 py-1 rounded-lg font-bold hover:bg-[#FAF6F0] transition-colors">Update</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- RECENT BATCHES -->
+    <div class="card overflow-hidden">
+        <div class="p-5 border-b border-[#E6DCCF] flex items-center justify-between">
+            <h3 class="text-sm font-bold text-[#4E342E] uppercase tracking-wider flex items-center gap-2">
+                <i class="fas fa-box text-[#C9952C]"></i> Recent Batches
+            </h3>
+            <a href="{% url 'batch_list' %}" class="text-xs font-semibold text-[#C9952C] hover:text-[#B08020]">View All <i class="fas fa-arrow-right ml-1"></i></a>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="bg-[#FAF6F0] text-left text-xs font-semibold text-[#8D6E63] uppercase tracking-wider">
+                        <th class="px-5 py-3">Batch Code</th>
+                        <th class="px-5 py-3">Type</th>
+                        <th class="px-5 py-3">Partner</th>
+                        <th class="px-5 py-3">Product</th>
+                        <th class="px-5 py-3 text-right">Weight</th>
+                        <th class="px-5 py-3 text-center">Status</th>
+                        <th class="px-5 py-3 text-right">Date</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-[#E6DCCF]">
+                    {% for batch in recent_batches %}
+                    <tr class="table-row transition-colors">
+                        <td class="px-5 py-3 font-medium text-[#4E342E]">
+                            <a href="{% url 'batch_detail' batch.pk %}" class="hover:text-[#C9952C] transition-colors">{{ batch.batch_code }}</a>
+                        </td>
+                        <td class="px-5 py-3">
+                            {% if batch.transaction_type == 'BUY' %}
+                            <span class="inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-semibold bg-[#dbeafe] text-[#1e40af]">
+                                <i class="fas fa-arrow-down text-[10px]"></i> BUY
+                            </span>
+                            {% else %}
+                            <span class="inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-semibold bg-[#d1fae5] text-[#065f46]">
+                                <i class="fas fa-arrow-up text-[10px]"></i> SELL
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td class="px-5 py-3 text-[#5D4037]">{{ batch.user.username }}</td>
+                        <td class="px-5 py-3 text-[#8D6E63]">{{ batch.product.name }}</td>
+                        <td class="px-5 py-3 text-right font-medium text-[#4E342E]">
+                            {{ batch.weight|floatformat:2 }} {{ batch.product.unit }}
+                            {% if batch.dry_weight %}
+                            <span class="block text-xs text-[#6B8E23]">{{ batch.dry_weight|floatformat:2 }} dry</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-5 py-3 text-center">
+                            {% if batch.payment_status == 'FULL_PAYMENT' %}
+                            <span class="badge-paid px-2.5 py-1 rounded-md text-xs font-bold">Paid</span>
+                            {% elif batch.payment_status == 'PARTIAL_PAYMENT' %}
+                            <span class="badge-partial px-2.5 py-1 rounded-md text-xs font-bold">Partial</span>
+                            {% else %}
+                            <span class="badge-unpaid px-2.5 py-1 rounded-md text-xs font-bold">Unpaid</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-5 py-3 text-right text-[#8D6E63] text-xs">{{ batch.transaction_date|date:"M d, Y" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="px-5 py-8 text-center text-[#8D6E63] text-sm">No recent batches found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- RECENT EXPENSES -->
+    <div class="card overflow-hidden">
+        <div class="p-5 border-b border-[#E6DCCF] flex items-center justify-between">
+            <h3 class="text-sm font-bold text-[#4E342E] uppercase tracking-wider flex items-center gap-2">
+                <i class="fas fa-receipt text-[#C9952C]"></i> Recent Expenses
+            </h3>
+            <div class="flex items-center gap-3">
+                <span class="text-xs text-[#8D6E63]">30 days: <span class="font-bold text-[#4E342E]">₦{{ recent_expenses_total|floatformat:2 }}</span></span>
+                <a href="{% url 'expense_list' %}" class="text-xs font-semibold text-[#C9952C] hover:text-[#B08020]">View All <i class="fas fa-arrow-right ml-1"></i></a>
+            </div>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="bg-[#FAF6F0] text-left text-xs font-semibold text-[#8D6E63] uppercase tracking-wider">
+                        <th class="px-5 py-3">Category</th>
+                        <th class="px-5 py-3">Title</th>
+                        <th class="px-5 py-3">Batch</th>
+                        <th class="px-5 py-3 text-right">Amount</th>
+                        <th class="px-5 py-3 text-right">Date</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-[#E6DCCF]">
+                    {% for expense in recent_expenses %}
+                    <tr class="table-row transition-colors">
+                        <td class="px-5 py-3">
+                            <span class="inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium bg-[#FAF6F0] text-[#5D4037] border border-[#E6DCCF]">
+                                {{ expense.get_category_display }}
+                            </span>
+                        </td>
+                        <td class="px-5 py-3 font-medium text-[#4E342E]">{{ expense.title }}</td>
+                        <td class="px-5 py-3 text-[#8D6E63] text-xs">
+                            {% if expense.batch %}
+                            <a href="{% url 'batch_detail' expense.batch.pk %}" class="hover:text-[#C9952C]">{{ expense.batch.batch_code }}</a>
+                            {% else %}
+                            <span class="text-[#A1887F]">General</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-5 py-3 text-right font-semibold text-[#4E342E]">₦{{ expense.amount|floatformat:2 }}</td>
+                        <td class="px-5 py-3 text-right text-[#8D6E63] text-xs">{{ expense.expense_date|date:"M d, Y" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="px-5 py-8 text-center text-[#8D6E63] text-sm">No recent expenses.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="text-center text-[#A1887F] text-xs pt-4 pb-8">
+        <p> Dikubs Cashew Staff Portal. All rights reserved.</p>
+    </div>
+
+</div>
+{% endblock %}

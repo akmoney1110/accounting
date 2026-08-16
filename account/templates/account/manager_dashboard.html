@@ -1,0 +1,337 @@
+{% extends "base.html" %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}Manager Dashboard — Dikubs Cashew{% endblock %}
+
+{% block extra_css %}
+<style>
+    .card { background: white; border: 1px solid #E6DCCF; border-radius: 1rem; }
+    .stat-card { background: white; border: 1px solid #E6DCCF; border-radius: 1rem; transition: transform 0.2s, box-shadow 0.2s; }
+    .stat-card:hover { transform: translateY(-2px); box-shadow: 0 10px 25px -5px rgba(78, 52, 46, 0.1); }
+    .badge-paid { background: #d1fae5; color: #065f46; }
+    .badge-partial { background: #fef3c7; color: #92400e; }
+    .badge-unpaid { background: #fee2e2; color: #991b1b; }
+    .table-row:hover { background-color: #FAF6F0; }
+</style>
+{% endblock %}
+
+{% block page_title %}Manager Dashboard{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto space-y-6">
+
+    <!-- HEADER -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+            <h1 class="text-2xl font-bold text-[#4E342E]">Manager Dashboard</h1>
+            <p class="text-sm text-[#8D6E63] mt-1">
+                <i class="far fa-calendar-alt mr-1"></i> {{ today|date:"F j, Y" }} &nbsp;|&nbsp; 
+                Last 30 days review
+            </p>
+        </div>
+        <div class="flex gap-3">
+            <a href="{% url 'batch_create' %}" class="inline-flex items-center gap-2 bg-[#6B8E23] hover:bg-[#55721C] text-white px-4 py-2.5 rounded-xl text-sm font-semibold transition-colors shadow-lg shadow-[#6B8E23]/20">
+                <i class="fas fa-plus"></i> New Batch
+            </a>
+            <a href="{% url 'transaction_add' %}" class="inline-flex items-center gap-2 bg-[#C9952C] hover:bg-[#B08020] text-white px-4 py-2.5 rounded-xl text-sm font-semibold transition-colors shadow-lg shadow-[#C9952C]/20">
+                <i class="fas fa-coins"></i> Record Payment
+            </a>
+        </div>
+    </div>
+
+    <!-- FINANCIAL KPI CARDS -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="stat-card p-5 relative overflow-hidden">
+            <div class="absolute top-0 right-0 p-4 opacity-10">
+                <i class="fas fa-arrow-trend-up text-5xl text-[#6B8E23]"></i>
+            </div>
+            <p class="text-xs font-semibold text-[#8D6E63] uppercase tracking-wider">Total Sales</p>
+            <p class="text-2xl font-bold text-[#4E342E] mt-1">₦{{ total_sales|floatformat:2 }}</p>
+            <div class="mt-3 flex items-center gap-1 text-xs text-[#6B8E23] font-medium">
+                <i class="fas fa-circle text-[6px]"></i> SELL transactions
+            </div>
+        </div>
+
+        <div class="stat-card p-5 relative overflow-hidden">
+            <div class="absolute top-0 right-0 p-4 opacity-10">
+                <i class="fas fa-arrow-trend-down text-5xl text-[#C75B39]"></i>
+            </div>
+            <p class="text-xs font-semibold text-[#8D6E63] uppercase tracking-wider">Total Purchases</p>
+            <p class="text-2xl font-bold text-[#4E342E] mt-1">₦{{ total_purchases|floatformat:2 }}</p>
+            <div class="mt-3 flex items-center gap-1 text-xs text-[#C75B39] font-medium">
+                <i class="fas fa-circle text-[6px]"></i> BUY transactions
+            </div>
+        </div>
+
+        <div class="stat-card p-5 relative overflow-hidden">
+            <div class="absolute top-0 right-0 p-4 opacity-10">
+                <i class="fas fa-receipt text-5xl text-[#C9952C]"></i>
+            </div>
+            <p class="text-xs font-semibold text-[#8D6E63] uppercase tracking-wider">Total Expenses</p>
+            <p class="text-2xl font-bold text-[#4E342E] mt-1">₦{{ total_expenses|floatformat:2 }}</p>
+            <div class="mt-3 flex items-center gap-1 text-xs text-[#C9952C] font-medium">
+                <i class="fas fa-circle text-[6px]"></i> Operational costs
+            </div>
+        </div>
+
+        <div class="stat-card p-5 relative overflow-hidden {% if net_profit >= 0 %}border-l-4 border-l-[#6B8E23]{% else %}border-l-4 border-l-[#C75B39]{% endif %}">
+            <div class="absolute top-0 right-0 p-4 opacity-10">
+                <i class="fas fa-sack-dollar text-5xl text-[#4E342E]"></i>
+            </div>
+            <p class="text-xs font-semibold text-[#8D6E63] uppercase tracking-wider">Net Position</p>
+            <p class="text-2xl font-bold {% if net_profit >= 0 %}text-[#6B8E23]{% else %}text-[#C75B39]{% endif %} mt-1">
+                ₦{{ net_profit|floatformat:2 }}
+            </p>
+            <div class="mt-3 flex items-center gap-1 text-xs font-medium {% if net_profit >= 0 %}text-[#6B8E23]{% else %}text-[#C75B39]{% endif %}">
+                <i class="fas {% if net_profit >= 0 %}fa-arrow-up{% else %}fa-arrow-down{% endif %}"></i>
+                Sales − Purchases − Expenses
+            </div>
+        </div>
+    </div>
+
+    <!-- BALANCE & OPERATIONS ROW -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div class="card p-5 lg:col-span-2">
+            <h3 class="text-sm font-bold text-[#4E342E] uppercase tracking-wider mb-4 flex items-center gap-2">
+                <i class="fas fa-scale-balanced text-[#C9952C]"></i> Balance Summary
+            </h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="bg-[#FAF6F0] rounded-xl p-4 border border-[#E6DCCF]">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-medium text-[#8D6E63]">We Owe Vendors</span>
+                        <span class="w-8 h-8 rounded-lg bg-[#C75B39]/10 flex items-center justify-center text-[#C75B39]">
+                            <i class="fas fa-hand-holding-dollar text-xs"></i>
+                        </span>
+                    </div>
+                    <p class="text-xl font-bold text-[#C75B39]">₦{{ amount_owe_vendors|floatformat:2 }}</p>
+                    <p class="text-xs text-[#8D6E63] mt-1">Outstanding disbursements</p>
+                </div>
+                <div class="bg-[#FAF6F0] rounded-xl p-4 border border-[#E6DCCF]">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-medium text-[#8D6E63]">Clients Owe Us</span>
+                        <span class="w-8 h-8 rounded-lg bg-[#6B8E23]/10 flex items-center justify-center text-[#6B8E23]">
+                            <i class="fas fa-hand-holding-dollar text-xs"></i>
+                        </span>
+                    </div>
+                    <p class="text-xl font-bold text-[#6B8E23]">₦{{ clients_owe_me|floatformat:2 }}</p>
+                    <p class="text-xs text-[#8D6E63] mt-1">Outstanding receipts</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card p-5">
+            <h3 class="text-sm font-bold text-[#4E342E] uppercase tracking-wider mb-4 flex items-center gap-2">
+                <i class="fas fa-cogs text-[#C9952C]"></i> Operations
+            </h3>
+            <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-[#4E342E]/5 flex items-center justify-center text-[#4E342E]">
+                            <i class="fas fa-boxes"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold text-[#4E342E]">{{ total_batches }}</p>
+                            <p class="text-xs text-[#8D6E63]">Total Batches</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="border-t border-[#E6DCCF]"></div>
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-[#C9952C]/10 flex items-center justify-center text-[#C9952C]">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold text-[#C75B39]">{{ pending_payments }}</p>
+                            <p class="text-xs text-[#8D6E63]">Pending Payments</p>
+                        </div>
+                    </div>
+                    <a href="{% url 'batch_list' %}?payment_status=NO_PAYMENT" class="text-xs text-[#C9952C] hover:underline font-medium">View</a>
+                </div>
+                <div class="border-t border-[#E6DCCF]"></div>
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-[#6B8E23]/10 flex items-center justify-center text-[#6B8E23]">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold text-[#6B8E23]">{{ settled_batches }}</p>
+                            <p class="text-xs text-[#8D6E63]">Settled Batches</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RECENT BATCHES -->
+    <div class="card overflow-hidden">
+        <div class="p-5 border-b border-[#E6DCCF] flex items-center justify-between">
+            <h3 class="text-sm font-bold text-[#4E342E] uppercase tracking-wider flex items-center gap-2">
+                <i class="fas fa-box text-[#C9952C]"></i> Recent Batches
+            </h3>
+            <a href="{% url 'batch_list' %}" class="text-xs font-semibold text-[#C9952C] hover:text-[#B08020]">View All <i class="fas fa-arrow-right ml-1"></i></a>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="bg-[#FAF6F0] text-left text-xs font-semibold text-[#8D6E63] uppercase tracking-wider">
+                        <th class="px-5 py-3">Batch Code</th>
+                        <th class="px-5 py-3">Type</th>
+                        <th class="px-5 py-3">Partner</th>
+                        <th class="px-5 py-3">Product</th>
+                        <th class="px-5 py-3 text-right">Weight</th>
+                        <th class="px-5 py-3 text-right">Total</th>
+                        <th class="px-5 py-3 text-center">Status</th>
+                        <th class="px-5 py-3 text-right">Date</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-[#E6DCCF]">
+                    {% for batch in recent_batches %}
+                    <tr class="table-row transition-colors">
+                        <td class="px-5 py-3 font-medium text-[#4E342E]">
+                            <a href="{% url 'batch_detail' batch.pk %}" class="hover:text-[#C9952C] transition-colors">{{ batch.batch_code }}</a>
+                        </td>
+                        <td class="px-5 py-3">
+                            {% if batch.transaction_type == 'BUY' %}
+                            <span class="inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-semibold bg-[#dbeafe] text-[#1e40af]">
+                                <i class="fas fa-arrow-down text-[10px]"></i> BUY
+                            </span>
+                            {% else %}
+                            <span class="inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-semibold bg-[#d1fae5] text-[#065f46]">
+                                <i class="fas fa-arrow-up text-[10px]"></i> SELL
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td class="px-5 py-3 text-[#5D4037]">{{ batch.user.username }}</td>
+                        <td class="px-5 py-3 text-[#8D6E63]">{{ batch.product.name }}</td>
+                        <td class="px-5 py-3 text-right font-medium text-[#4E342E]">{{ batch.weight|floatformat:2 }} {{ batch.product.unit }}</td>
+                        <td class="px-5 py-3 text-right font-semibold text-[#4E342E]">₦{{ batch.total_amount|floatformat:2 }}</td>
+                        <td class="px-5 py-3 text-center">
+                            {% if batch.payment_status == 'FULL_PAYMENT' %}
+                            <span class="badge-paid px-2.5 py-1 rounded-md text-xs font-bold">Paid</span>
+                            {% elif batch.payment_status == 'PARTIAL_PAYMENT' %}
+                            <span class="badge-partial px-2.5 py-1 rounded-md text-xs font-bold">Partial</span>
+                            {% else %}
+                            <span class="badge-unpaid px-2.5 py-1 rounded-md text-xs font-bold">Unpaid</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-5 py-3 text-right text-[#8D6E63] text-xs">{{ batch.transaction_date|date:"M d, Y" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8" class="px-5 py-8 text-center text-[#8D6E63] text-sm">No recent batches found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- TOP PERFORMERS -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div class="card p-5">
+            <h3 class="text-sm font-bold text-[#4E342E] uppercase tracking-wider mb-4 flex items-center gap-2">
+                <i class="fas fa-truck text-[#C9952C]"></i> Top Vendors
+            </h3>
+            <div class="space-y-3">
+                {% for vendor in top_vendors %}
+                <div class="flex items-center gap-3 p-3 rounded-xl bg-[#FAF6F0] border border-[#E6DCCF]">
+                    <div class="w-10 h-10 rounded-full bg-[#4E342E] text-white flex items-center justify-center font-bold text-sm">
+                        {{ vendor.username|first|upper }}
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-semibold text-[#4E342E] truncate">{{ vendor.username }}</p>
+                        <p class="text-xs text-[#8D6E63]">{{ vendor.total_value|floatformat:2 }} value supplied</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm font-bold text-[#4E342E]">{{ vendor.total_supplied|floatformat:0 }} <span class="text-xs font-normal text-[#8D6E63]">kg</span></p>
+                    </div>
+                </div>
+                {% empty %}
+                <p class="text-sm text-[#8D6E63] text-center py-4">No vendor data yet.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="card p-5">
+            <h3 class="text-sm font-bold text-[#4E342E] uppercase tracking-wider mb-4 flex items-center gap-2">
+                <i class="fas fa-handshake text-[#C9952C]"></i> Top Clients
+            </h3>
+            <div class="space-y-3">
+                {% for client in top_clients %}
+                <div class="flex items-center gap-3 p-3 rounded-xl bg-[#FAF6F0] border border-[#E6DCCF]">
+                    <div class="w-10 h-10 rounded-full bg-[#6B8E23] text-white flex items-center justify-center font-bold text-sm">
+                        {{ client.username|first|upper }}
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-semibold text-[#4E342E] truncate">{{ client.username }}</p>
+                        <p class="text-xs text-[#8D6E63]">{{ client.total_value|floatformat:2 }} value bought</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm font-bold text-[#4E342E]">{{ client.total_bought|floatformat:0 }} <span class="text-xs font-normal text-[#8D6E63]">kg</span></p>
+                    </div>
+                </div>
+                {% empty %}
+                <p class="text-sm text-[#8D6E63] text-center py-4">No client data yet.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- RECENT TRANSACTIONS -->
+    <div class="card overflow-hidden">
+        <div class="p-5 border-b border-[#E6DCCF] flex items-center justify-between">
+            <h3 class="text-sm font-bold text-[#4E342E] uppercase tracking-wider flex items-center gap-2">
+                <i class="fas fa-exchange-alt text-[#C9952C]"></i> Recent Transactions
+            </h3>
+            <a href="{% url 'payment_list' %}" class="text-xs font-semibold text-[#C9952C] hover:text-[#B08020]">View All <i class="fas fa-arrow-right ml-1"></i></a>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="bg-[#FAF6F0] text-left text-xs font-semibold text-[#8D6E63] uppercase tracking-wider">
+                        <th class="px-5 py-3">Reference</th>
+                        <th class="px-5 py-3">User</th>
+                        <th class="px-5 py-3">Type</th>
+                        <th class="px-5 py-3">Method</th>
+                        <th class="px-5 py-3 text-right">Amount</th>
+                        <th class="px-5 py-3 text-right">Date</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-[#E6DCCF]">
+                    {% for txn in recent_transactions %}
+                    <tr class="table-row transition-colors">
+                        <td class="px-5 py-3 font-medium text-[#4E342E]">
+                            {% if txn.reference_code %}{{ txn.reference_code }}{% else %}#{{ txn.pk }}{% endif %}
+                        </td>
+                        <td class="px-5 py-3 text-[#5D4037]">{{ txn.user.username }}</td>
+                        <td class="px-5 py-3">
+                            {% if txn.transaction_type == 'DISBURSEMENT' %}
+                            <span class="text-[#C75B39] font-medium text-xs">DISBURSEMENT</span>
+                            {% else %}
+                            <span class="text-[#6B8E23] font-medium text-xs">RECEIPT</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-5 py-3 text-[#8D6E63] text-xs">{{ txn.get_payment_method_display }}</td>
+                        <td class="px-5 py-3 text-right font-bold text-[#4E342E]">₦{{ txn.amount|floatformat:2 }}</td>
+                        <td class="px-5 py-3 text-right text-[#8D6E63] text-xs">{{ txn.transaction_date|date:"M d, Y" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="px-5 py-8 text-center text-[#8D6E63] text-sm">No recent transactions.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="text-center text-[#A1887F] text-xs pt-4 pb-8">
+        <p> Dikubs Cashew Manager Portal. All rights reserved.</p>
+    </div>
+
+</div>
+{% endblock %}

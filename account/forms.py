@@ -235,12 +235,15 @@ class BatchForm(BaseStyledForm):
         # Populate active products only
         self.fields['product'].queryset = Product.objects.filter(is_active=True)
         
-        # Filter users: no admins, and if transaction_type known, filter by role
+        # ONLY show business partners (Vendors & Clients), never internal staff
         tx_type = self.data.get('transaction_type') if self.data else None
         if not tx_type and self.instance.pk:
             tx_type = self.instance.transaction_type
         
-        user_qs = User.objects.filter(is_active=True).exclude(role=User.Roles.ADMIN)
+        user_qs = User.objects.filter(
+            is_active=True,
+            role__in=[User.Roles.VENDOR, User.Roles.CLIENT]
+        )
         if tx_type == 'BUY':
             user_qs = user_qs.filter(role=User.Roles.VENDOR)
         elif tx_type == 'SELL':
@@ -250,7 +253,6 @@ class BatchForm(BaseStyledForm):
         # Set default transaction date to today if creating new batch
         if not self.instance.pk and 'transaction_date' in self.fields:
             self.fields['transaction_date'].initial = timezone.now().date()
-
     def clean_weight(self):
         weight = self.cleaned_data.get('weight')
         if weight is not None and weight <= Decimal('0.00'):
@@ -389,8 +391,9 @@ class TransactionForm(BaseStyledForm):
                 self.fields['transaction_date'].initial = timezone.now().date()
 
         self.fields['user'].queryset = User.objects.filter(
-            is_active=True
-        ).exclude(role=User.Roles.ADMIN)
+            is_active=True,
+            role__in=[User.Roles.VENDOR, User.Roles.CLIENT]
+        )
 
     def clean_amount(self):
         amount = self.cleaned_data.get('amount')
@@ -422,7 +425,10 @@ class TransctionForm(BaseStyledForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['batch'].required = False
-        self.fields['user'].queryset = User.objects.filter(is_active=True).exclude(role=User.Roles.ADMIN)
+        self.fields['user'].queryset = User.objects.filter(
+    is_active=True,
+    role__in=[User.Roles.VENDOR, User.Roles.CLIENT]
+)
         if not self.instance.pk and 'transaction_date' in self.fields:
             self.fields['transaction_date'].initial = timezone.now().date()
 
@@ -440,7 +446,10 @@ class UserProductRateForm(BaseStyledForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['user'].queryset = User.objects.filter(is_active=True).exclude(role=User.Roles.ADMIN)
+        self.fields['user'].queryset = User.objects.filter(
+    is_active=True,
+    role__in=[User.Roles.VENDOR, User.Roles.CLIENT]
+)
         self.fields['product'].queryset = Product.objects.filter(is_active=True)
 
 
@@ -515,8 +524,9 @@ class TransactionForm(BaseStyledForm):
                 self.fields['transaction_date'].initial = timezone.now().date()
 
         self.fields['user'].queryset = User.objects.filter(
-            is_active=True
-        ).exclude(role=User.Roles.ADMIN)
+    is_active=True,
+    role__in=[User.Roles.VENDOR, User.Roles.CLIENT]
+)
 
     def clean_amount(self):
         amount = self.cleaned_data.get('amount')

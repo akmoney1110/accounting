@@ -86,6 +86,7 @@
                 <thead>
                     <tr class="bg-[#F5EFE6] text-[#8D7B6B] text-xs uppercase tracking-wider">
                         <th class="px-6 py-3 text-left font-semibold">Date</th>
+                        <th class="px-5 py-3">Recorded By</th>
                         <th class="px-6 py-3 text-left font-semibold">Category</th>
                         <th class="px-6 py-3 text-left font-semibold">What You Buy/Spend On</th>
                         <th class="px-6 py-3 text-left font-semibold">Linked Load</th>
@@ -97,6 +98,13 @@
                     {% for exp in expenses %}
                     <tr class="table-row-hover">
                         <td class="px-6 py-4 text-[#5D4037] whitespace-nowrap">{{ exp.expense_date|date:"M d, Y" }}</td>
+                        <td class="px-5 py-3 text-[#8D6E63] text-xs">
+    {% if expense.created_by %}
+        {{ expense.created_by.username }}
+    {% else %}
+        —
+    {% endif %}
+</td>
                         <td class="px-6 py-4">
                             <span class="status-badge bg-[#FDEDE8] text-[#C75B39] border border-[#FFCCBC]">
                                 {{ exp.get_category_display }}

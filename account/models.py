@@ -18,11 +18,13 @@ from django.utils import timezone
 
 class User(AbstractUser):
     class Roles(models.TextChoices):
-        ADMIN = 'ADMIN', 'Super Admin / Manager'
+        ADMIN = 'ADMIN', 'Super Admin'
+        MANAGER = 'MANAGER', 'Manager'
+        STAFF = 'STAFF', 'Staff / Operations'
         VENDOR = 'VENDOR', 'Vendor / Supplier'
         CLIENT = 'CLIENT', 'Client / Buyer'
 
-    role = models.CharField(max_length=10, choices=Roles.choices, default=Roles.ADMIN)
+    role = models.CharField(max_length=10, choices=Roles.choices, default=Roles.STAFF)
     phone = models.CharField(max_length=20, blank=True, null=True)
     address = models.TextField(blank=True, null=True)
     credit_limit = models.DecimalField(
@@ -36,11 +38,9 @@ class User(AbstractUser):
         blank=True
     )
 
-
-
     def save(self, *args, **kwargs):
-        # Automatically mark Admins as staff so they can access staff features if needed
-        if self.role == self.Roles.ADMIN:
+        # Admins and Managers get staff status for Django admin access
+        if self.role in (self.Roles.ADMIN, self.Roles.MANAGER):
             self.is_staff = True
         else:
             self.is_staff = False
@@ -145,6 +145,14 @@ class Batch(models.Model):
         'Product', 
         on_delete=models.PROTECT, 
         related_name='batches'
+    )
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='batches_created',
+        help_text="Staff/Manager who registered this batch"
     )
     
     weight = models.DecimalField(
@@ -391,6 +399,14 @@ class Expense(models.Model):
     expense_date = models.DateField()
     receipt_reference = models.CharField(max_length=100, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='expenses_created',
+        help_text="Staff/Manager who recorded this expense"
+    )
 
     def __str__(self):
         batch_code = self.batch.batch_code if self.batch else "General Expense"
@@ -418,6 +434,14 @@ class Transaction(models.Model):
     reference_code = models.CharField(max_length=100, help_text="Bank Ref, Cheque Number, or Receipt Code")
     transaction_date = models.DateField()
     notes = models.TextField(blank=True, null=True)
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='transactions_created',
+        help_text="Staff/Manager who recorded this payment"
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     @property
     def unallocated_amount(self):

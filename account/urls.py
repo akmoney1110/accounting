@@ -35,6 +35,8 @@ from .views import (
     ProductListView,
     ProductCreateView,
     ProductUpdateView,
+    ManagerDashboardView,
+    StaffDashboardView,
     ExpenseListView,PaymentDetailView,
     ExpenseUpdateView,UserCreateView,ExpenseCreateView,PaymentListView,
 )
@@ -43,6 +45,8 @@ urlpatterns = [
     # Authentication
     path('', LoginView.as_view(), name='login'),
     path('logout/', LogoutView.as_view(), name='logout'),
+    path('manager/', ManagerDashboardView.as_view(), name='manager_dashboard'),
+    path('staff/', StaffDashboardView.as_view(), name='staff_dashboard'),
     path('products/', ProductListView.as_view(), name='product_list'),
     path('products/create/', ProductCreateView.as_view(), name='product_create'),
     path('products/<int:pk>/edit/', ProductUpdateView.as_view(), name='product_edit'),

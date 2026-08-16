@@ -21,7 +21,28 @@ from .models import (
     Transaction,
     User,UserProductRate,
 )
+from django.contrib.auth.decorators import user_passes_test
+from django.core.exceptions import PermissionDenied
 
+def manager_required(view_func):
+    """Decorator: ADMIN or MANAGER only."""
+    def check(user):
+        if not user.is_authenticated:
+            return False
+        if user.role not in (User.Roles.ADMIN, User.Roles.MANAGER):
+            raise PermissionDenied
+        return True
+    return user_passes_test(check)(view_func)
+
+def staff_required(view_func):
+    """Decorator: ADMIN, MANAGER, or STAFF."""
+    def check(user):
+        if not user.is_authenticated:
+            return False
+        if user.role not in (User.Roles.ADMIN, User.Roles.MANAGER, User.Roles.STAFF):
+            raise PermissionDenied
+        return True
+    return user_passes_test(check)(view_func)
 
 # ============================================================
 # ACCESS CONTROL MIXINS
@@ -47,7 +68,22 @@ class ClientRequiredMixin(UserPassesTestMixin):
         user = self.request.user
         return user.is_authenticated and user.role == User.Roles.CLIENT
 
+class ManagerRequiredMixin(UserPassesTestMixin):
+    """Allows access to ADMIN and MANAGER roles."""
+    def test_func(self):
+        user = self.request.user
+        return user.is_authenticated and user.role in (
+            User.Roles.ADMIN, User.Roles.MANAGER
+        )
 
+
+class StaffRequiredMixin(UserPassesTestMixin):
+    """Allows access to ADMIN, MANAGER, and STAFF roles."""
+    def test_func(self):
+        user = self.request.user
+        return user.is_authenticated and user.role in (
+            User.Roles.ADMIN, User.Roles.MANAGER, User.Roles.STAFF
+        )
 # ============================================================
 # 1. AUTHENTICATION
 # ============================================================
@@ -79,6 +115,10 @@ class LoginView(View):
     def redirect_by_role(user):
         if user.role == User.Roles.ADMIN:
             return redirect("admin_dashboard")
+        if user.role == User.Roles.MANAGER:
+            return redirect("manager_dashboard")
+        if user.role == User.Roles.STAFF:
+            return redirect("staff_dashboard")
         if user.role == User.Roles.VENDOR:
             return redirect("vendor_portal")
         if user.role == User.Roles.CLIENT:
@@ -831,24 +871,27 @@ from django.http import JsonResponse
 from .forms import BatchForm, BatchExpenseFormSet
 from django.db.models import Sum
 
-class CreateBatchView(LoginRequiredMixin, AdminRequiredMixin, View):
+class CreateBatchView(LoginRequiredMixin, StaffRequiredMixin, View):
     """
     Create a new BUY or SELL batch.
     Also record expenses (transport, fuel, bags, etc.) in the same form.
     """
     template_name = "account/batch_create.html"
-
+    
     def get(self, request):
+        
         form = BatchForm()
         expense_formset = BatchExpenseFormSet(
             queryset=Expense.objects.none(),
             prefix='expenses'
         )
+        
         return render(request, self.template_name, {
             "form": form,
             "expense_formset": expense_formset,
         })
-
+        
+ 
     def post(self, request):
         form = BatchForm(request.POST)
         expense_formset = BatchExpenseFormSet(
@@ -860,12 +903,15 @@ class CreateBatchView(LoginRequiredMixin, AdminRequiredMixin, View):
         if form.is_valid() and expense_formset.is_valid():
             with db_transaction.atomic():
                 # 1. Save the batch
+                batch = form.save(commit=False)
+                batch.created_by = request.user
                 batch = form.save()
 
                 # 2. Save expenses linked to this batch
                 expenses = expense_formset.save(commit=False)
                 for expense in expenses:
                     expense.batch = batch
+                    expense.created_by = request.user
                     expense.save()
 
                 # Delete any marked rows
@@ -1085,7 +1131,7 @@ from decimal import Decimal, ROUND_HALF_UP
 # 4. BATCH DETAIL
 # ============================================================
 
-class BatchDetailView(LoginRequiredMixin, View):
+class BatchDetailView(LoginRequiredMixin,StaffRequiredMixin, View):
     """
     Displays batch details.
     
@@ -1195,7 +1241,7 @@ from django.urls import reverse_lazy
 # PRODUCTS MANAGEMENT
 # ============================================================
 
-class ProductListView(LoginRequiredMixin, AdminRequiredMixin, ListView):
+class ProductListView(LoginRequiredMixin, StaffRequiredMixin, ListView):
     """List all products with usage stats."""
     model = Product
     template_name = "account/product_list.html"
@@ -1216,7 +1262,7 @@ class ProductListView(LoginRequiredMixin, AdminRequiredMixin, ListView):
         return context
 
 
-class ProductCreateView(LoginRequiredMixin, AdminRequiredMixin, CreateView):
+class ProductCreateView(LoginRequiredMixin, StaffRequiredMixin, CreateView):
     """Create a new product."""
     model = Product
     form_class = ProductForm
@@ -1337,6 +1383,7 @@ class AddExpenseView(LoginRequiredMixin, AdminRequiredMixin, View):
         if form.is_valid():
             expense = form.save(commit=False)
             expense.batch = batch
+            expense.created_by = request.user
             expense.save()
 
             messages.success(
@@ -1397,6 +1444,8 @@ class RecordTransactionView(LoginRequiredMixin, AdminRequiredMixin, View):
 
         with db_transaction.atomic():
             # 1. Save transaction
+            transaction = form.save(commit=False)
+            transaction.created_by = request.user
             transaction = form.save()
 
             # 2. Pay linked batch first (if user selected one)
@@ -1595,7 +1644,7 @@ class RecordTranactionView(LoginRequiredMixin, AdminRequiredMixin, View):
 
         return render(request, self.template_name, {"form": form})
 
-class GetOutstandingBatchesView(LoginRequiredMixin, AdminRequiredMixin, View):
+class GetOutstandingBatchesView(LoginRequiredMixin, StaffRequiredMixin, View):
     """AJAX: Return user's outstanding batches for the allocation preview."""
 
     def get(self, request):
@@ -1755,7 +1804,7 @@ class UpdateDryWeightView(LoginRequiredMixin, AdminRequiredMixin, View):
 # AJAX HELPERS FOR BATCH CREATE
 # ============================================================
 
-class GetUsersByTypeView(LoginRequiredMixin, AdminRequiredMixin, View):
+class GetUsersByTypeView(LoginRequiredMixin, StaffRequiredMixin, View):
     """Return users filtered by transaction type (BUY→Vendors, SELL→Clients)."""
     def get(self, request):
         tx_type = request.GET.get('transaction_type', '')
@@ -1777,7 +1826,7 @@ class GetUsersByTypeView(LoginRequiredMixin, AdminRequiredMixin, View):
         return JsonResponse({'users': data})
 
 
-class GetProductsByUserView(LoginRequiredMixin, AdminRequiredMixin, View):
+class GetProductsByUserView(LoginRequiredMixin, StaffRequiredMixin, View):
     """Return products assigned to a user via UserProductRate."""
     def get(self, request):
         user_id = request.GET.get('user_id')
@@ -1792,7 +1841,7 @@ class GetProductsByUserView(LoginRequiredMixin, AdminRequiredMixin, View):
         return JsonResponse({'products': list(products)})
 
 
-class GetUserProductRateView(LoginRequiredMixin, AdminRequiredMixin, View):
+class GetUserProductRateView(LoginRequiredMixin, StaffRequiredMixin, View):
     """Return the stored rate for a user+product combo."""
     def get(self, request):
         user_id = request.GET.get('user_id')
@@ -1943,13 +1992,14 @@ class RecordPaymentView(LoginRequiredMixin, AdminRequiredMixin, View):
             )
             
             transaction = Transaction.objects.create(
-                user=batch.user,
-                batch=batch,
-                amount=amount,
-                transaction_type=trans_type,
-                transaction_date=timezone.now().date(),
-                notes=f"Payment on Batch #{batch.batch_code} via detail page"
-            )
+    user=batch.user,
+    batch=batch,
+    amount=amount,
+    transaction_type=trans_type,
+    transaction_date=timezone.now().date(),
+    notes=f"Payment on Batch #{batch.batch_code} via detail page",
+    created_by=request.user,  # <-- TRACK CREATOR
+)
             
             # Create the allocation
             PaymentAllocation.objects.create(
@@ -1970,7 +2020,7 @@ class RecordPaymentView(LoginRequiredMixin, AdminRequiredMixin, View):
 # 14. BATCH LIST
 # ============================================================
 
-class BatchListView(LoginRequiredMixin, AdminRequiredMixin, View):
+class BatchListView(LoginRequiredMixin, StaffRequiredMixin, View):
     """
     Display all batches with filtering and search capabilities.
     ADMIN only view.
@@ -2370,23 +2420,32 @@ class UserProfileView(LoginRequiredMixin, View):
 # USER DIRECTORY (All Clients & Vendors)
 # ============================================================
 
-class UserListView(LoginRequiredMixin, AdminRequiredMixin, View):
+from decimal import Decimal, ROUND_HALF_UP
+from django.db.models import Sum, Count, Q
+from django.utils import timezone
+from datetime import timedelta
+
+
+class UserListView(LoginRequiredMixin, ManagerRequiredMixin, View):
     """
-    ADMIN-only directory of all Clients and Vendors.
-    Shows summary stats per user. Click to view full profile.
+    ADMIN/MANAGER directory of all Clients and Vendors.
+    Shows ledger balances in ₦ + kg, with debtor/creditor/payment filters.
     """
     template_name = "account/user_list.html"
 
     def get(self, request):
-        # Base queryset: exclude admins
-        users = User.objects.exclude(role=User.Roles.ADMIN).select_related('ledger').prefetch_related('batches', 'product_rates')
+        # Base queryset: only business partners (not internal staff)
+        users = User.objects.filter(
+            role__in=[User.Roles.VENDOR, User.Roles.CLIENT]
+        ).select_related('ledger').prefetch_related(
+            'batches', 'product_rates', 'transactions'
+        ).order_by('role', 'username')
 
-        # Filter by role
+        # --- FILTERS ---
         role_filter = request.GET.get('role', '')
         if role_filter in [User.Roles.VENDOR, User.Roles.CLIENT]:
             users = users.filter(role=role_filter)
 
-        # Search by name/username/phone
         search = request.GET.get('search', '').strip()
         if search:
             users = users.filter(
@@ -2396,37 +2455,114 @@ class UserListView(LoginRequiredMixin, AdminRequiredMixin, View):
                 Q(phone__icontains=search)
             )
 
-        # Annotate with stats
-        from django.db.models import Count, Sum, OuterRef, Subquery
-        users = users.annotate(
-            batch_count=Count('batches', distinct=True),
-            total_weight=Sum('batches__weight'),
-        ).order_by('role', 'username')
+        filter_type = request.GET.get('filter_type', 'all')
 
-        # Pre-calculate per-user stats for the template
+        # --- BUILD USER DATA ---
         user_data = []
+        total_clients_owe = Decimal('0.00')
+        total_we_owe_vendors = Decimal('0.00')
+        total_vendors_owe_us = Decimal('0.00')
+        total_we_owe_clients = Decimal('0.00')
+        total_clients_owe_kg = Decimal('0.00')
+        total_vendors_owe_us_kg = Decimal('0.00')
+        total_we_owe_clients_kg = Decimal('0.00')
+
         for u in users:
             ledger = getattr(u, 'ledger', None)
-            batches = u.batches.all()
-            
-            # Payment status breakdown
+            balance = ledger.balance if ledger else Decimal('0.00')
+            batches = list(u.batches.all())
+
+            # Batch payment counts
             paid_count = sum(1 for b in batches if b.payment_status == Batch.PaymentStatus.FULL_PAYMENT)
             partial_count = sum(1 for b in batches if b.payment_status == Batch.PaymentStatus.PARTIAL_PAYMENT)
             unpaid_count = sum(1 for b in batches if b.payment_status == Batch.PaymentStatus.NO_PAYMENT)
+            batch_count = len(batches)
 
-            # Unallocated credit
-            unallocated = sum(t.unallocated_amount for t in u.transactions.all())
+            # Determine who-owes-who based on role + balance
+            tx_type = 'SELL' if u.role == User.Roles.CLIENT else 'BUY'
+            rate = self._latest_rate(u, tx_type)
+
+            if u.role == User.Roles.CLIENT:
+                # balance > 0  → Client owes us money
+                # balance < 0  → We owe client money/goods
+                owes_us_money = max(Decimal('0.00'), balance)
+                we_owe_money = max(Decimal('0.00'), -balance)
+                is_debtor = balance > Decimal('0.00')
+                is_creditor = balance < Decimal('0.00')
+            else:  # VENDOR
+                # balance > 0  → We owe vendor money
+                # balance < 0  → Vendor owes us money/goods
+                owes_us_money = max(Decimal('0.00'), -balance)
+                we_owe_money = max(Decimal('0.00'), balance)
+                is_debtor = balance < Decimal('0.00')   # Vendor owes us
+                is_creditor = balance > Decimal('0.00')  # We owe vendor
+
+            # Convert to kg
+            owes_us_kg = Decimal('0.00')
+            we_owe_kg = Decimal('0.00')
+            if rate > Decimal('0.00'):
+                if owes_us_money > Decimal('0.00'):
+                    owes_us_kg = (owes_us_money / rate).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+                if we_owe_money > Decimal('0.00'):
+                    we_owe_kg = (we_owe_money / rate).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+
+            # Payment category for filtering
+            if batch_count == 0:
+                pay_category = 'no_batches'
+            elif unpaid_count > 0:
+                pay_category = 'has_unpaid'
+            elif partial_count > 0:
+                pay_category = 'has_partial'
+            else:
+                pay_category = 'fully_paid'
+
+            # Apply filters
+            if filter_type == 'debtor' and not is_debtor:
+                continue
+            if filter_type == 'creditor' and not is_creditor:
+                continue
+            if filter_type == 'has_unpaid' and unpaid_count == 0:
+                continue
+            if filter_type == 'has_partial' and partial_count == 0:
+                continue
+            if filter_type == 'fully_paid' and (unpaid_count > 0 or partial_count > 0 or batch_count == 0):
+                continue
+            if filter_type == 'settled' and (is_debtor or is_creditor):
+                continue
+
+            # Unallocated credit (across all transactions)
+            unallocated = Decimal('0.00')
+            for txn in u.transactions.all():
+                unallocated += txn.unallocated_amount
+
+            # Roll up totals
+            if u.role == User.Roles.CLIENT:
+                total_clients_owe += owes_us_money
+                total_we_owe_clients += we_owe_money
+                total_we_owe_clients_kg += we_owe_kg
+            else:
+                total_we_owe_vendors += we_owe_money
+                total_vendors_owe_us += owes_us_money
+                total_vendors_owe_us_kg += owes_us_kg
 
             user_data.append({
                 'user': u,
                 'ledger': ledger,
-                'batch_count': u.batch_count or 0,
-                'total_weight': u.total_weight or Decimal('0.00'),
+                'balance': balance,
+                'batch_count': batch_count,
                 'paid_count': paid_count,
                 'partial_count': partial_count,
                 'unpaid_count': unpaid_count,
+                'owes_us_money': owes_us_money,
+                'owes_us_kg': owes_us_kg,
+                'we_owe_money': we_owe_money,
+                'we_owe_kg': we_owe_kg,
+                'is_debtor': is_debtor,
+                'is_creditor': is_creditor,
+                'pay_category': pay_category,
                 'unallocated': unallocated,
                 'product_count': u.product_rates.count(),
+                'rate': rate,
             })
 
         context = {
@@ -2434,16 +2570,44 @@ class UserListView(LoginRequiredMixin, AdminRequiredMixin, View):
             'total_count': len(user_data),
             'vendor_count': sum(1 for d in user_data if d['user'].role == User.Roles.VENDOR),
             'client_count': sum(1 for d in user_data if d['user'].role == User.Roles.CLIENT),
+            'total_clients_owe': total_clients_owe,
+            'total_clients_owe_kg': total_clients_owe_kg,
+            'total_we_owe_vendors': total_we_owe_vendors,
+            'total_vendors_owe_us': total_vendors_owe_us,
+            'total_vendors_owe_us_kg': total_vendors_owe_us_kg,
+            'total_we_owe_clients': total_we_owe_clients,
+            'total_we_owe_clients_kg': total_we_owe_clients_kg,
             'selected_role': role_filter,
+            'selected_filter': filter_type,
             'search_query': search,
             'role_choices': [
                 ('', 'All Partners'),
-                (User.Roles.VENDOR, 'Vendors Only'),
-                (User.Roles.CLIENT, 'Clients Only'),
+                (User.Roles.VENDOR, 'Farmers (Vendors)'),
+                (User.Roles.CLIENT, 'Buyers (Clients)'),
+            ],
+            'filter_choices': [
+                ('all', 'All Statuses'),
+                ('debtor', 'Debtors (Owe Us)'),
+                ('creditor', 'Creditors (We Owe Them)'),
+                ('has_unpaid', 'Has Unpaid Batches'),
+                ('has_partial', 'Has Partial Payments'),
+                ('fully_paid', 'Fully Paid Up'),
+                ('settled', 'Zero Balance'),
             ],
         }
-        return render(request, self.template_name, context)    
+        return render(request, self.template_name, context)
 
+    def _latest_rate(self, user, tx_type):
+        """Get most recent applicable rate for kg conversion."""
+        latest_batch = Batch.objects.filter(
+            user=user, transaction_type=tx_type
+        ).order_by('-transaction_date', '-created_at').first()
+        if latest_batch and latest_batch.applied_rate and latest_batch.applied_rate > 0:
+            return latest_batch.applied_rate
+        rate_obj = UserProductRate.objects.filter(user=user).order_by('-id').first()
+        if rate_obj and rate_obj.rate and rate_obj.rate > 0:
+            return rate_obj.rate
+        return Decimal('0.00')
 
 
 
@@ -2507,7 +2671,7 @@ class GetOutstaningBatchesView(LoginRequiredMixin, AdminRequiredMixin, View):
 # EXPENSE MANAGEMENT (Standalone List + Edit)
 # ============================================================
 
-class ExpenseListView(LoginRequiredMixin, AdminRequiredMixin, View):
+class ExpenseListView(LoginRequiredMixin, StaffRequiredMixin, View):
     """See every expense across all batches — with filters and totals."""
     template_name = "account/expense_list.html"
 
@@ -2621,7 +2785,7 @@ class UserCreateView(LoginRequiredMixin, AdminRequiredMixin, View):
 
 
 
-class ExpenseCreateView(LoginRequiredMixin, AdminRequiredMixin, View):
+class ExpenseCreateView(LoginRequiredMixin, StaffRequiredMixin, View):
     """Record a new expense from anywhere (not tied to a batch page)."""
     template_name = "account/expense_form.html"
 
@@ -2632,6 +2796,8 @@ class ExpenseCreateView(LoginRequiredMixin, AdminRequiredMixin, View):
     def post(self, request):
         form = ExpenseForm(request.POST)
         if form.is_valid():
+            expense = form.save(commit=False)
+            expense.created_by = request.user
             expense = form.save()
             messages.success(
                 request, 
@@ -2640,6 +2806,10 @@ class ExpenseCreateView(LoginRequiredMixin, AdminRequiredMixin, View):
             return redirect('expense_list')
         return render(request, self.template_name, {'form': form})    
     
+
+# ============================================================
+# NEW ACCESS CONTROL MIXINS
+# ============================================================
 
 
 from decimal import Decimal
@@ -2653,7 +2823,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 # PAYMENTS LIST & DETAIL
 # ============================================================
 
-class PaymentListView(LoginRequiredMixin, AdminRequiredMixin, View):
+class PaymentListView(LoginRequiredMixin, ManagerRequiredMixin, View):
     """List all money in and money out with filters."""
     template_name = "account/payment_list.html"
 
@@ -2767,3 +2937,181 @@ class PaymentDetailView(LoginRequiredMixin, AdminRequiredMixin, View):
             'outstanding': outstanding,
         }
         return render(request, self.template_name, context)
+
+
+
+
+class ManagerDashboardView(LoginRequiredMixin, ManagerRequiredMixin, View):
+    """
+    Manager dashboard with full financial visibility.
+    Same data as admin but rendered via separate template.
+    """
+    template_name = "account/manager_dashboard.html"
+
+    def get(self, request):
+        today = timezone.now().date()
+        thirty_days_ago = today - timedelta(days=30)
+
+        # Core financials
+        total_sales = (
+            Batch.objects.filter(transaction_type=Batch.TransactionType.SELL)
+            .aggregate(total=Sum("total_amount"))["total"] or Decimal("0.00")
+        )
+        total_purchases = (
+            Batch.objects.filter(transaction_type=Batch.TransactionType.BUY)
+            .aggregate(total=Sum("total_amount"))["total"] or Decimal("0.00")
+        )
+        total_expenses = (
+            Expense.objects.aggregate(total=Sum("amount"))["total"] or Decimal("0.00")
+        )
+        net_profit = total_sales - total_purchases - total_expenses
+
+        # Operational counts
+        total_batches = Batch.objects.count()
+        pending_payments = Batch.objects.filter(
+            payment_status__in=[
+                Batch.PaymentStatus.NO_PAYMENT,
+                Batch.PaymentStatus.PARTIAL_PAYMENT,
+            ]
+        ).count()
+
+        # Balance summaries
+        vendor_ledgers = Ledger.objects.filter(user__role=User.Roles.VENDOR)
+        client_ledgers = Ledger.objects.filter(user__role=User.Roles.CLIENT)
+
+        amount_owe_vendors = (
+            vendor_ledgers.filter(balance__gt=0).aggregate(total=Sum("balance"))["total"]
+            or Decimal("0.00")
+        )
+        clients_owe_me = (
+            client_ledgers.filter(balance__gt=0).aggregate(total=Sum("balance"))["total"]
+            or Decimal("0.00")
+        )
+
+        # Recent activity
+        recent_batches = (
+            Batch.objects.select_related("product", "user")
+            .order_by("-transaction_date", "-created_at")[:10]
+        )
+        recent_transactions = (
+            Transaction.objects.select_related("user", "batch")
+            .order_by("-created_at")[:10]
+        )
+
+        # Top performers
+        top_vendors = (
+            User.objects.filter(role=User.Roles.VENDOR)
+            .annotate(
+                total_value=Sum("batches__total_amount", filter=Q(batches__transaction_type="BUY")),
+            )
+            .filter(total_value__gt=0)
+            .order_by("-total_value")[:5]
+        )
+
+        top_clients = (
+            User.objects.filter(role=User.Roles.CLIENT)
+            .annotate(
+                total_value=Sum("batches__total_amount", filter=Q(batches__transaction_type="SELL")),
+            )
+            .filter(total_value__gt=0)
+            .order_by("-total_value")[:5]
+        )
+
+        context = {
+            "total_sales": total_sales,
+            "total_purchases": total_purchases,
+            "total_expenses": total_expenses,
+            "net_profit": net_profit,
+            "total_batches": total_batches,
+            "pending_payments": pending_payments,
+            "amount_owe_vendors": amount_owe_vendors,
+            "clients_owe_me": clients_owe_me,
+            "recent_batches": recent_batches,
+            "settled_batches": total_batches - pending_payments, 
+            "recent_transactions": recent_transactions,
+            "top_vendors": top_vendors,
+            "top_clients": top_clients,
+            "today": today,
+            "thirty_days_ago": thirty_days_ago,
+        }
+        return render(request, self.template_name, context)
+    
+
+class StaffDashboardView(LoginRequiredMixin, StaffRequiredMixin, View):
+    """
+    Staff operational dashboard.
+    Focus on batches, weights, expenses — no sensitive financial balances.
+    """
+    template_name = "account/staff_dashboard.html"
+
+    def get(self, request):
+        today = timezone.now().date()
+        seven_days_ago = today - timedelta(days=7)
+        thirty_days_ago = today - timedelta(days=30)
+
+        # Recent batches
+        recent_batches = (
+            Batch.objects.select_related("product", "user")
+            .order_by("-transaction_date", "-created_at")[:15]
+        )
+
+        # Batches needing dry weight (purchases not yet dried)
+        pending_dry_weight = (
+            Batch.objects.filter(
+                transaction_type=Batch.TransactionType.BUY,
+                dry_weight__isnull=True
+            )
+            .select_related("product", "user")
+            .order_by("-transaction_date")[:10]
+        )
+
+        # Operational counts
+        total_batches = Batch.objects.count()
+        batches_this_week = Batch.objects.filter(transaction_date__gte=seven_days_ago).count()
+
+        # Weight metrics
+        total_weight = (
+            Batch.objects.aggregate(total=Sum("weight"))["total"] or Decimal("0.00")
+        )
+        total_dry_weight = (
+            Batch.objects.aggregate(total=Sum("dry_weight"))["total"] or Decimal("0.00")
+        )
+
+        # Expense summary (last 30 days)
+        recent_expenses_total = (
+            Expense.objects.filter(expense_date__gte=thirty_days_ago)
+            .aggregate(total=Sum("amount"))["total"] or Decimal("0.00")
+        )
+
+        # Payment status counts
+        payment_status_counts = {
+            "full": Batch.objects.filter(
+                payment_status=Batch.PaymentStatus.FULL_PAYMENT
+            ).count(),
+            "partial": Batch.objects.filter(
+                payment_status=Batch.PaymentStatus.PARTIAL_PAYMENT
+            ).count(),
+            "none": Batch.objects.filter(
+                payment_status=Batch.PaymentStatus.NO_PAYMENT
+            ).count(),
+        }
+
+        # Recent expenses
+        recent_expenses = (
+            Expense.objects.select_related("batch")
+            .order_by("-expense_date", "-created_at")[:10]
+        )
+
+        context = {
+            "recent_batches": recent_batches,
+            "pending_dry_weight": pending_dry_weight,
+            "total_batches": total_batches,
+            "batches_this_week": batches_this_week,
+            "total_weight": total_weight,
+            "total_dry_weight": total_dry_weight,
+            "recent_expenses_total": recent_expenses_total,
+            "payment_status_counts": payment_status_counts,
+            "recent_expenses": recent_expenses,
+            "today": today,
+        }
+        return render(request, self.template_name, context)    

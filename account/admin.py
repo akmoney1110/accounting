@@ -114,9 +114,12 @@ class UserAdmin(BaseUserAdmin):
     inlines = [UserProductRateInline, LedgerInline]
 
     @admin.display(description='Role', ordering='role')
+    @admin.display(description='Role', ordering='role')
     def role_badge(self, obj):
         role_map = {
             'ADMIN': ('#f3e8ff', '#6b21a8'),
+            'MANAGER': ('#ffedd5', '#9a3412'),   # orange
+            'STAFF': ('#e0e7ff', '#3730a3'),      # indigo
             'VENDOR': ('#dbeafe', '#1e40af'),
             'CLIENT': ('#d1fae5', '#065f46'),
         }
@@ -125,7 +128,6 @@ class UserAdmin(BaseUserAdmin):
             '<span style="background-color: {}; color: {}; padding: 3px 8px; border-radius: 6px; font-weight: 600; font-size: 11px;">{}</span>',
             bg, color, obj.get_role_display()
         )
-
     @admin.display(description='Credit Limit', ordering='credit_limit')
     def credit_limit_formatted(self, obj):
         val = obj.credit_limit or Decimal('0.00')
@@ -160,6 +162,7 @@ class BatchAdmin(admin.ModelAdmin):
         'transaction_type_badge', 
         'user', 
         'product', 
+        'created_by',
         'dry_weight_formatted',
         'moisture_loss_formatted',
         'weight_formatted', 
@@ -200,6 +203,7 @@ class BatchAdmin(admin.ModelAdmin):
         'payment_status',
         'balance_due_formatted', 
         'payment_status_badge',
+        'created_by',
         'created_at',
     )
     
@@ -333,7 +337,8 @@ class TransactionAdmin(admin.ModelAdmin):
         'batch', 
         'transaction_type', 
         'payment_method', 
-        'amount_formatted', 
+        'amount_formatted',
+        'created_by',  
         'unallocated_amount',
         'is_fully_allocated_badge',
         'transaction_date'
@@ -384,7 +389,7 @@ class PaymentAllocationAdmin(admin.ModelAdmin):
 
 @admin.register(Expense)
 class ExpenseAdmin(admin.ModelAdmin):
-    list_display = ('batch', 'category', 'title', 'amount_formatted', 'expense_date')
+    list_display = ('batch', 'category', 'title', 'amount_formatted', 'expense_date', 'created_by')
     list_filter = ('category', 'expense_date')
     search_fields = ('batch__batch_code', 'notes', 'title')
     autocomplete_fields = ['batch']

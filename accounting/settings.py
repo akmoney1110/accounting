@@ -92,11 +92,22 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-
+# For local development ONLY — set to True in production behind HTTPS
+CSRF_COOKIE_SECURE = False
+SESSION_COOKIE_SECURE = False
 # Allow requests from your React frontend
+# For API calls from your frontend
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
+]
+
+# For CSRF to work when frontend POSTs to backend
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://localhost:8000",      # your Django server
+    "http://127.0.0.1:8000",
 ]
 
 ROOT_URLCONF = 'accounting.urls'

@@ -21,6 +21,16 @@
                 <div>
                     <div class="flex flex-wrap items-center gap-2 mb-1">
                         <h1 class="text-2xl font-bold" style="color: #4E342E;">Batch {{ batch.batch_code }}</h1>
+                        <div class="flex items-center gap-2 text-xs text-[#8D6E63] mt-1">
+    <i class="fas fa-user-circle"></i>
+    Registered by: 
+    {% if batch.created_by %}
+        <span class="font-medium text-[#4E342E]">{{ batch.created_by.username }}</span>
+        <span class="text-[#A1887F]">({{ batch.created_by.get_role_display }})</span>
+    {% else %}
+        <span class="text-[#A1887F]">Unknown</span>
+    {% endif %}
+</div>
                         {% if batch.transaction_type == 'BUY' %}
                         <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide border" style="background-color: #FDF6E3; color: #8B6914; border-color: #E8D5A3;">
                             <i class="fas fa-arrow-down text-[10px]"></i> You Bought This
@@ -506,6 +516,7 @@
                             <th class="px-5 py-3 text-right font-semibold">Amount</th>
                             <th class="px-5 py-3 text-center font-semibold">Day</th>
                             <th class="px-5 py-3 text-left font-semibold">Receipt</th>
+                            <th class="px-5 py-3">Recorded By</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y" style="border-color: #F5EFE6;">
@@ -531,6 +542,13 @@
                             <td class="px-5 py-4 text-right font-mono font-bold" style="color: #4E342E;">₦{{ expense.amount|default:"0.00" }}</td>
                             <td class="px-5 py-4 text-center text-xs" style="color: #8D6E63;">{{ expense.expense_date|date:"M d, Y" }}</td>
                             <td class="px-5 py-4 text-xs font-mono" style="color: #8D6E63;">{{ expense.receipt_reference|default:"—" }}</td>
+                            <td class="px-5 py-3 text-[#8D6E63] text-xs">
+    {% if expense.created_by %}
+        {{ expense.created_by.username }}
+    {% else %}
+        —
+    {% endif %}
+</td>
                         </tr>
                         {% empty %}
                         <tr>
@@ -590,6 +608,7 @@
                         <th class="px-5 py-3 text-right font-semibold">Amount</th>
                         <th class="px-5 py-3 text-left font-semibold">Note</th>
                         <th class="px-5 py-3 text-center font-semibold">Day</th>
+                        <th class="px-5 py-3">Recorded By</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y" style="border-color: #F5EFE6;">
@@ -618,6 +637,13 @@
                         <td class="px-5 py-4 text-right font-mono font-bold" style="color: #4E342E;">₦{{ tx.amount|default:"0.00" }}</td>
                         <td class="px-5 py-4 text-xs max-w-xs truncate" style="color: #6D4C41;">{{ tx.notes|default:"—" }}</td>
                         <td class="px-5 py-4 text-center text-xs" style="color: #8D6E63;">{{ tx.transaction_date|date:"M d, Y" }}</td>
+                        <td class="px-5 py-3 text-[#8D6E63] text-xs">
+    {% if txn.created_by %}
+        {{ txn.created_by.username }}
+    {% else %}
+        —
+    {% endif %}
+</td>
                     </tr>
                     {% empty %}
                     <tr>

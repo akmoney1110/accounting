@@ -176,6 +176,55 @@
                         <i class="fas fa-user-plus w-5 text-center"></i> Add Partner
                     </a>
 
+                {% elif request.user.role == 'MANAGER' %}
+                    <a href="{% url 'manager_dashboard' %}" class="sidebar-link {% if request.resolver_match.url_name == 'manager_dashboard' %}active{% endif %} flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-[#D7CCC8]">
+                        <i class="fas fa-chart-line w-5 text-center"></i> Dashboard
+                    </a>
+                    <a href="{% url 'batch_create' %}" class="sidebar-link {% if request.resolver_match.url_name == 'batch_create' %}active{% endif %} flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-[#D7CCC8]">
+                        <i class="fas fa-plus-circle w-5 text-center"></i> New Batch
+                    </a>
+                    <a href="{% url 'batch_list' %}" class="sidebar-link {% if request.resolver_match.url_name == 'batch_list' %}active{% endif %} flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-[#D7CCC8]">
+                        <i class="fas fa-list w-5 text-center"></i> View All Batches
+                    </a>
+                    <a href="{% url 'transaction_add' %}" class="sidebar-link {% if request.resolver_match.url_name == 'transaction_add' %}active{% endif %} flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-[#D7CCC8]">
+                        <i class="fas fa-money-bill-transfer w-5 text-center"></i> Record Payment
+                    </a>
+                    <a href="{% url 'payment_list' %}" class="sidebar-link {% if request.resolver_match.url_name == 'payment_list' or request.resolver_match.url_name == 'payment_detail' %}active{% endif %} flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-[#D7CCC8]">
+                        <i class="fas fa-money-bill-wave w-5 text-center"></i> All Payments
+                    </a>
+                    <a href="{% url 'expense_create' %}" class="sidebar-link {% if request.resolver_match.url_name == 'expense_create' %}active{% endif %} flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-[#D7CCC8]">
+                        <i class="fas fa-receipt w-5 text-center"></i> Record Expense
+                    </a>
+                    <a href="{% url 'expense_list' %}" class="sidebar-link {% if request.resolver_match.url_name == 'expense_list' or request.resolver_match.url_name == 'expense_edit' %}active{% endif %} flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-[#D7CCC8]">
+                        <i class="fas fa-file-invoice-dollar w-5 text-center"></i> Expenses
+                    </a>
+
+                    <div class="pt-4 pb-2 px-4 text-xs font-bold text-[#8D7B6B] uppercase tracking-wider">Directory</div>
+
+                    <a href="{% url 'user_list' %}" class="sidebar-link {% if request.resolver_match.url_name == 'user_list' %}active{% endif %} flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-[#D7CCC8]">
+                        <i class="fas fa-users w-5 text-center"></i> Partners & Rates
+                    </a>
+                    <a href="{% url 'product_list' %}" class="sidebar-link {% if request.resolver_match.url_name == 'product_list' or request.resolver_match.url_name == 'product_create' or request.resolver_match.url_name == 'product_edit' %}active{% endif %} flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-[#D7CCC8]">
+                        <i class="fas fa-boxes w-5 text-center"></i> Products
+                    </a>
+
+                {% elif request.user.role == 'STAFF' %}
+                    <a href="{% url 'staff_dashboard' %}" class="sidebar-link {% if request.resolver_match.url_name == 'staff_dashboard' %}active{% endif %} flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-[#D7CCC8]">
+                        <i class="fas fa-chart-line w-5 text-center"></i> Dashboard
+                    </a>
+                    <a href="{% url 'batch_create' %}" class="sidebar-link {% if request.resolver_match.url_name == 'batch_create' %}active{% endif %} flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-[#D7CCC8]">
+                        <i class="fas fa-plus-circle w-5 text-center"></i> New Batch
+                    </a>
+                    <a href="{% url 'batch_list' %}" class="sidebar-link {% if request.resolver_match.url_name == 'batch_list' %}active{% endif %} flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-[#D7CCC8]">
+                        <i class="fas fa-list w-5 text-center"></i> View All Batches
+                    </a>
+                    <a href="{% url 'expense_create' %}" class="sidebar-link {% if request.resolver_match.url_name == 'expense_create' %}active{% endif %} flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-[#D7CCC8]">
+                        <i class="fas fa-receipt w-5 text-center"></i> Record Expense
+                    </a>
+                    <a href="{% url 'expense_list' %}" class="sidebar-link {% if request.resolver_match.url_name == 'expense_list' or request.resolver_match.url_name == 'expense_edit' %}active{% endif %} flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-[#D7CCC8]">
+                        <i class="fas fa-file-invoice-dollar w-5 text-center"></i> Expenses
+                    </a>
+
                 {% elif request.user.role == 'VENDOR' %}
                     <a href="{% url 'vendor_portal' %}" class="sidebar-link {% if request.resolver_match.url_name == 'vendor_portal' %}active{% endif %} flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-[#D7CCC8]">
                         <i class="fas fa-warehouse w-5 text-center"></i> My Portal
@@ -277,6 +326,7 @@
     </div>
 
     <!-- Floating Calculator Trigger Button -->
+    <!-- Floating Calculator Trigger Button -->
     <button id="calcToggleBtn" type="button" onclick="toggleCalculator()"
             style="position: fixed; bottom: 24px; right: 24px; z-index: 9999;"
             class="p-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full shadow-2xl transition-transform transform hover:scale-110 focus:outline-none flex items-center justify-center cursor-pointer border-2 border-white">
@@ -288,18 +338,20 @@
 
     <!-- Draggable Calculator Widget -->
     <div id="calcModal" 
-         style="position: fixed; bottom: 90px; right: 24px; z-index: 9999; display: none; width: 340px;"
+         style="position: fixed; bottom: 90px; right: 24px; z-index: 9999; display: none; width: 360px;"
          class="bg-slate-900 rounded-2xl shadow-2xl border border-slate-700 overflow-hidden font-sans text-slate-100 select-none">
       
         <!-- Header -->
         <div id="calcHeader" class="bg-slate-800 px-4 py-3 flex justify-between items-center cursor-move border-b border-slate-700 active:bg-slate-700/80">
-            <div class="flex items-center gap-2">
-                <svg class="w-4 h-4 text-slate-400" fill="currentColor" viewBox="0 0 20 20">
+            <div class="flex items-center gap-1.5">
+                <svg class="w-4 h-4 text-slate-400 shrink-0" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M7 2a2 2 0 10.001 4.001A2 2 0 007 2zm0 6a2 2 0 10.001 4.001A2 2 0 007 8zm0 6a2 2 0 10.001 4.001A2 2 0 007 14zm6-12a2 2 0 10.001 4.001A2 2 0 0013 2zm0 6a2 2 0 10.001 4.001A2 2 0 0013 8zm0 6a2 2 0 10.001 4.001A2 2 0 0013 14z"/>
                 </svg>
-                <div class="flex gap-2 text-xs font-bold uppercase tracking-wider">
-                    <button id="tabCalcBtn" onclick="switchCalcTab('calc')" class="text-indigo-400 border-b-2 border-indigo-400 pb-0.5">Basic Calc</button>
-                    <button id="tabKgBtn" onclick="switchCalcTab('kg')" class="text-slate-400 hover:text-white pb-0.5">Kg / Bag Unit</button>
+                <!-- Header Tabs -->
+                <div class="flex gap-2 text-[11px] font-bold uppercase tracking-wider">
+                    <button id="tabCalcBtn" onclick="switchCalcTab('calc')" class="text-indigo-400 border-b-2 border-indigo-400 pb-0.5">Basic</button>
+                    <button id="tabKgBtn" onclick="switchCalcTab('kg')" class="text-slate-400 hover:text-white pb-0.5">Kg/Bag</button>
+                    <button id="tabRateBtn" onclick="switchCalcTab('rate')" class="text-slate-400 hover:text-white pb-0.5">Dry Rate</button>
                 </div>
             </div>
             <button onclick="toggleCalculator()" class="text-slate-400 hover:text-white text-xl font-bold leading-none p-1 hover:bg-slate-700 rounded">&times;</button>
@@ -367,6 +419,47 @@
                 </div>
             </div>
         </div>
+
+        <!-- Dry Rate Adjuster Tab (NEW) -->
+        <div id="tabRate" class="p-4 space-y-3" style="display: none;">
+            <div class="grid grid-cols-2 gap-2">
+                <div>
+                    <label class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Wet Wt (kg)</label>
+                    <input id="wetWeight" type="number" oninput="calculateDryRate()" placeholder="e.g. 1000" 
+                           class="w-full text-sm font-mono bg-slate-800 text-white px-2.5 py-1.5 rounded-lg border border-slate-700 focus:outline-none mt-1 font-bold" />
+                </div>
+                <div>
+                    <label class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Dry Wt (kg)</label>
+                    <input id="dryWeight" type="number" oninput="calculateDryRate()" placeholder="e.g. 900" 
+                           class="w-full text-sm font-mono bg-slate-800 text-white px-2.5 py-1.5 rounded-lg border border-slate-700 focus:outline-none mt-1 font-bold" />
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2">
+                <div>
+                    <label class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Wet Rate (/kg)</label>
+                    <input id="wetRate" type="number" oninput="calculateDryRate()" placeholder="e.g. 50" 
+                           class="w-full text-sm font-mono bg-slate-800 text-white px-2.5 py-1.5 rounded-lg border border-slate-700 focus:outline-none mt-1 font-bold" />
+                </div>
+                <div>
+                    <label class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Expenses</label>
+                    <input id="expenses" type="number" oninput="calculateDryRate()" placeholder="e.g. 2000" 
+                           class="w-full text-sm font-mono bg-slate-800 text-white px-2.5 py-1.5 rounded-lg border border-slate-700 focus:outline-none mt-1 font-bold" />
+                </div>
+            </div>
+
+            <!-- Calculated Output Card -->
+            <div class="pt-2 border-t border-slate-800 space-y-1.5 text-xs font-mono">
+                <div class="bg-black/60 p-2.5 rounded-lg border border-slate-700/80">
+                    <span class="text-slate-400 text-[10px] uppercase font-bold tracking-wider block">New Adjusted Dry Rate</span>
+                    <div id="newDryRate" class="text-2xl font-bold text-emerald-400 font-mono mt-0.5">0.00 /kg</div>
+                </div>
+                <div class="flex justify-between items-center bg-slate-800 p-2 rounded-lg border border-slate-700">
+                    <span class="text-slate-400">Moisture Loss:</span>
+                    <span id="weightLoss" class="font-bold text-amber-400 text-xs">0.00%</span>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Script Implementations -->
@@ -409,19 +502,32 @@
         function switchCalcTab(tab) {
             const calcTab = document.getElementById('tabCalc');
             const kgTab = document.getElementById('tabKg');
+            const rateTab = document.getElementById('tabRate');
+            
             const calcBtn = document.getElementById('tabCalcBtn');
             const kgBtn = document.getElementById('tabKgBtn');
+            const rateBtn = document.getElementById('tabRateBtn');
 
+            // Hide all tabs
+            calcTab.style.display = 'none';
+            kgTab.style.display = 'none';
+            rateTab.style.display = 'none';
+
+            // Reset tab styles
+            calcBtn.className = "text-slate-400 hover:text-white pb-0.5";
+            kgBtn.className = "text-slate-400 hover:text-white pb-0.5";
+            rateBtn.className = "text-slate-400 hover:text-white pb-0.5";
+
+            // Activate chosen tab
             if (tab === 'calc') {
                 calcTab.style.display = 'block';
-                kgTab.style.display = 'none';
                 calcBtn.className = "text-indigo-400 border-b-2 border-indigo-400 pb-0.5";
-                kgBtn.className = "text-slate-400 hover:text-white pb-0.5";
-            } else {
-                calcTab.style.display = 'none';
+            } else if (tab === 'kg') {
                 kgTab.style.display = 'block';
                 kgBtn.className = "text-indigo-400 border-b-2 border-indigo-400 pb-0.5";
-                calcBtn.className = "text-slate-400 hover:text-white pb-0.5";
+            } else if (tab === 'rate') {
+                rateTab.style.display = 'block';
+                rateBtn.className = "text-indigo-400 border-b-2 border-indigo-400 pb-0.5";
             }
         }
 
@@ -445,6 +551,29 @@
             document.getElementById('outputBags').value = (kg / bagSize).toFixed(2);
             document.getElementById('outputTons').innerText = (kg / 1000).toFixed(3) + ' MT';
             document.getElementById('outputLbs').innerText = (kg * 2.20462).toFixed(2) + ' lbs';
+        }
+
+        // New Dry Rate Calculation
+        function calculateDryRate() {
+            const wetKg = parseFloat(document.getElementById('wetWeight').value) || 0;
+            const dryKg = parseFloat(document.getElementById('dryWeight').value) || 0;
+            const wetRate = parseFloat(document.getElementById('wetRate').value) || 0;
+            const exp = parseFloat(document.getElementById('expenses').value) || 0;
+
+            if (dryKg > 0) {
+                const totalCost = (wetKg * wetRate) + exp;
+                const newRate = totalCost / dryKg;
+                document.getElementById('newDryRate').innerText = newRate.toFixed(2) + ' /kg';
+            } else {
+                document.getElementById('newDryRate').innerText = '0.00 /kg';
+            }
+
+            if (wetKg > 0 && dryKg > 0) {
+                const lossPercent = ((wetKg - dryKg) / wetKg) * 100;
+                document.getElementById('weightLoss').innerText = lossPercent.toFixed(2) + '%';
+            } else {
+                document.getElementById('weightLoss').innerText = '0.00%';
+            }
         }
 
         // Drag Handler
@@ -483,7 +612,6 @@
             }
         })();
     </script>
-
     {% block extra_js %}{% endblock %}
 </body>
 </html>
