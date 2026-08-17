@@ -107,6 +107,8 @@ CORS_ALLOWED_ORIGINS = [
 CSRF_TRUSTED_ORIGINS = [
     'https://dikubs.com',
     'https://www.dikubs.com',
+    'http://127.0.0.1:8000',
+    'http://localhost:8000',
     "http://127.0.0.1:8000",
     'http://69.62.71.166',
     'http://localhost:8000',

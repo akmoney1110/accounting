@@ -4,9 +4,14 @@ from django import forms
 from django.contrib.auth.forms import AuthenticationForm
 from django.core.exceptions import ValidationError
 from django.utils import timezone
-
+from django.db.models import Sum, Q, F
 from .models import User, Product, UserProductRate, Batch, Expense, Transaction
-
+from decimal import Decimal
+from django import forms
+from django.contrib.auth.forms import AuthenticationForm
+from django.core.exceptions import ValidationError
+from django.utils import timezone
+from django.forms import formset_factory, BaseFormSet, modelformset_factory
 
 # Utility class mixin for Tailwind UI styling
 TWIND_INPUT = (
@@ -406,32 +411,6 @@ class TransactionForm(BaseStyledForm):
 
 
 
-class TransctionForm(BaseStyledForm):
-    """Form to log payments and ledger entries."""
-    class Meta:
-        model = Transaction
-        fields = ['user', 'batch', 'transaction_type', 'payment_method', 'amount', 'reference_code', 'transaction_date', 'notes']
-        widgets = {
-            'user': forms.Select(),
-            'batch': forms.Select(),
-            'transaction_type': forms.Select(),
-            'payment_method': forms.Select(),
-            'amount': forms.NumberInput(attrs={'placeholder': '0.00', 'step': '0.01'}),
-            'reference_code': forms.TextInput(attrs={'placeholder': 'Bank Ref / Cheque # / Receipt'}),
-            'transaction_date': forms.DateInput(attrs={'type': 'date'}),
-            'notes': forms.Textarea(attrs={'rows': 2, 'placeholder': 'Payment terms or partial payment notes'}),
-        }
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['batch'].required = False
-        self.fields['user'].queryset = User.objects.filter(
-    is_active=True,
-    role__in=[User.Roles.VENDOR, User.Roles.CLIENT]
-)
-        if not self.instance.pk and 'transaction_date' in self.fields:
-            self.fields['transaction_date'].initial = timezone.now().date()
-
 
 class UserProductRateForm(BaseStyledForm):
     """Form to assign buying/selling rates per product for Vendors and Clients."""
@@ -476,63 +455,6 @@ class ExpenseForm(BaseStyledForm):
         if not self.instance.pk and 'expense_date' in self.fields:
             self.fields['expense_date'].initial = timezone.now().date()
 
-class TransactionForm(BaseStyledForm):
-    """Form to log payments and ledger entries."""
-    class Meta:
-        model = Transaction
-        fields = [
-            'user', 'batch', 'transaction_type', 'payment_method',
-            'amount', 'reference_code', 'transaction_date', 'notes'
-        ]
-        widgets = {
-            'user': forms.Select(),
-            'batch': forms.Select(),
-            'transaction_type': forms.Select(attrs={
-                'class': 'font-semibold'
-            }),
-            'payment_method': forms.Select(attrs={
-                'class': 'font-semibold'
-            }),
-            'amount': forms.NumberInput(attrs={
-                'placeholder': '0.00', 
-                'step': '0.01',
-                'min': '0.01'
-            }),
-            'reference_code': forms.TextInput(attrs={
-                'placeholder': 'Bank Ref / Cheque #'
-            }),
-            'transaction_date': forms.DateInput(attrs={'type': 'date'}),
-            'notes': forms.Textarea(attrs={
-                'rows': 2, 
-                'placeholder': 'Payment terms or partial payment notes'
-            }),
-        }
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['batch'].required = False
-        self.fields['notes'].required = False
-        self.fields['reference_code'].required = False
-        
-        # Defaults for new records
-        if not self.instance.pk:
-            if not self.initial.get('transaction_type'):
-                self.fields['transaction_type'].initial = 'DISBURSEMENT'
-            if not self.initial.get('payment_method'):
-                self.fields['payment_method'].initial = 'BANK_TRANSFER'
-            if 'transaction_date' in self.fields:
-                self.fields['transaction_date'].initial = timezone.now().date()
-
-        self.fields['user'].queryset = User.objects.filter(
-    is_active=True,
-    role__in=[User.Roles.VENDOR, User.Roles.CLIENT]
-)
-
-    def clean_amount(self):
-        amount = self.cleaned_data.get('amount')
-        if amount is None or amount <= Decimal('0.00'):
-            raise ValidationError("Amount must be greater than zero.")
-        return amount
 class PaymentAllocationForm(BaseStyledForm):
     """Form to allocate an existing unallocated payment to a batch."""
     class Meta:
@@ -647,72 +569,6 @@ class ProductForm(BaseStyledForm):
 
 
 
-class UserCreateForm(BaseStyledForm):
-    """Form to create a new user (Vendor, Client, or Admin)."""
-    password = forms.CharField(
-        widget=forms.PasswordInput(attrs={
-            'placeholder': 'Set a password',
-            'class': 'w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm transition-all'
-        }),
-        help_text="User go use this password to login."
-    )
-    confirm_password = forms.CharField(
-        widget=forms.PasswordInput(attrs={
-            'placeholder': 'Type password again',
-            'class': 'w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm transition-all'
-        }),
-        help_text="Type the same password to confirm."
-    )
-
-    class Meta:
-        model = User
-        fields = [
-            'username', 'first_name', 'last_name', 'email',
-            'role', 'phone', 'address', 'credit_limit'
-        ]
-        widgets = {
-            'username': forms.TextInput(attrs={'placeholder': 'e.g. farmer_john, buyer_mike'}),
-            'first_name': forms.TextInput(attrs={'placeholder': 'First name'}),
-            'last_name': forms.TextInput(attrs={'placeholder': 'Last name'}),
-            'email': forms.EmailInput(attrs={'placeholder': 'email@example.com'}),
-            'phone': forms.TextInput(attrs={'placeholder': '+234 800 000 0000'}),
-            'address': forms.Textarea(attrs={'rows': 2, 'placeholder': 'Village, Town, or Business address'}),
-            'credit_limit': forms.NumberInput(attrs={'placeholder': '0.00', 'step': '0.01'}),
-        }
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['email'].required = False
-        self.fields['first_name'].required = False
-        self.fields['last_name'].required = False
-        self.fields['phone'].required = False
-        self.fields['address'].required = False
-        self.fields['credit_limit'].required = False
-        # Hide credit limit by default unless client selected
-        self.fields['credit_limit'].widget.attrs['id'] = 'id_credit_limit'
-
-    def clean(self):
-        cleaned_data = super().clean()
-        password = cleaned_data.get('password')
-        confirm = cleaned_data.get('confirm_password')
-
-        if password and confirm and password != confirm:
-            self.add_error('confirm_password', "Passwords no match. Type the same thing twice.")
-
-        # Only clients get credit limit
-        role = cleaned_data.get('role')
-        if role != User.Roles.CLIENT:
-            cleaned_data['credit_limit'] = Decimal('0.00')
-
-        return cleaned_data
-
-    def save(self, commit=True):
-        user = super().save(commit=False)
-        user.set_password(self.cleaned_data['password'])
-        if commit:
-            user.save()
-        return user
-    
 
 
 from django.forms import formset_factory, BaseFormSet

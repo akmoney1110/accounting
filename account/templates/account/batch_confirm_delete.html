@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block title %}Delete Batch {{ batch.batch_code }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-xl-5">
+
+            <div class="card border-0 shadow-lg">
+                <!-- Warning Header -->
+                <div class="card-header bg-danger text-white text-center py-4">
+                    <i class="bi bi-exclamation-triangle-fill display-4 mb-2 d-block"></i>
+                    <h3 class="mb-0">Delete Batch?</h3>
+                    <p class="mb-0 mt-2 opacity-75">This action cannot be undone.</p>
+                </div>
+
+                <div class="card-body p-4 p-md-5">
+
+                    <!-- Batch Identity -->
+                    <div class="text-center mb-4">
+                        <span class="badge bg-{% if batch.transaction_type == 'BUY' %}primary{% else %}success{% endif %} fs-6 mb-2">
+                            {{ batch.get_transaction_type_display }}
+                        </span>
+                        <h4 class="font-monospace text-primary mb-1">{{ batch.batch_code }}</h4>
+                        <p class="text-muted mb-0">{{ batch.product.name }} &middot; {{ batch.weight }} {{ batch.product.unit }}</p>
+                    </div>
+
+                    <!-- Impact Summary -->
+                    <div class="alert alert-light border mb-4">
+                        <h6 class="fw-bold text-dark mb-3">
+                            <i class="bi bi-info-circle me-2"></i>What will happen:
+                        </h6>
+                        <ul class="list-unstyled mb-0">
+                            <li class="d-flex align-items-start mb-2">
+                                <i class="bi bi-check-circle-fill text-success me-2 mt-1"></i>
+                                <span>The batch record <strong>{{ batch.batch_code }}</strong> will be permanently removed.</span>
+                            </li>
+                            <li class="d-flex align-items-start mb-2">
+                                <i class="bi bi-check-circle-fill text-success me-2 mt-1"></i>
+                                <span><strong>{{ expense_count }}</strong> linked expense{{ expense_count|pluralize }} will be deleted.</span>
+                            </li>
+                            <li class="d-flex align-items-start mb-2">
+                                <i class="bi bi-check-circle-fill text-success me-2 mt-1"></i>
+                                <span><strong>{{ allocation_count }}</strong> payment allocation{{ allocation_count|pluralize }} will be freed.</span>
+                            </li>
+                            <li class="d-flex align-items-start mb-2">
+                                <i class="bi bi-shield-check text-primary me-2 mt-1"></i>
+                                <span><strong>{{ transaction_count }}</strong> transaction{{ transaction_count|pluralize }} will be <strong>preserved</strong> as unallocated credit.</span>
+                            </li>
+                            <li class="d-flex align-items-start">
+                                <i class="bi bi-arrow-repeat text-info me-2 mt-1"></i>
+                                <span>Freed credit will be <strong>auto-allocated</strong> to other outstanding batches.</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Financial Summary -->
+                    <div class="row g-2 mb-4">
+                        <div class="col-6">
+                            <div class="p-3 rounded bg-light text-center">
+                                <div class="text-muted small">Total Amount</div>
+                                <div class="fw-bold fs-5">N{{ batch.total_amount|floatformat:2 }}</div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-3 rounded bg-light text-center">
+                                <div class="text-muted small">Amount Paid</div>
+                                <div class="fw-bold fs-5 text-{% if batch.amount_paid >= batch.total_amount %}success{% else %}warning{% endif %}">
+                                    N{{ batch.amount_paid|floatformat:2 }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-3 rounded bg-light text-center">
+                                <div class="text-muted small">Balance Due</div>
+                                <div class="fw-bold fs-5 text-{% if batch.balance_due > 0 %}danger{% else %}success{% endif %}">
+                                    N{{ batch.balance_due|floatformat:2 }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-3 rounded bg-light text-center">
+                                <div class="text-muted small">Expenses</div>
+                                <div class="fw-bold fs-5">N{{ batch.total_batch_expenses|floatformat:2 }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- User Info -->
+                    <div class="d-flex align-items-center p-3 rounded bg-light mb-4">
+                        <div class="flex-shrink-0">
+                            <div class="rounded-circle bg-{% if batch.user.role == 'VENDOR' %}primary{% else %}success{% endif %} text-white d-flex align-items-center justify-content-center" style="width:48px;height:48px;font-weight:bold;font-size:1.2rem;">
+                                {{ batch.user.username|first|upper }}
+                            </div>
+                        </div>
+                        <div class="ms-3">
+                            <div class="fw-bold">{{ batch.user.username }}</div>
+                            <div class="text-muted small">{{ batch.user.get_role_display }} &middot; {{ batch.user.phone|default:"No phone" }}</div>
+                        </div>
+                    </div>
+
+                    <!-- Confirmation Form -->
+                    <form method="post">
+                        {% csrf_token %}
+
+                        <div class="form-check mb-4 p-3 rounded border border-danger bg-danger bg-opacity-10">
+                            <input class="form-check-input" type="checkbox" id="confirmDelete" required>
+                            <label class="form-check-label fw-semibold text-danger" for="confirmDelete">
+                                I understand this will permanently delete batch {{ batch.batch_code }} and all linked expenses.
+                            </label>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                            <a href="{% url 'batch_detail' batch.pk %}" class="btn btn-outline-secondary btn-lg px-4">
+                                <i class="bi bi-x-lg me-2"></i>Cancel — Keep Batch
+                            </a>
+                            <button type="submit" class="btn btn-danger btn-lg px-4" id="deleteBtn" disabled>
+                                <i class="bi bi-trash3-fill me-2"></i>Yes, Delete Batch
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    // Enable delete button only when checkbox is checked
+    document.getElementById('confirmDelete').addEventListener('change', function() {
+        document.getElementById('deleteBtn').disabled = !this.checked;
+    });
+</script>
+{% endblock %}
