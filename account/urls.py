@@ -43,7 +43,7 @@ from .views import (
 
 urlpatterns = [
     # Authentication
-    path('account/login/', LoginView.as_view(), name='login'),
+    path('accounts/login/', LoginView.as_view(), name='login'),
     path(
         'staff/<int:pk>/toggle-status/',
         StaffToggleStatusView.as_view(),
