@@ -1116,51 +1116,159 @@ class DeleteExpenseView(LoginRequiredMixin, AdminRequiredMixin, View):
 # ============================================================
 # 11. RECORD TRANSACTION
 # ============================================================
-class RecordTransactionView(LoginRequiredMixin, AdminRequiredMixin, View):
+class RecordTransactionView(LoginRequiredMixin, ManagerRequiredMixin, View):
     template_name = "account/transaction_add.html"
 
     def get(self, request):
-        form = TransactionForm()
-        return render(request, self.template_name, {"form": form})
+        form = TransactionForm(
+            request_user=request.user
+        )
+
+        return render(
+            request,
+            self.template_name,
+            {"form": form}
+        )
 
     def post(self, request):
-        form = TransactionForm(request.POST)
+        form = TransactionForm(
+            request.POST,
+            request_user=request.user
+        )
+
         if not form.is_valid():
-            return render(request, self.template_name, {"form": form})
+            return render(
+                request,
+                self.template_name,
+                {"form": form}
+            )
+
+        # ==========================================================
+        # EXTRA SERVER-SIDE SECURITY CHECK
+        #
+        # Managers can ONLY record:
+        #
+        #     Vendor → DISBURSEMENT
+        #
+        # They cannot record:
+        #
+        #     Client → RECEIPT
+        #
+        # This is intentionally checked again here even though the
+        # TransactionForm already validates it.
+        # ==========================================================
+
+        if request.user.role == User.Roles.MANAGER:
+
+            transaction_type = form.cleaned_data.get(
+                "transaction_type"
+            )
+
+            partner = form.cleaned_data.get("user")
+
+            if transaction_type != Transaction.TransactionType.DISBURSEMENT:
+                messages.error(
+                    request,
+                    "Managers can only record payments made to vendors."
+                )
+                return render(
+                    request,
+                    self.template_name,
+                    {"form": form}
+                )
+
+            if not partner or partner.role != User.Roles.VENDOR:
+                messages.error(
+                    request,
+                    "Managers can only record payments for vendors."
+                )
+                return render(
+                    request,
+                    self.template_name,
+                    {"form": form}
+                )
+
+        # ==========================================================
+        # SAVE TRANSACTION
+        #
+        # Existing behavior preserved.
+        # ==========================================================
 
         with db_transaction.atomic():
-            transaction = form.save(commit=False)
+
+            transaction = form.save(
+                commit=False
+            )
+
             transaction.created_by = request.user
+
             transaction.save()
+
             # Signal auto-allocates to outstanding batches automatically
 
-        txn_ref = transaction.reference_code or f"#{transaction.pk}"
-        allocations = transaction.allocations.select_related('batch')
-        total_allocated = allocations.aggregate(t=Sum('amount'))['t'] or Decimal('0.00')
+        # ==========================================================
+        # TRANSACTION RESULT
+        # ==========================================================
+
+        txn_ref = (
+            transaction.reference_code
+            or f"#{transaction.pk}"
+        )
+
+        allocations = transaction.allocations.select_related(
+            'batch'
+        )
+
+        total_allocated = (
+            allocations.aggregate(
+                t=Sum('amount')
+            )['t']
+            or Decimal('0.00')
+        )
+
         remaining = transaction.unallocated_amount
 
-        paid_batches = [f"{a.batch.batch_code} (N{a.amount:,.2f})" for a in allocations]
+        paid_batches = [
+            f"{a.batch.batch_code} (N{a.amount:,.2f})"
+            for a in allocations
+        ]
+
+        # ==========================================================
+        # SUCCESS MESSAGE
+        # ==========================================================
 
         if paid_batches:
+
             if remaining > Decimal('0.00'):
+
                 msg = (
                     f"Transaction {txn_ref} recorded. "
                     f"Paid: {'; '.join(paid_batches)}. "
                     f"N{remaining:,.2f} remains as unallocated credit."
                 )
+
             else:
+
                 msg = (
                     f"Transaction {txn_ref} recorded. "
                     f"Fully allocated: {'; '.join(paid_batches)}."
                 )
+
         else:
+
             msg = (
                 f"Transaction {txn_ref} recorded as unallocated credit "
                 f"(N{transaction.amount:,.2f})."
             )
 
-        messages.success(request, msg)
-        return redirect("admin_dashboard")
+        messages.success(
+            request,
+            msg
+        )
+
+        return redirect(
+            "admin_dashboard"
+        )
 
 
 # ============================================================
@@ -1599,6 +1707,7 @@ class UserListView(LoginRequiredMixin, ManagerRequiredMixin, View):
 
             user_data.append({
                 'user': u,
+                'is_suspended': not u.is_active,
                 'ledger': ledger,
                 'balance': balance,
                 'batch_count': batch_count,
@@ -1664,7 +1773,233 @@ class UserListView(LoginRequiredMixin, ManagerRequiredMixin, View):
 # ============================================================
 # 17. STAFF DIRECTORY
 # ============================================================
+
+from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Count, Q
+from django.shortcuts import get_object_or_404, redirect, render
+from django.views import View
+
+from .models import User
+
+
+
 class StaffListView(LoginRequiredMixin, ManagerRequiredMixin, View):
+    template_name = "account/staff_list.html"
+
+    def get(self, request):
+        staff_qs = User.objects.filter(
+            role__in=[
+                User.Roles.ADMIN,
+                User.Roles.MANAGER,
+                User.Roles.STAFF,
+            ]
+        ).annotate(
+            batches_created_count=Count(
+                'batches_created',
+                distinct=True
+            ),
+            expenses_created_count=Count(
+                'expenses_created',
+                distinct=True
+            ),
+            transactions_created_count=Count(
+                'transactions_created',
+                distinct=True
+            ),
+        )
+
+        # -----------------------------------------
+        # SEARCH
+        # -----------------------------------------
+        search = request.GET.get('search', '').strip()
+
+        if search:
+            staff_qs = staff_qs.filter(
+                Q(username__icontains=search) |
+                Q(first_name__icontains=search) |
+                Q(last_name__icontains=search) |
+                Q(email__icontains=search)
+            )
+
+        # -----------------------------------------
+        # ROLE FILTER
+        # -----------------------------------------
+        role_filter = request.GET.get('role', '').strip()
+
+        valid_roles = [
+            User.Roles.ADMIN,
+            User.Roles.MANAGER,
+            User.Roles.STAFF,
+        ]
+
+        if role_filter in valid_roles:
+            staff_qs = staff_qs.filter(role=role_filter)
+
+        # -----------------------------------------
+        # STATUS FILTER
+        # -----------------------------------------
+        status_filter = request.GET.get('status', '').strip()
+
+        if status_filter == 'active':
+            staff_qs = staff_qs.filter(is_active=True)
+
+        elif status_filter == 'suspended':
+            staff_qs = staff_qs.filter(is_active=False)
+
+        # -----------------------------------------
+        # ORDER
+        # -----------------------------------------
+        staff_qs = staff_qs.order_by(
+            'role',
+            '-is_active',
+            'username'
+        )
+
+        # -----------------------------------------
+        # COUNTS
+        # -----------------------------------------
+        base_staff_qs = User.objects.filter(
+            role__in=[
+                User.Roles.ADMIN,
+                User.Roles.MANAGER,
+                User.Roles.STAFF,
+            ]
+        )
+
+        context = {
+            'staff_list': staff_qs,
+
+            # Current filtered result count
+            'total_staff': staff_qs.count(),
+
+            # Overall counts
+            'all_staff_count': base_staff_qs.count(),
+            'active_staff_count': base_staff_qs.filter(
+                is_active=True
+            ).count(),
+            'suspended_staff_count': base_staff_qs.filter(
+                is_active=False
+            ).count(),
+
+            # Role counts
+            'admin_count': base_staff_qs.filter(
+                role=User.Roles.ADMIN
+            ).count(),
+
+            'manager_count': base_staff_qs.filter(
+                role=User.Roles.MANAGER
+            ).count(),
+
+            'staff_count': base_staff_qs.filter(
+                role=User.Roles.STAFF
+            ).count(),
+
+            'selected_role': role_filter,
+            'selected_status': status_filter,
+            'search_query': search,
+
+            'role_choices': [
+                ('', 'All Staff'),
+                (User.Roles.ADMIN, 'Super Admins'),
+                (User.Roles.MANAGER, 'Managers'),
+                (User.Roles.STAFF, 'Operations Staff'),
+            ],
+
+            'status_choices': [
+                ('', 'All Statuses'),
+                ('active', 'Active'),
+                ('suspended', 'Suspended'),
+            ],
+        }
+
+        return render(
+            request,
+            self.template_name,
+            context
+        )
+
+
+class StaffToggleStatusView(
+    LoginRequiredMixin,
+    ManagerRequiredMixin,
+    View
+):
+    """
+    Suspend or reactivate a staff account.
+
+    Uses Django's built-in is_active field.
+
+    POST only.
+    """
+
+    def post(self, request, pk):
+        staff = get_object_or_404(
+            User,
+            pk=pk,
+            role__in=[
+                User.Roles.ADMIN,
+                User.Roles.MANAGER,
+                User.Roles.STAFF,
+            ]
+        )
+
+        # -----------------------------------------
+        # NEVER ALLOW A USER TO SUSPEND THEMSELVES
+        # -----------------------------------------
+        if staff.pk == request.user.pk:
+            messages.error(
+                request,
+                "You cannot suspend your own account."
+            )
+            return redirect('staff_list')
+
+        # -----------------------------------------
+        # PROTECT SUPERUSERS
+        # -----------------------------------------
+        if staff.is_superuser:
+            messages.error(
+                request,
+                "This account is a superuser and cannot be suspended here."
+            )
+            return redirect('staff_list')
+
+        # -----------------------------------------
+        # TOGGLE STATUS
+        # -----------------------------------------
+        if staff.is_active:
+            staff.is_active = False
+            staff.save(update_fields=['is_active'])
+
+            messages.success(
+                request,
+                f"{staff.get_full_name() or staff.username} has been suspended."
+            )
+
+        else:
+            staff.is_active = True
+            staff.save(update_fields=['is_active'])
+
+            messages.success(
+                request,
+                f"{staff.get_full_name() or staff.username} has been reactivated."
+            )
+
+        return redirect('staff_list')
+
+
+
+
+
+
+
+
+
+
+
+
+
+class StaffLstView(LoginRequiredMixin, ManagerRequiredMixin, View):
     template_name = "account/staff_list.html"
 
     def get(self, request):
@@ -1714,43 +2049,112 @@ class StaffListView(LoginRequiredMixin, ManagerRequiredMixin, View):
 # ============================================================
 # 18. USER CREATION
 # ============================================================
-class UserCreateView(LoginRequiredMixin, AdminRequiredMixin, View):
+class UserCreateView(LoginRequiredMixin, ManagerRequiredMixin, View):
     template_name = "account/user_form.html"
 
     def get(self, request):
-        user_form = UserCreateForm()
-        product_formset = AssignProductFormSet(prefix='products')
-        return render(request, self.template_name, {
-            'form': user_form,
-            'product_formset': product_formset,
-        })
+        user_form = UserCreateForm(
+            request_user=request.user
+        )
+
+        product_formset = AssignProductFormSet(
+            prefix='products'
+        )
+
+        return render(
+            request,
+            self.template_name,
+            {
+                'form': user_form,
+                'product_formset': product_formset,
+            }
+        )
 
     def post(self, request):
-        user_form = UserCreateForm(request.POST)
-        product_formset = AssignProductFormSet(request.POST, prefix='products')
+        user_form = UserCreateForm(
+            request.POST,
+            request_user=request.user
+        )
+
+        product_formset = AssignProductFormSet(
+            request.POST,
+            prefix='products'
+        )
 
         if user_form.is_valid() and product_formset.is_valid():
+
+            # ======================================================
+            # EXTRA SERVER-SIDE SECURITY
+            # ======================================================
+
+            requested_role = user_form.cleaned_data.get('role')
+
+            if request.user.role == User.Roles.MANAGER:
+
+                if requested_role not in [
+                    User.Roles.VENDOR,
+                    User.Roles.CLIENT,
+                ]:
+                    messages.error(
+                        request,
+                        "Managers can only create Vendors and Clients."
+                    )
+
+                    return render(
+                        request,
+                        self.template_name,
+                        {
+                            'form': user_form,
+                            'product_formset': product_formset,
+                        }
+                    )
+
+            # ======================================================
+            # CREATE USER
+            # ======================================================
+
             user = user_form.save()
 
+            # ======================================================
+            # ASSIGN PRODUCTS
+            # ======================================================
+
             for form in product_formset:
-                if form.cleaned_data and form.cleaned_data.get('product'):
+
+                if (
+                    form.cleaned_data
+                    and form.cleaned_data.get('product')
+                ):
                     UserProductRate.objects.create(
                         user=user,
                         product=form.cleaned_data['product'],
                         rate=form.cleaned_data['rate']
                     )
 
+            # ======================================================
+            # SUCCESS
+            # ======================================================
+
             messages.success(
                 request,
-                f"New {user.get_role_display()} '{user.username}' created successfully. "
+                f"New {user.get_role_display()} "
+                f"'{user.username}' created successfully. "
                 f"They can now login with the password you set."
             )
-            return redirect('user_profile', pk=user.pk)
 
-        return render(request, self.template_name, {
-            'form': user_form,
-            'product_formset': product_formset,
-        })
+            return redirect(
+                'user_profile',
+                pk=user.pk
+            )
+
+        return render(
+            request,
+            self.template_name,
+            {
+                'form': user_form,
+                'product_formset': product_formset,
+            }
+        )
 
 
 # ============================================================
@@ -1891,3 +2295,344 @@ class GetOutstandingBatchesView(LoginRequiredMixin, StaffRequiredMixin, View):
             'batches': batch_list,
             'total_due': str(total_due)
         })
+
+
+
+# ============================================================
+# STAFF DELETE
+# ============================================================
+class StaffDeleteView(LoginRequiredMixin, AdminRequiredMixin, View):
+    """Delete a staff member. Batches where they are the primary party block deletion.
+    Records they created (as created_by) are preserved with NULL author."""
+    template_name = "account/staff_confirm_delete.html"
+
+    def get(self, request, pk):
+        staff = get_object_or_404(
+            User.objects.filter(role__in=[
+                User.Roles.ADMIN, User.Roles.MANAGER, User.Roles.STAFF
+            ]),
+            pk=pk
+        )
+
+        if staff == request.user:
+            messages.error(request, "You cannot delete your own account.")
+            return redirect('staff_list')
+
+        primary_batches = staff.batches.count()
+        authored_batches = staff.batches_created.count()
+        authored_expenses = staff.expenses_created.count()
+        authored_transactions = staff.transactions_created.count()
+
+        context = {
+            'staff': staff,
+            'primary_batches': primary_batches,
+            'authored_batches': authored_batches,
+            'authored_expenses': authored_expenses,
+            'authored_transactions': authored_transactions,
+            'can_delete': primary_batches == 0,
+        }
+        return render(request, self.template_name, context)
+
+    def post(self, request, pk):
+        staff = get_object_or_404(
+            User.objects.filter(role__in=[
+                User.Roles.ADMIN, User.Roles.MANAGER, User.Roles.STAFF
+            ]),
+            pk=pk
+        )
+
+        if staff == request.user:
+            messages.error(request, "You cannot delete your own account.")
+            return redirect('staff_list')
+
+        if staff.batches.exists():
+            messages.error(
+                request,
+                f"Cannot delete {staff.username} because they are the primary party on {staff.batches.count()} batch(es). "
+                f"Reassign those batches first."
+            )
+            return redirect('staff_list')
+
+        username = staff.username
+        staff.delete()
+        messages.success(request, f"Staff member '{username}' has been deleted.")
+        return redirect('staff_list')
+    
+
+
+
+
+from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db import transaction as db_transaction
+from django.shortcuts import get_object_or_404, redirect, render
+from django.views import View
+
+# Make sure User is imported
+# from .models import User
+
+
+class UserDeleteView(LoginRequiredMixin, AdminRequiredMixin, View):
+    template_name = "account/user_confirm_delete.html"
+
+    def get(self, request, pk):
+        user = get_object_or_404(User, pk=pk)
+
+        # ==========================================================
+        # NEVER ALLOW A USER TO DELETE THEMSELVES
+        # ==========================================================
+
+        if user.pk == request.user.pk:
+            messages.error(
+                request,
+                "You cannot delete your own account."
+            )
+            return redirect("user_list")
+
+        # ==========================================================
+        # MANAGER SECURITY
+        #
+        # Managers can ONLY delete Vendors and Clients.
+        # ==========================================================
+
+        if request.user.role == User.Roles.MANAGER:
+            if user.role not in [
+                User.Roles.VENDOR,
+                User.Roles.CLIENT,
+            ]:
+                messages.error(
+                    request,
+                    "Managers can only delete Vendors and Clients."
+                )
+                return redirect("user_list")
+
+        return render(
+            request,
+            self.template_name,
+            {
+                "user_to_delete": user,
+            }
+        )
+
+    def post(self, request, pk):
+        user = get_object_or_404(User, pk=pk)
+
+        # ==========================================================
+        # NEVER ALLOW SELF DELETE
+        # ==========================================================
+
+        if user.pk == request.user.pk:
+            messages.error(
+                request,
+                "You cannot delete your own account."
+            )
+            return redirect("user_list")
+
+        # ==========================================================
+        # MANAGER SECURITY
+        # ==========================================================
+
+        if request.user.role == User.Roles.MANAGER:
+            if user.role not in [
+                User.Roles.VENDOR,
+                User.Roles.CLIENT,
+            ]:
+                messages.error(
+                    request,
+                    "Managers can only delete Vendors and Clients."
+                )
+                return redirect("user_list")
+
+        username = user.username
+        role = user.get_role_display()
+
+        # ==========================================================
+        # DELETE
+        # ==========================================================
+
+        with db_transaction.atomic():
+            user.delete()
+
+        messages.success(
+            request,
+            f"{role} '{username}' was permanently deleted."
+        )
+
+        return redirect("user_list")
+
+
+
+
+class UserSuspendView(LoginRequiredMixin, AdminRequiredMixin, View):
+
+    def post(self, request, pk):
+        user = get_object_or_404(User, pk=pk)
+
+        # ==========================================================
+        # NEVER ALLOW SELF SUSPENSION
+        # ==========================================================
+
+        if user.pk == request.user.pk:
+            messages.error(
+                request,
+                "You cannot suspend your own account."
+            )
+            return redirect("user_list")
+
+        # ==========================================================
+        # MANAGER SECURITY
+        #
+        # Managers can ONLY suspend/activate Vendors and Clients.
+        # ==========================================================
+
+        if request.user.role == User.Roles.MANAGER:
+            if user.role not in [
+                User.Roles.VENDOR,
+                User.Roles.CLIENT,
+            ]:
+                messages.error(
+                    request,
+                    "Managers can only suspend or activate Vendors and Clients."
+                )
+                return redirect("user_list")
+
+        # ==========================================================
+        # TOGGLE ACTIVE STATUS
+        # ==========================================================
+
+        user.is_active = not user.is_active
+        user.save(update_fields=["is_active"])
+
+        if user.is_active:
+            messages.success(
+                request,
+                f"'{user.username}' has been activated and can login again."
+            )
+        else:
+            messages.warning(
+                request,
+                f"'{user.username}' has been suspended and can no longer login."
+            )
+
+        return redirect("user_list")        
+    
+
+
+from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import get_object_or_404, redirect
+from django.views import View
+
+from .models import User
+
+
+class StaffSuspendView(LoginRequiredMixin, View):
+
+    def post(self, request, pk):
+
+        # ==========================================================
+        # ADMIN ONLY
+        # ==========================================================
+        if not request.user.is_superuser:
+            messages.error(
+                request,
+                "Only an administrator can suspend staff members."
+            )
+            return redirect('staff_list')
+
+        # ==========================================================
+        # FIND USER
+        # ==========================================================
+        user = get_object_or_404(
+            User,
+            pk=pk,
+            role__in=[
+                User.Roles.ADMIN,
+                User.Roles.MANAGER,
+                User.Roles.STAFF,
+            ]
+        )
+
+        # ==========================================================
+        # DON'T ALLOW SELF-SUSPENSION
+        # ==========================================================
+        if user.pk == request.user.pk:
+            messages.error(
+                request,
+                "You cannot suspend your own account."
+            )
+            return redirect('staff_list')
+
+        # ==========================================================
+        # DON'T SUSPEND ANOTHER SUPERUSER
+        # ==========================================================
+        if user.is_superuser:
+            messages.error(
+                request,
+                "A super administrator cannot be suspended."
+            )
+            return redirect('staff_list')
+
+        # ==========================================================
+        # SUSPEND
+        # ==========================================================
+        user.is_active = False
+        user.save(update_fields=['is_active'])
+
+        messages.success(
+            request,
+            f"{user.get_full_name() or user.username} has been suspended."
+        )
+
+        return redirect('staff_list')
+
+
+class StaffUnsuspendView(LoginRequiredMixin, View):
+
+    def post(self, request, pk):
+
+        # ==========================================================
+        # ADMIN ONLY
+        # ==========================================================
+        if not request.user.is_superuser:
+            messages.error(
+                request,
+                "Only an administrator can unsuspend staff members."
+            )
+            return redirect('staff_list')
+
+        # ==========================================================
+        # FIND USER
+        # ==========================================================
+        user = get_object_or_404(
+            User,
+            pk=pk,
+            role__in=[
+                User.Roles.ADMIN,
+                User.Roles.MANAGER,
+                User.Roles.STAFF,
+            ]
+        )
+
+        # ==========================================================
+        # DON'T CHANGE SUPERUSER
+        # ==========================================================
+        if user.is_superuser:
+            messages.error(
+                request,
+                "A super administrator does not need to be unsuspended."
+            )
+            return redirect('staff_list')
+
+        # ==========================================================
+        # UNSUSPEND
+        # ==========================================================
+        user.is_active = True
+        user.save(update_fields=['is_active'])
+
+        messages.success(
+            request,
+            f"{user.get_full_name() or user.username} has been reactivated."
+        )
+
+        return redirect('staff_list')        

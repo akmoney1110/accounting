@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block title %}Delete Staff — {{ staff.get_full_name|default:staff.username }}{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto px-4 py-8">
+
+    <!-- Breadcrumb -->
+    <nav class="flex items-center text-sm text-slate-500 mb-6">
+        <a href="{% url 'staff_list' %}" class="hover:text-slate-800 transition-colors">Staff Directory</a>
+        <svg class="w-4 h-4 mx-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+        <span class="text-slate-800 font-medium">Delete</span>
+    </nav>
+
+    <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-red-50 to-rose-50 border-b border-red-100 p-6 text-center">
+            <div class="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-3">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+            </div>
+            <h1 class="text-xl font-bold text-slate-900">Delete Staff Member</h1>
+            <p class="text-slate-500 text-sm mt-1">This action is permanent and cannot be undone.</p>
+        </div>
+
+        <div class="p-6 space-y-6">
+
+            <!-- Staff Identity Card -->
+            <div class="flex items-center gap-4 p-4 rounded-xl bg-slate-50 border border-slate-100">
+                <div class="w-12 h-12 rounded-full bg-gradient-to-br from-slate-700 to-slate-900 text-white flex items-center justify-center font-bold text-lg flex-shrink-0">
+                    {{ staff.username|first|upper }}
+                </div>
+                <div class="min-w-0">
+                    <div class="font-semibold text-slate-900 truncate">{{ staff.get_full_name|default:staff.username }}</div>
+                    <div class="text-sm text-slate-500 font-mono">@{{ staff.username }}</div>
+                    <div class="flex items-center gap-2 mt-1">
+                        {% if staff.role == 'ADMIN' %}
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-100 text-purple-700 border border-purple-200/50">Super Admin</span>
+                        {% elif staff.role == 'MANAGER' %}
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-700 border border-amber-200/50">Manager</span>
+                        {% else %}
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-100 text-indigo-700 border border-indigo-200/50">Staff</span>
+                        {% endif %}
+                        <span class="text-xs text-slate-400">Joined {{ staff.date_joined|date:"M d, Y" }}</span>
+                    </div>
+                </div>
+            </div>
+
+            {% if not can_delete %}
+            <!-- BLOCKED Banner -->
+            <div class="bg-red-50 border border-red-200 rounded-xl p-4 flex items-start gap-3">
+                <svg class="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                <div>
+                    <h3 class="font-semibold text-red-800 text-sm">Deletion Blocked</h3>
+                    <p class="text-red-700 text-sm mt-1">
+                        <strong>{{ staff.username }}</strong> is the primary party on 
+                        <strong>{{ primary_batches }}</strong> batch{{ primary_batches|pluralize }}. 
+                        You must reassign or delete those batches first.
+                    </p>
+                </div>
+            </div>
+            {% else %}
+            <!-- Impact Summary -->
+            <div class="space-y-3">
+                <h3 class="text-sm font-semibold text-slate-700 uppercase tracking-wider">What will happen</h3>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div class="p-3 rounded-lg bg-amber-50 border border-amber-100 text-center">
+                        <div class="text-2xl font-bold text-amber-700">{{ authored_batches }}</div>
+                        <div class="text-xs text-amber-600 font-medium mt-0.5">Batch{{ authored_batches|pluralize }} Created</div>
+                        <div class="text-[10px] text-amber-500 mt-1">Author set to NULL</div>
+                    </div>
+                    <div class="p-3 rounded-lg bg-blue-50 border border-blue-100 text-center">
+                        <div class="text-2xl font-bold text-blue-700">{{ authored_expenses }}</div>
+                        <div class="text-xs text-blue-600 font-medium mt-0.5">Expense{{ authored_expenses|pluralize }} Logged</div>
+                        <div class="text-[10px] text-blue-500 mt-1">Author set to NULL</div>
+                    </div>
+                    <div class="p-3 rounded-lg bg-emerald-50 border border-emerald-100 text-center">
+                        <div class="text-2xl font-bold text-emerald-700">{{ authored_transactions }}</div>
+                        <div class="text-xs text-emerald-600 font-medium mt-0.5">Payment{{ authored_transactions|pluralize }} Recorded</div>
+                        <div class="text-[10px] text-emerald-500 mt-1">Author set to NULL</div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-50 border border-slate-200 rounded-lg p-3 text-sm text-slate-600 flex items-start gap-2">
+                    <svg class="w-4 h-4 text-slate-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <span>All records created by this staff member will remain in the system, but their author will be set to <em>NULL</em>.</span>
+                </div>
+            </div>
+
+            <!-- Confirmation Form -->
+            <form method="post" class="space-y-4">
+                {% csrf_token %}
+
+                <label class="flex items-start gap-3 p-4 rounded-xl border border-red-200 bg-red-50/50 cursor-pointer hover:bg-red-50 transition-colors">
+                    <input type="checkbox" id="confirmDelete" required class="mt-0.5 w-4 h-4 text-red-600 border-red-300 rounded focus:ring-red-500">
+                    <span class="text-sm text-slate-700">
+                        I understand that deleting <strong>{{ staff.username }}</strong> is permanent. 
+                        Their login credentials will be revoked immediately and all authored records will lose their creator attribution.
+                    </span>
+                </label>
+
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2">
+                    <a href="{% url 'staff_list' %}" class="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl border border-slate-200 text-slate-700 text-sm font-semibold hover:bg-slate-50 transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        Cancel
+                    </a>
+                    <button type="submit" id="deleteBtn" disabled
+                            class="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-red-600 text-white text-sm font-semibold shadow-sm hover:bg-red-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                        Yes, Delete Staff Member
+                    </button>
+                </div>
+            </form>
+            {% endif %}
+
+            <!-- Back Button (for blocked state) -->
+            {% if not can_delete %}
+            <div class="pt-2">
+                <a href="{% url 'staff_list' %}" class="inline-flex items-center justify-center gap-2 w-full px-5 py-2.5 rounded-xl bg-slate-900 text-white text-sm font-semibold hover:bg-slate-800 transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                    Back to Staff Directory
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+    const checkbox = document.getElementById('confirmDelete');
+    const btn = document.getElementById('deleteBtn');
+    if (checkbox && btn) {
+        checkbox.addEventListener('change', () => {
+            btn.disabled = !checkbox.checked;
+        });
+    }
+</script>
+{% endblock %}

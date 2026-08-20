@@ -1,0 +1,1649 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{% block title %}Dikubs — Premium Cash Crop Trading & Supply{% endblock %}</title>
+
+    <meta name="description"
+          content="Dikubs — Premium cash crop trading, commodity sourcing, produce supply and agricultural commerce.">
+
+    <meta name="theme-color" content="#382420">
+
+    <!-- =========================================================
+         GOOGLE FONTS
+    ========================================================== -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap"
+          rel="stylesheet">
+
+    <!-- =========================================================
+         TAILWIND
+    ========================================================== -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+
+                    fontFamily: {
+                        sans: ['DM Sans', 'sans-serif'],
+                        display: ['Playfair Display', 'serif'],
+                    },
+
+                    colors: {
+
+                        brand: {
+
+                            50: '#FCFAF6',
+                            100: '#F8F3EA',
+                            200: '#E9DED0',
+
+                            300: '#D8C6AF',
+
+                            400: '#D3A74C',
+
+                            500: '#C9952C',
+
+                            600: '#B8860B',
+
+                            700: '#86600B',
+
+                            800: '#4E342E',
+
+                            900: '#382420',
+
+                            olive: '#6B8E23',
+
+                            rust: '#C75B39',
+
+                            cream: '#FAF6F0',
+
+                        }
+
+                    },
+
+                    boxShadow: {
+
+                        luxury:
+                            '0 20px 60px rgba(56,36,32,.08)',
+
+                        soft:
+                            '0 10px 35px rgba(56,36,32,.06)',
+
+                        gold:
+                            '0 12px 30px rgba(201,149,44,.18)',
+
+                    },
+
+                    animation: {
+
+                        'fade-up':
+                            'fadeUp .7s ease-out both',
+
+                        'fade-in':
+                            'fadeIn .5s ease-out both',
+
+                        'float':
+                            'float 5s ease-in-out infinite',
+
+                        'pulse-soft':
+                            'pulseSoft 2s ease-in-out infinite',
+
+                    },
+
+                    keyframes: {
+
+                        fadeUp: {
+
+                            '0%': {
+                                opacity: '0',
+                                transform: 'translateY(18px)'
+                            },
+
+                            '100%': {
+                                opacity: '1',
+                                transform: 'translateY(0)'
+                            }
+
+                        },
+
+                        fadeIn: {
+
+                            '0%': {
+                                opacity: '0'
+                            },
+
+                            '100%': {
+                                opacity: '1'
+                            }
+
+                        },
+
+                        float: {
+
+                            '0%, 100%': {
+                                transform: 'translateY(0)'
+                            },
+
+                            '50%': {
+                                transform: 'translateY(-6px)'
+                            }
+
+                        },
+
+                        pulseSoft: {
+
+                            '0%, 100%': {
+                                opacity: '.45',
+                                transform: 'scale(1)'
+                            },
+
+                            '50%': {
+                                opacity: '1',
+                                transform: 'scale(1.12)'
+                            }
+
+                        }
+
+                    }
+
+                }
+            }
+        }
+    </script>
+
+    <!-- =========================================================
+         FONT AWESOME
+    ========================================================== -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    >
+
+    {% block extra_head %}{% endblock %}
+
+    <!-- =========================================================
+         GLOBAL STYLES
+    ========================================================== -->
+
+    <style>
+
+        :root {
+
+            --dikubs-brown: #382420;
+            --dikubs-dark: #4E342E;
+            --dikubs-gold: #C9952C;
+            --dikubs-cream: #FAF6F0;
+            --dikubs-border: rgba(78,52,46,.10);
+
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+
+            background:
+                radial-gradient(
+                    circle at 10% 10%,
+                    rgba(201,149,44,.035),
+                    transparent 30%
+                ),
+
+                radial-gradient(
+                    circle at 90% 80%,
+                    rgba(107,142,35,.025),
+                    transparent 30%
+                ),
+
+                var(--dikubs-cream);
+
+            color: var(--dikubs-dark);
+
+        }
+
+        /* =====================================================
+           PREMIUM SELECTION
+        ====================================================== */
+
+        ::selection {
+
+            background: var(--dikubs-gold);
+            color: white;
+
+        }
+
+        /* =====================================================
+           CUSTOM SCROLLBAR
+        ====================================================== */
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #F8F3EA;
+        }
+
+        ::-webkit-scrollbar-thumb {
+
+            background: rgba(78,52,46,.25);
+
+            border-radius: 999px;
+
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+
+            background: var(--dikubs-gold);
+
+        }
+
+        /* =====================================================
+           NAVIGATION
+        ====================================================== */
+
+        #main-nav {
+
+            transition:
+                background .3s ease,
+                box-shadow .3s ease,
+                border-color .3s ease,
+                transform .3s ease;
+
+        }
+
+        #main-nav.nav-scrolled {
+
+            background: rgba(250,246,240,.94);
+
+            backdrop-filter: blur(20px);
+
+            -webkit-backdrop-filter: blur(20px);
+
+            border-color: rgba(78,52,46,.08);
+
+            box-shadow:
+                0 10px 35px rgba(56,36,32,.07);
+
+        }
+
+        /* =====================================================
+           DESKTOP NAV LINKS
+        ====================================================== */
+
+        .nav-link {
+
+            position: relative;
+
+            transition:
+                color .25s ease;
+
+        }
+
+        .nav-link::after {
+
+            content: "";
+
+            position: absolute;
+
+            left: 0;
+
+            bottom: -5px;
+
+            width: 0;
+
+            height: 2px;
+
+            border-radius: 999px;
+
+            background: var(--dikubs-gold);
+
+            transition: width .3s ease;
+
+        }
+
+        .nav-link:hover {
+
+            color: var(--dikubs-gold);
+
+        }
+
+        .nav-link:hover::after {
+
+            width: 100%;
+
+        }
+
+        /* =====================================================
+           LOGO
+        ====================================================== */
+
+        .logo-mark {
+
+            position: relative;
+
+            overflow: hidden;
+
+        }
+
+        .logo-mark::before {
+
+            content: "";
+
+            position: absolute;
+
+            width: 60px;
+
+            height: 60px;
+
+            border-radius: 50%;
+
+            background:
+                radial-gradient(
+                    circle,
+                    rgba(255,255,255,.15),
+                    transparent 70%
+                );
+
+            transform:
+                translate(-25px,-25px);
+
+        }
+
+        /* =====================================================
+           MOBILE MENU
+        ====================================================== */
+
+        #mobile-menu {
+
+            transition:
+                opacity .3s ease,
+                transform .3s ease;
+
+        }
+
+        #mobile-menu.menu-open {
+
+            opacity: 1;
+
+            transform: translateY(0);
+
+        }
+
+        #mobile-menu.menu-closed {
+
+            opacity: 0;
+
+            transform: translateY(-8px);
+
+            pointer-events: none;
+
+        }
+
+        /* =====================================================
+           MESSAGE ANIMATION
+        ====================================================== */
+
+        .django-message {
+
+            animation:
+                messageIn .45s ease-out both;
+
+        }
+
+        @keyframes messageIn {
+
+            from {
+
+                opacity: 0;
+
+                transform:
+                    translateY(-10px)
+                    scale(.98);
+
+            }
+
+            to {
+
+                opacity: 1;
+
+                transform:
+                    translateY(0)
+                    scale(1);
+
+            }
+
+        }
+
+        /* =====================================================
+           REDUCED MOTION
+        ====================================================== */
+
+        @media (prefers-reduced-motion: reduce) {
+
+            *,
+            *::before,
+            *::after {
+
+                scroll-behavior: auto !important;
+
+                animation-duration: .01ms !important;
+
+                animation-iteration-count: 1 !important;
+
+                transition-duration: .01ms !important;
+
+            }
+
+        }
+
+    </style>
+</head>
+
+
+<body class="
+    bg-brand-cream
+    text-brand-800
+    font-sans
+    antialiased
+    min-h-screen
+    flex
+    flex-col
+">
+
+
+<!-- =========================================================
+     PREMIUM TOP INFORMATION BAR
+========================================================== -->
+
+<div
+    class="
+        bg-brand-900
+        text-white/70
+        text-[11px]
+        sm:text-xs
+        border-b
+        border-white/5
+    "
+>
+
+    <div
+        class="
+            max-w-7xl
+            mx-auto
+            px-4
+            sm:px-6
+            lg:px-8
+            min-h-[38px]
+            flex
+            items-center
+            justify-between
+            gap-4
+        "
+    >
+
+        <!-- Left -->
+
+        <div class="hidden md:flex items-center gap-6">
+
+            <span class="flex items-center gap-2">
+
+                <i class="fa-solid fa-phone text-brand-500"></i>
+
+                +234 (0) 800 DIKUBS
+
+            </span>
+
+            <span class="flex items-center gap-2">
+
+                <i class="fa-solid fa-envelope text-brand-500"></i>
+
+                trade@dikubs.com
+
+            </span>
+
+            <span class="flex items-center gap-2">
+
+                <i class="fa-solid fa-location-dot text-brand-500"></i>
+
+                Nigeria
+
+            </span>
+
+        </div>
+
+
+        <!-- Market Status -->
+
+        <div class="ml-auto flex items-center gap-4">
+
+            <div
+                class="
+                    inline-flex
+                    items-center
+                    gap-2
+                    rounded-full
+                    border
+                    border-brand-olive/20
+                    bg-brand-olive/10
+                    px-3
+                    py-1
+                    text-[10px]
+                    font-semibold
+                    uppercase
+                    tracking-wider
+                    text-brand-olive
+                "
+            >
+
+                <span class="relative flex h-2 w-2">
+
+                    <span
+                        class="
+                            absolute
+                            inline-flex
+                            h-full
+                            w-full
+                            animate-ping
+                            rounded-full
+                            bg-brand-olive
+                            opacity-60
+                        "
+                    ></span>
+
+                    <span
+                        class="
+                            relative
+                            inline-flex
+                            h-2
+                            w-2
+                            rounded-full
+                            bg-brand-olive
+                        "
+                    ></span>
+
+                </span>
+
+                Market Open
+
+            </div>
+
+
+            <!-- Social -->
+
+            <div
+                class="
+                    hidden
+                    sm:flex
+                    items-center
+                    gap-3
+                    pl-4
+                    border-l
+                    border-white/10
+                "
+            >
+
+                <a
+                    href="#"
+                    aria-label="WhatsApp"
+                    class="hover:text-brand-500 transition"
+                >
+                    <i class="fab fa-whatsapp"></i>
+                </a>
+
+                <a
+                    href="#"
+                    aria-label="LinkedIn"
+                    class="hover:text-brand-500 transition"
+                >
+                    <i class="fab fa-linkedin-in"></i>
+                </a>
+
+                <a
+                    href="#"
+                    aria-label="Facebook"
+                    class="hover:text-brand-500 transition"
+                >
+                    <i class="fab fa-facebook-f"></i>
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- =========================================================
+     MAIN NAVIGATION
+========================================================== -->
+
+<nav
+    id="main-nav"
+    class="
+        sticky
+        top-0
+        z-50
+        bg-brand-cream/90
+        backdrop-blur-xl
+        border-b
+        border-brand-800/10
+    "
+>
+
+    <div
+        class="
+            max-w-7xl
+            mx-auto
+            px-4
+            sm:px-6
+            lg:px-8
+        "
+    >
+
+        <div
+            class="
+                h-[76px]
+                sm:h-[82px]
+                flex
+                items-center
+                justify-between
+            "
+        >
+
+
+            <!-- =================================================
+                 LOGO
+            ================================================== -->
+
+            <a
+                href="{% url 'home' %}"
+                class="flex items-center gap-3 group"
+            >
+
+                <!-- Mark -->
+
+                <div
+                    class="
+                        logo-mark
+                        relative
+                        w-11
+                        h-11
+                        sm:w-12
+                        sm:h-12
+                        rounded-[15px]
+                        bg-brand-900
+                        flex
+                        items-center
+                        justify-center
+                        shadow-soft
+                        transition-all
+                        duration-300
+                        group-hover:-translate-y-0.5
+                        group-hover:shadow-gold
+                    "
+                >
+
+                    <i
+                        class="
+                            fa-solid
+                            fa-seedling
+                            text-brand-500
+                            text-lg
+                            relative
+                            z-10
+                            transition-transform
+                            duration-300
+                            group-hover:scale-110
+                        "
+                    ></i>
+
+                </div>
+
+
+                <!-- Wordmark -->
+
+                <div class="flex flex-col">
+
+                    <div
+                        class="
+                            flex
+                            items-baseline
+                            leading-none
+                        "
+                    >
+
+                        <span
+                            class="
+                                text-[1.65rem]
+                                sm:text-[1.9rem]
+                                font-black
+                                tracking-[-0.055em]
+                                text-brand-900
+                            "
+                        >
+                            Dikubs
+                        </span>
+
+                    </div>
+
+
+                    <div
+                        class="
+                            mt-2
+                            flex
+                            items-center
+                            gap-2
+                        "
+                    >
+
+                        <span
+                            class="
+                                h-px
+                                w-7
+                                bg-brand-500
+                                transition-all
+                                duration-300
+                                group-hover:w-11
+                            "
+                        ></span>
+
+                        <span
+                            class="
+                                text-[8px]
+                                sm:text-[9px]
+                                uppercase
+                                font-bold
+                                tracking-[0.18em]
+                                text-brand-800/55
+                                whitespace-nowrap
+                            "
+                        >
+                            Produce & Commodity
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </a>
+
+
+
+            <!-- =================================================
+                 DESKTOP NAVIGATION
+            ================================================== -->
+
+            <div
+                class="
+                    hidden
+                    lg:flex
+                    items-center
+                    gap-7
+                    xl:gap-8
+                    text-[13px]
+                    font-semibold
+                "
+            >
+
+                <a
+                    href="#home"
+                    class="nav-link text-brand-800/75 py-2"
+                >
+                    Home
+                </a>
+
+                <a
+                    href="#businesses"
+                    class="nav-link text-brand-800/75 py-2"
+                >
+                    Our Business
+                </a>
+
+                <a
+                    href="#market-prices"
+                    class="
+                        nav-link
+                        text-brand-800/75
+                        py-2
+                        flex
+                        items-center
+                        gap-2
+                    "
+                >
+
+                    Live Prices
+
+                    <span
+                        class="
+                            px-1.5
+                            py-0.5
+                            rounded
+                            bg-brand-rust/10
+                            text-brand-rust
+                            text-[8px]
+                            uppercase
+                            tracking-wider
+                        "
+                    >
+                        New
+                    </span>
+
+                </a>
+
+                <a
+                    href="#about"
+                    class="nav-link text-brand-800/75 py-2"
+                >
+                    About
+                </a>
+
+                <a
+                    href="#gallery"
+                    class="nav-link text-brand-800/75 py-2"
+                >
+                    Market & Events
+                </a>
+
+                <a
+                    href="#contact"
+                    class="nav-link text-brand-800/75 py-2"
+                >
+                    Contact
+                </a>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 ACTIONS
+            ================================================== -->
+
+            <div class="hidden sm:flex items-center gap-2.5">
+
+                {% if request.user.is_authenticated %}
+
+                    <a
+                        href="{% url 'admin_dashboard' %}"
+                        class="
+                            group
+                            inline-flex
+                            items-center
+                            gap-2
+                            rounded-xl
+                            bg-brand-900
+                            px-4
+                            sm:px-5
+                            py-2.5
+                            text-sm
+                            font-semibold
+                            text-white
+                            shadow-soft
+                            transition-all
+                            duration-300
+                            hover:-translate-y-0.5
+                            hover:bg-brand-800
+                            hover:shadow-luxury
+                        "
+                    >
+
+                        <i
+                            class="
+                                fa-solid
+                                fa-grid-2
+                                text-brand-500
+                                group-hover:scale-110
+                                transition
+                            "
+                        ></i>
+
+                        Dashboard
+
+                    </a>
+
+                {% else %}
+
+                    <a
+                        href="{% url 'login' %}"
+                        class="
+                            rounded-xl
+                            px-4
+                            py-2.5
+                            text-sm
+                            font-semibold
+                            text-brand-800/80
+                            transition
+                            hover:bg-brand-800/5
+                            hover:text-brand-800
+                        "
+                    >
+                        Sign In
+                    </a>
+
+
+                    <a
+                        href="#contact"
+                        class="
+                            group
+                            inline-flex
+                            items-center
+                            gap-2
+                            rounded-xl
+                            bg-brand-500
+                            px-5
+                            py-2.5
+                            text-sm
+                            font-semibold
+                            text-white
+                            shadow-gold
+                            transition-all
+                            duration-300
+                            hover:-translate-y-0.5
+                            hover:bg-brand-600
+                            hover:shadow-lg
+                        "
+                    >
+
+                        <i
+                            class="
+                                fa-solid
+                                fa-arrow-right
+                                transition-transform
+                                group-hover:translate-x-0.5
+                            "
+                        ></i>
+
+                        Request Quote
+
+                    </a>
+
+                {% endif %}
+
+            </div>
+
+
+
+            <!-- =================================================
+                 MOBILE MENU BUTTON
+            ================================================== -->
+
+            <button
+                type="button"
+                id="mobile-menu-btn"
+                aria-label="Open navigation menu"
+                aria-expanded="false"
+                class="
+                    lg:hidden
+                    w-11
+                    h-11
+                    rounded-xl
+                    border
+                    border-brand-800/10
+                    bg-white/40
+                    flex
+                    items-center
+                    justify-center
+                    text-brand-800
+                    transition
+                    hover:bg-brand-800
+                    hover:text-white
+                "
+            >
+
+                <i
+                    id="mobile-menu-icon"
+                    class="fa-solid fa-bars text-lg"
+                ></i>
+
+            </button>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =========================================================
+         MOBILE MENU
+    ========================================================== -->
+
+    <div
+        id="mobile-menu"
+    class="
+        lg:hidden
+        absolute
+        left-0
+        right-0
+        top-full
+        z-[60]
+        bg-[#FAF6F0]
+        border-b
+        border-brand-800/10
+        shadow-[0_20px_45px_rgba(56,36,32,0.12)]
+        menu-closed
+    "
+    >
+
+        <div class="max-w-7xl mx-auto px-5 py-5">
+
+            <div class="space-y-1">
+
+                <a
+                    href="#home"
+                    class="
+                        mobile-nav-link
+                        flex
+                        items-center
+                        justify-between
+                        rounded-xl
+                        px-4
+                        py-3
+                        font-semibold
+                        text-brand-800
+                        hover:bg-brand-800/5
+                        hover:text-brand-500
+                        transition
+                    "
+                >
+                    Home
+                    <i class="fa-solid fa-chevron-right text-[10px] opacity-40"></i>
+                </a>
+
+                <a
+                    href="#businesses"
+                    class="
+                        mobile-nav-link
+                        flex
+                        items-center
+                        justify-between
+                        rounded-xl
+                        px-4
+                        py-3
+                        font-semibold
+                        text-brand-800
+                        hover:bg-brand-800/5
+                        hover:text-brand-500
+                        transition
+                    "
+                >
+                    Our Businesses
+                    <i class="fa-solid fa-chevron-right text-[10px] opacity-40"></i>
+                </a>
+
+                <a
+                    href="#market-prices"
+                    class="
+                        mobile-nav-link
+                        flex
+                        items-center
+                        justify-between
+                        rounded-xl
+                        px-4
+                        py-3
+                        font-semibold
+                        text-brand-800
+                        hover:bg-brand-800/5
+                        hover:text-brand-500
+                        transition
+                    "
+                >
+
+                    <span class="flex items-center gap-2">
+
+                        Live Prices
+
+                        <span
+                            class="
+                                text-[8px]
+                                uppercase
+                                font-bold
+                                bg-brand-rust/10
+                                text-brand-rust
+                                px-1.5
+                                py-0.5
+                                rounded
+                            "
+                        >
+                            New
+                        </span>
+
+                    </span>
+
+                    <i class="fa-solid fa-chevron-right text-[10px] opacity-40"></i>
+
+                </a>
+
+                <a
+                    href="#about"
+                    class="
+                        mobile-nav-link
+                        flex
+                        items-center
+                        justify-between
+                        rounded-xl
+                        px-4
+                        py-3
+                        font-semibold
+                        text-brand-800
+                        hover:bg-brand-800/5
+                        hover:text-brand-500
+                        transition
+                    "
+                >
+                    About Us
+                    <i class="fa-solid fa-chevron-right text-[10px] opacity-40"></i>
+                </a>
+
+                <a
+                    href="#gallery"
+                    class="
+                        mobile-nav-link
+                        flex
+                        items-center
+                        justify-between
+                        rounded-xl
+                        px-4
+                        py-3
+                        font-semibold
+                        text-brand-800
+                        hover:bg-brand-800/5
+                        hover:text-brand-500
+                        transition
+                    "
+                >
+                    Events & Market Days
+                    <i class="fa-solid fa-chevron-right text-[10px] opacity-40"></i>
+                </a>
+
+                <a
+                    href="#contact"
+                    class="
+                        mobile-nav-link
+                        flex
+                        items-center
+                        justify-between
+                        rounded-xl
+                        px-4
+                        py-3
+                        font-semibold
+                        text-brand-800
+                        hover:bg-brand-800/5
+                        hover:text-brand-500
+                        transition
+                    "
+                >
+                    Contact
+                    <i class="fa-solid fa-chevron-right text-[10px] opacity-40"></i>
+                </a>
+
+            </div>
+
+
+
+            <!-- Mobile Actions -->
+
+            <div
+                class="
+                    mt-4
+                    pt-4
+                    border-t
+                    border-brand-800/10
+                "
+            >
+
+                {% if request.user.is_authenticated %}
+
+                    <a
+                        href="{% url 'admin_dashboard' %}"
+                        class="
+                            flex
+                            items-center
+                            justify-center
+                            gap-2
+                            w-full
+                            rounded-xl
+                            bg-brand-900
+                            py-3
+                            font-semibold
+                            text-white
+                            shadow-soft
+                        "
+                    >
+
+                        <i class="fa-solid fa-table-columns"></i>
+
+                        Dashboard
+
+                    </a>
+
+                {% else %}
+
+                    <div class="grid grid-cols-2 gap-2">
+
+                        <a
+                            href="{% url 'login' %}"
+                            class="
+                                flex
+                                items-center
+                                justify-center
+                                rounded-xl
+                                border
+                                border-brand-800/15
+                                py-3
+                                font-semibold
+                                text-brand-800
+                            "
+                        >
+                            Sign In
+                        </a>
+
+                        <a
+                            href="#contact"
+                            class="
+                                flex
+                                items-center
+                                justify-center
+                                rounded-xl
+                                bg-brand-500
+                                py-3
+                                font-semibold
+                                text-white
+                            "
+                        >
+                            Request Quote
+                        </a>
+
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+</nav>
+
+
+
+<!-- =========================================================
+     DJANGO FLASH MESSAGES
+========================================================== -->
+
+{% if messages %}
+
+<div
+    class="
+        fixed
+        z-[100]
+        top-5
+        right-4
+        sm:right-6
+        w-[calc(100%-2rem)]
+        sm:w-auto
+        sm:max-w-md
+        space-y-3
+    "
+    id="django-messages"
+>
+
+    {% for message in messages %}
+
+    <div
+        class="
+            django-message
+            flex
+            items-start
+            gap-3
+            rounded-2xl
+            border
+            bg-white/95
+            backdrop-blur-xl
+            px-4
+            py-3.5
+            shadow-luxury
+        "
+
+        data-message
+    >
+
+        <!-- Icon -->
+
+        <div
+            class="
+                mt-0.5
+                flex
+                h-9
+                w-9
+                shrink-0
+                items-center
+                justify-center
+                rounded-xl
+
+                {% if message.tags == 'error' %}
+                    bg-rose-50 text-rose-600
+                {% elif message.tags == 'success' %}
+                    bg-emerald-50 text-emerald-600
+                {% else %}
+                    bg-amber-50 text-amber-600
+                {% endif %}
+            "
+        >
+
+            <i
+                class="
+                    fa-solid
+                    {% if message.tags == 'error' %}
+                        fa-circle-exclamation
+                    {% elif message.tags == 'success' %}
+                        fa-circle-check
+                    {% else %}
+                        fa-circle-info
+                    {% endif %}
+                "
+            ></i>
+
+        </div>
+
+
+        <!-- Message -->
+
+        <div class="flex-1 min-w-0">
+
+            <p class="text-sm font-semibold text-brand-900">
+
+                {% if message.tags == 'error' %}
+                    Something went wrong
+                {% elif message.tags == 'success' %}
+                    Success
+                {% else %}
+                    Notice
+                {% endif %}
+
+            </p>
+
+            <p class="mt-0.5 text-xs leading-5 text-brand-800/65">
+
+                {{ message }}
+
+            </p>
+
+        </div>
+
+
+        <!-- Close -->
+
+        <button
+            type="button"
+            onclick="this.closest('[data-message]').remove()"
+            class="
+                shrink-0
+                text-brand-800/30
+                hover:text-brand-800
+                transition
+            "
+            aria-label="Close message"
+        >
+
+            <i class="fa-solid fa-xmark"></i>
+
+        </button>
+
+    </div>
+
+    {% endfor %}
+
+</div>
+
+{% endif %}
+
+
+
+<!-- =========================================================
+     MAIN CONTENT
+========================================================== -->
+
+<main
+    class="
+        flex-grow
+        relative
+    "
+>
+
+    {% block content %}{% endblock %}
+
+</main>
+
+
+
+<!-- =========================================================
+     GLOBAL JAVASCRIPT
+========================================================== -->
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    /* ========================================================
+       NAVIGATION
+    ========================================================= */
+
+    const nav = document.getElementById("main-nav");
+
+    function updateNav() {
+
+        if (!nav) return;
+
+        if (window.scrollY > 15) {
+
+            nav.classList.add("nav-scrolled");
+
+        } else {
+
+            nav.classList.remove("nav-scrolled");
+
+        }
+
+    }
+
+    updateNav();
+
+    window.addEventListener(
+        "scroll",
+        updateNav,
+        { passive: true }
+    );
+
+
+    /* ========================================================
+       MOBILE MENU
+    ========================================================= */
+
+    const menuBtn =
+        document.getElementById("mobile-menu-btn");
+
+    const menu =
+        document.getElementById("mobile-menu");
+
+    const menuIcon =
+        document.getElementById("mobile-menu-icon");
+
+    const mobileLinks =
+        document.querySelectorAll(".mobile-nav-link");
+
+
+    if (menuBtn && menu && menuIcon) {
+
+        function openMenu() {
+
+            menu.classList.remove("menu-closed");
+
+            menu.classList.add("menu-open");
+
+            menuBtn.setAttribute(
+                "aria-expanded",
+                "true"
+            );
+
+            menuIcon.classList.remove(
+                "fa-bars"
+            );
+
+            menuIcon.classList.add(
+                "fa-xmark"
+            );
+
+        }
+
+
+        function closeMenu() {
+
+            menu.classList.remove("menu-open");
+
+            menu.classList.add("menu-closed");
+
+            menuBtn.setAttribute(
+                "aria-expanded",
+                "false"
+            );
+
+            menuIcon.classList.remove(
+                "fa-xmark"
+            );
+
+            menuIcon.classList.add(
+                "fa-bars"
+            );
+
+        }
+
+
+        menuBtn.addEventListener(
+            "click",
+            function () {
+
+                const isOpen =
+                    menuBtn.getAttribute(
+                        "aria-expanded"
+                    ) === "true";
+
+                if (isOpen) {
+
+                    closeMenu();
+
+                } else {
+
+                    openMenu();
+
+                }
+
+            }
+        );
+
+
+        mobileLinks.forEach(function (link) {
+
+            link.addEventListener(
+                "click",
+                closeMenu
+            );
+
+        });
+
+
+        document.addEventListener(
+            "keydown",
+            function (event) {
+
+                if (event.key === "Escape") {
+
+                    closeMenu();
+
+                }
+
+            }
+        );
+
+    }
+
+
+    /* ========================================================
+       AUTO DISMISS DJANGO MESSAGES
+    ========================================================= */
+
+    const messages =
+        document.querySelectorAll(
+            "[data-message]"
+        );
+
+    messages.forEach(function (message) {
+
+        setTimeout(function () {
+
+            message.style.transition =
+                "opacity .4s ease, transform .4s ease";
+
+            message.style.opacity = "0";
+
+            message.style.transform =
+                "translateY(-10px) scale(.98)";
+
+            setTimeout(function () {
+
+                message.remove();
+
+            }, 400);
+
+        }, 6000);
+
+    });
+
+
+    /* ========================================================
+       PREVENT MOBILE MENU FROM REMAINING OPEN ON RESIZE
+    ========================================================= */
+
+    window.addEventListener(
+        "resize",
+        function () {
+
+            if (
+                window.innerWidth >= 1024 &&
+                menu
+            ) {
+
+                menu.classList.remove(
+                    "menu-open"
+                );
+
+                menu.classList.add(
+                    "menu-closed"
+                );
+
+            }
+
+        }
+    );
+
+});
+
+</script>
+
+
+
+{% block extra_js %}{% endblock %}
+
+</body>
+</html>

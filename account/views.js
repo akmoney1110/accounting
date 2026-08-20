@@ -3158,3 +3158,70 @@ context = {
     "today": today,
 }
 return render(request, self.template_name, context)    
+
+
+
+
+
+
+
+
+# ============================================================
+# STAFF DELETE
+# ============================================================
+    class StaffDeleteView(LoginRequiredMixin, AdminRequiredMixin, View):
+"""Delete a staff member. Batches where they are the primary party block deletion.
+    Records they created(as created_by) are preserved with NULL author."""
+template_name = "account/staff_confirm_delete.html"
+
+    def get(self, request, pk):
+staff = get_object_or_404(
+    User.objects.filter(role__in = [
+        User.Roles.ADMIN, User.Roles.MANAGER, User.Roles.STAFF
+    ]),
+    pk = pk
+)
+
+if staff == request.user:
+    messages.error(request, "You cannot delete your own account.")
+return redirect('staff_list')
+
+primary_batches = staff.batches.count()
+authored_batches = staff.batches_created.count()
+authored_expenses = staff.expenses_created.count()
+authored_transactions = staff.transactions_created.count()
+
+context = {
+    'staff': staff,
+    'primary_batches': primary_batches,
+    'authored_batches': authored_batches,
+    'authored_expenses': authored_expenses,
+    'authored_transactions': authored_transactions,
+    'can_delete': primary_batches == 0,
+}
+return render(request, self.template_name, context)
+
+    def post(self, request, pk):
+staff = get_object_or_404(
+    User.objects.filter(role__in = [
+        User.Roles.ADMIN, User.Roles.MANAGER, User.Roles.STAFF
+    ]),
+    pk = pk
+)
+
+if staff == request.user:
+    messages.error(request, "You cannot delete your own account.")
+return redirect('staff_list')
+
+if staff.batches.exists():
+    messages.error(
+        request,
+        f"Cannot delete {staff.username} because they are the primary party on {staff.batches.count()} batch(es). "
+                f"Reassign those batches first."
+    )
+return redirect('staff_list')
+
+username = staff.username
+staff.delete()
+messages.success(request, f"Staff member '{username}' has been deleted.")
+return redirect('staff_list')

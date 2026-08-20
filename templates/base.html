@@ -203,10 +203,16 @@
                     </a>
 
                     <div class="pt-4 pb-2 px-4 text-xs font-bold text-[#8D7B6B] uppercase tracking-wider">Directory</div>
-
+<a href="{% url 'user_create' %}" class="sidebar-link {% if request.resolver_match.url_name == 'user_create' %}active{% endif %} flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-[#D7CCC8]">
+                        <i class="fas fa-user-plus w-5 text-center"></i> Add Partner
+                    </a>
                     <a href="{% url 'user_list' %}" class="sidebar-link {% if request.resolver_match.url_name == 'user_list' %}active{% endif %} flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-[#D7CCC8]">
                         <i class="fas fa-users w-5 text-center"></i> Partners & Rates
                     </a>
+                    <a href="{% url 'staff_list' %}" 
+   class="sidebar-link {% if request.resolver_match.url_name == 'staff_list' %}active{% endif %} flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-[#D7CCC8]">
+    <i class="fas fa-user-shield w-5 text-center"></i> Staff Directory
+</a>
                     <a href="{% url 'product_list' %}" class="sidebar-link {% if request.resolver_match.url_name == 'product_list' or request.resolver_match.url_name == 'product_create' or request.resolver_match.url_name == 'product_edit' %}active{% endif %} flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-[#D7CCC8]">
                         <i class="fas fa-boxes w-5 text-center"></i> Products
                     </a>

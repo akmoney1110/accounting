@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+{% block title %}Delete User — AgroLedger{% endblock %}
+
+{% block content %}
+
+<div class="max-w-xl mx-auto px-4 py-10">
+
+    <div class="bg-white rounded-2xl border border-[#D4C5A9] shadow-sm overflow-hidden">
+
+        <!-- HEADER -->
+        <div class="bg-[#FDE8E0] border-b border-[#E8C7BC] p-6 text-center">
+
+            <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-[#C75B39] text-white flex items-center justify-center">
+                <i class="fas fa-user-times text-2xl"></i>
+            </div>
+
+            <h1 class="text-2xl font-bold text-[#4E342E]">
+                Delete User?
+            </h1>
+
+            <p class="text-sm text-[#8D6E63] mt-2">
+                This action cannot be undone.
+            </p>
+
+        </div>
+
+        <!-- BODY -->
+        <div class="p-6 md:p-8">
+
+            <div class="bg-[#FAF6F0] rounded-xl border border-[#D4C5A9] p-5 mb-6">
+
+                <div class="flex items-center gap-4">
+
+                    <div class="w-12 h-12 rounded-full bg-[#EFE8DE] flex items-center justify-center text-[#6B8E23]">
+                        <i class="fas fa-user text-lg"></i>
+                    </div>
+
+                    <div>
+                        <h2 class="font-bold text-[#4E342E]">
+                            {{ user_to_delete.get_full_name|default:user_to_delete.username }}
+                        </h2>
+
+                        <p class="text-sm text-[#8D6E63]">
+                            @{{ user_to_delete.username }}
+                        </p>
+
+                        <span class="inline-block mt-1 text-xs font-bold uppercase text-[#6B8E23]">
+                            {{ user_to_delete.get_role_display }}
+                        </span>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="bg-[#FDE8E0] border border-[#E8C7BC] rounded-xl p-4 mb-6">
+
+                <p class="text-sm text-[#C75B39]">
+                    <i class="fas fa-exclamation-triangle mr-2"></i>
+
+                    <strong>Warning:</strong>
+                    Deleting this user may also affect records associated
+                    with this account depending on your database relationships.
+                </p>
+
+            </div>
+
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="flex flex-col sm:flex-row gap-3">
+
+                    <button
+                        type="submit"
+                        class="flex-1 px-6 py-3 bg-[#C75B39] hover:bg-[#A84D2F] text-white font-bold rounded-xl transition"
+                    >
+                        <i class="fas fa-trash mr-2"></i>
+                        Yes, Delete User
+                    </button>
+
+                    <a
+                        href="{% url 'user_list' %}"
+                        class="flex-1 px-6 py-3 bg-[#EFE8DE] hover:bg-[#E4DBCE] text-[#4E342E] font-semibold rounded-xl text-center transition"
+                    >
+                        Cancel
+                    </a>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

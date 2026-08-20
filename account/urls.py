@@ -35,16 +35,43 @@ from .views import (
     ProductListView,
     ProductCreateView,
     ProductUpdateView,
-    ManagerDashboardView,
-    StaffDashboardView,StaffListView,
+    ManagerDashboardView,StaffDeleteView,UserDeleteView,
+    StaffDashboardView,StaffListView,StaffToggleStatusView,
     ExpenseListView,PaymentDetailView,
-    ExpenseUpdateView,UserCreateView,ExpenseCreateView,PaymentListView,
+    ExpenseUpdateView,UserCreateView,ExpenseCreateView,PaymentListView,UserSuspendView,StaffSuspendView,StaffUnsuspendView,
 )
 
 urlpatterns = [
     # Authentication
-    path('', LoginView.as_view(), name='login'),
+    path('account/login/', LoginView.as_view(), name='login'),
+    path(
+        'staff/<int:pk>/toggle-status/',
+        StaffToggleStatusView.as_view(),
+        name='staff_toggle_status'
+    ),
+    path(
+    "users/<int:pk>/delete/",
+    UserDeleteView.as_view(),
+    name="user_delete"
+),
     path('logout/', LogoutView.as_view(), name='logout'),
+    path(
+        'staff/<int:pk>/suspend/',
+        StaffSuspendView.as_view(),
+        name='staff_suspend'
+    ),
+
+    path(
+        'staff/<int:pk>/unsuspend/',
+        StaffUnsuspendView.as_view(),
+        name='staff_unsuspend'
+    ),
+    path(
+    "users/<int:pk>/suspend/",
+    UserSuspendView.as_view(),
+    name="user_suspend"
+),
+    path('staff/<int:pk>/delete/', StaffDeleteView.as_view(), name='staff_delete'),
     path('manager/', ManagerDashboardView.as_view(), name='manager_dashboard'),
     path('staff/', StaffDashboardView.as_view(), name='staff_dashboard'),
     path('products/', ProductListView.as_view(), name='product_list'),

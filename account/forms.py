@@ -358,54 +358,155 @@ class BatchForm(BaseStyledForm):
 
 class TransactionForm(BaseStyledForm):
     """Form to log payments and ledger entries."""
+
     class Meta:
         model = Transaction
         fields = [
-            'user', 'batch', 'transaction_type', 'payment_method',
-            'amount', 'reference_code', 'transaction_date', 'notes'
+            'user',
+            'batch',
+            'transaction_type',
+            'payment_method',
+            'amount',
+            'reference_code',
+            'transaction_date',
+            'notes'
         ]
+
         widgets = {
             'user': forms.Select(),
             'batch': forms.Select(),
-            'transaction_type': forms.Select(attrs={'class': 'font-semibold'}),
-            'payment_method': forms.Select(attrs={'class': 'font-semibold'}),
+            'transaction_type': forms.Select(
+                attrs={'class': 'font-semibold'}
+            ),
+            'payment_method': forms.Select(
+                attrs={'class': 'font-semibold'}
+            ),
             'amount': forms.NumberInput(attrs={
-                'placeholder': '0.00', 'step': '0.01', 'min': '0.01'
+                'placeholder': '0.00',
+                'step': '0.01',
+                'min': '0.01'
             }),
             'reference_code': forms.TextInput(attrs={
                 'placeholder': 'Bank Ref / Cheque #'
             }),
-            'transaction_date': forms.DateInput(attrs={'type': 'date'}),
+            'transaction_date': forms.DateInput(
+                attrs={'type': 'date'}
+            ),
             'notes': forms.Textarea(attrs={
-                'rows': 2, 'placeholder': 'Payment terms or partial payment notes'
+                'rows': 2,
+                'placeholder': 'Payment terms or partial payment notes'
             }),
         }
 
     def __init__(self, *args, **kwargs):
+        self.request_user = kwargs.pop('request_user', None)
+
         super().__init__(*args, **kwargs)
-        self.fields['batch'].required = False  # <-- KEY: allow auto-cascade
+
+        self.fields['batch'].required = False
         self.fields['notes'].required = False
         self.fields['reference_code'].required = False
-        
+
+        # ---------------------------------------------------------
+        # DEFAULTS
+        # ---------------------------------------------------------
         if not self.instance.pk:
+
             if not self.initial.get('transaction_type'):
                 self.fields['transaction_type'].initial = 'DISBURSEMENT'
+
             if not self.initial.get('payment_method'):
                 self.fields['payment_method'].initial = 'BANK_TRANSFER'
+
             if 'transaction_date' in self.fields:
                 self.fields['transaction_date'].initial = timezone.now().date()
 
-        self.fields['user'].queryset = User.objects.filter(
-            is_active=True,
-            role__in=[User.Roles.VENDOR, User.Roles.CLIENT]
-        )
+        # ---------------------------------------------------------
+        # USER / PARTNER RESTRICTIONS
+        # ---------------------------------------------------------
+        if self.request_user:
+
+            # MANAGER
+            # -----------------------------------------------------
+            # Manager can ONLY pay vendors.
+            if self.request_user.role == User.Roles.MANAGER:
+
+                self.fields['user'].queryset = User.objects.filter(
+                    is_active=True,
+                    role=User.Roles.VENDOR
+                )
+
+                # Manager can ONLY make DISBURSEMENTS
+                self.fields['transaction_type'].choices = [
+                    choice
+                    for choice in self.fields['transaction_type'].choices
+                    if choice[0] == 'DISBURSEMENT'
+                ]
+
+                self.fields['transaction_type'].initial = 'DISBURSEMENT'
+
+                # Prevent manager from changing it
+                self.fields['transaction_type'].disabled = True
+
+            # ADMIN
+            # -----------------------------------------------------
+            elif self.request_user.role == User.Roles.ADMIN:
+
+                self.fields['user'].queryset = User.objects.filter(
+                    is_active=True,
+                    role__in=[
+                        User.Roles.VENDOR,
+                        User.Roles.CLIENT
+                    ]
+                )
+
+            # OTHER USERS
+            # -----------------------------------------------------
+            else:
+
+                self.fields['user'].queryset = User.objects.none()
+
+        else:
+
+            self.fields['user'].queryset = User.objects.none()
 
     def clean_amount(self):
         amount = self.cleaned_data.get('amount')
+
         if amount is None or amount <= Decimal('0.00'):
-            raise ValidationError("Amount must be greater than zero.")
+            raise ValidationError(
+                "Amount must be greater than zero."
+            )
+
         return amount
 
+    def clean(self):
+        cleaned_data = super().clean()
+
+        transaction_type = cleaned_data.get('transaction_type')
+        partner = cleaned_data.get('user')
+
+        # ---------------------------------------------------------
+        # MANAGER SECURITY CHECK
+        # ---------------------------------------------------------
+        if self.request_user and self.request_user.role == User.Roles.MANAGER:
+
+            if transaction_type != 'DISBURSEMENT':
+                raise ValidationError(
+                    "Managers can only record payments made to vendors."
+                )
+
+            if not partner:
+                raise ValidationError(
+                    "Please select a vendor."
+                )
+
+            if partner.role != User.Roles.VENDOR:
+                raise ValidationError(
+                    "Managers can only record payments for vendors."
+                )
+
+        return cleaned_data
 
 
 
@@ -638,6 +739,7 @@ class UserCreateForm(BaseStyledForm):
         }),
         help_text="User go use this password to login."
     )
+
     confirm_password = forms.CharField(
         widget=forms.PasswordInput(attrs={
             'placeholder': 'Type password again',
@@ -649,39 +751,114 @@ class UserCreateForm(BaseStyledForm):
     class Meta:
         model = User
         fields = [
-            'username', 'first_name', 'last_name', 'email',
-            'role', 'phone', 'address', 'credit_limit'
+            'username',
+            'first_name',
+            'last_name',
+            'email',
+            'role',
+            'phone',
+            'address',
+            'credit_limit'
         ]
+
         widgets = {
-            'username': forms.TextInput(attrs={'placeholder': 'e.g. farmer_john, buyer_mike'}),
-            'first_name': forms.TextInput(attrs={'placeholder': 'First name'}),
-            'last_name': forms.TextInput(attrs={'placeholder': 'Last name'}),
-            'email': forms.EmailInput(attrs={'placeholder': 'email@example.com'}),
-            'phone': forms.TextInput(attrs={'placeholder': '+234 800 000 0000'}),
-            'address': forms.Textarea(attrs={'rows': 2, 'placeholder': 'Village, Town, or Business address'}),
-            'credit_limit': forms.NumberInput(attrs={'placeholder': '0.00', 'step': '0.01'}),
+            'username': forms.TextInput(attrs={
+                'placeholder': 'e.g. farmer_john, buyer_mike'
+            }),
+            'first_name': forms.TextInput(attrs={
+                'placeholder': 'First name'
+            }),
+            'last_name': forms.TextInput(attrs={
+                'placeholder': 'Last name'
+            }),
+            'email': forms.EmailInput(attrs={
+                'placeholder': 'email@example.com'
+            }),
+            'phone': forms.TextInput(attrs={
+                'placeholder': '+234 800 000 0000'
+            }),
+            'address': forms.Textarea(attrs={
+                'rows': 2,
+                'placeholder': 'Village, Town, or Business address'
+            }),
+            'credit_limit': forms.NumberInput(attrs={
+                'placeholder': '0.00',
+                'step': '0.01'
+            }),
         }
 
     def __init__(self, *args, **kwargs):
+        self.request_user = kwargs.pop('request_user', None)
+
         super().__init__(*args, **kwargs)
+
         self.fields['email'].required = False
         self.fields['first_name'].required = False
         self.fields['last_name'].required = False
         self.fields['phone'].required = False
         self.fields['address'].required = False
         self.fields['credit_limit'].required = False
+
         self.fields['credit_limit'].initial = Decimal('0.00')
+
+        # ==========================================================
+        # MANAGER ROLE RESTRICTION
+        # ==========================================================
+        if (
+            self.request_user
+            and self.request_user.role == User.Roles.MANAGER
+        ):
+            self.fields['role'].choices = [
+                (
+                    User.Roles.VENDOR,
+                    User.Roles.VENDOR.label
+                ),
+                (
+                    User.Roles.CLIENT,
+                    User.Roles.CLIENT.label
+                ),
+            ]
 
     def clean(self):
         cleaned = super().clean()
+
         password = cleaned.get('password')
         confirm = cleaned.get('confirm_password')
-
-        if password and confirm and password != confirm:
-            self.add_error('confirm_password', "Passwords no match. Type the same thing twice.")
-
-        # Only clients get credit limit
         role = cleaned.get('role')
+
+        # ==========================================================
+        # PASSWORD CONFIRMATION
+        # ==========================================================
+        if password and confirm and password != confirm:
+            self.add_error(
+                'confirm_password',
+                "Passwords no match. Type the same thing twice."
+            )
+
+        # ==========================================================
+        # MANAGER SECURITY CHECK
+        #
+        # Never trust the HTML choices. Someone can manually submit
+        # role=ADMIN, role=MANAGER, etc.
+        # ==========================================================
+        if (
+            self.request_user
+            and self.request_user.role == User.Roles.MANAGER
+        ):
+            allowed_roles = {
+                User.Roles.VENDOR,
+                User.Roles.CLIENT,
+            }
+
+            if role not in allowed_roles:
+                self.add_error(
+                    'role',
+                    "Managers can only create Vendors and Clients."
+                )
+
+        # ==========================================================
+        # ONLY CLIENTS GET CREDIT LIMIT
+        # ==========================================================
         if role != User.Roles.CLIENT:
             cleaned['credit_limit'] = Decimal('0.00')
 
@@ -689,11 +866,15 @@ class UserCreateForm(BaseStyledForm):
 
     def save(self, commit=True):
         user = super().save(commit=False)
-        user.set_password(self.cleaned_data['password'])
+
+        user.set_password(
+            self.cleaned_data['password']
+        )
+
         if commit:
             user.save()
-        return user    
-    
+
+        return user 
 
 
 

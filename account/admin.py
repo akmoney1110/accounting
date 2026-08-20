@@ -185,7 +185,7 @@ class UserAdmin(BaseUserAdmin):
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         return qs.select_related('ledger')
-
+    
     @admin.display(description='Role', ordering='role')
     def role_badge(self, obj):
         role_map = {
@@ -210,7 +210,7 @@ class UserAdmin(BaseUserAdmin):
     def ledger_balance(self, obj):
         ledger = getattr(obj, 'ledger', None)
         if not ledger:
-            return format_html('<span style="color:#9ca3af;">—</span>', '')
+            return format_html('<span style="color:#9ca3af;">—</span>')  # <-- FIX 2 (removed extra empty string)
         bal = ledger.balance or Decimal('0.00')
         color = '#991b1b' if bal > 0 else '#065f46' if bal < 0 else '#6b7280'
         return format_html(

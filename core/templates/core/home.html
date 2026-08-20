@@ -1,0 +1,1417 @@
+{% extends "layout.html" %}
+{%load static%}
+{%block content%}
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="DIKUBS is a diversified business group operating across agriculture, cashew, retail, bakery, energy and other business sectors.">
+  <title>Dikubs | Cashew Processing, Supermarket & Bakery</title>
+  <!-- Tailwind CSS (lightweight) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome Icons (optional but adds polish) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    /* CSS RESET & VARIABLES */
+    :root {
+      --sand-light: #f7f3eb;
+      --sand-base: #e6dac3;
+      --cashew-gold: #d4a359;
+      --crop-green: #3b5a32;
+      --earth-brown: #2d1e18;
+      --earth-dark: #1b120e;
+      --text-muted: #6b5e54;
+      --white: #ffffff;
+      --font-main: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: var(--font-main);
+      background-color: var(--sand-light);
+      color: var(--earth-brown);
+      line-height: 1.6;
+      scroll-behavior: smooth;
+    }
+    /* =========================================================
+       MODERN NAVIGATION
+    ========================================================= */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      padding: 14px 20px;
+      background: rgba(27, 18, 14, 0.88);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 10px 35px rgba(0, 0, 0, 0.18);
+      transition: background 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    /* =========================================================
+       HERO SECTION WITH ANIMATED SLIDING BACKGROUND
+    ========================================================= */
+    /* =========================================================
+   SMOOTH MODERN HERO
+========================================================= */
+
+/* =========================================================
+   PREMIUM HERO SLIDER
+========================================================= */
+
+.hero {
+  position: relative;
+  width: 100%;
+  min-height: 680px;
+
+  overflow: hidden;
+  isolation: isolate;
+
+  background: var(--earth-dark);
+}
+
+
+/* =========================================================
+   INDIVIDUAL SLIDES
+========================================================= */
+
+.hero-slide {
+  position: absolute;
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background-size: cover;
+  background-position: center;
+
+  opacity: 0;
+
+  visibility: hidden;
+
+  transform: scale(1);
+
+  transition:
+    opacity 1.2s ease,
+    visibility 1.2s ease;
+
+  will-change: transform, opacity;
+}
+
+
+/* ACTIVE SLIDE */
+
+.hero-slide.active {
+  opacity: 1;
+  visibility: visible;
+
+  animation: heroZoom 7s ease-in-out forwards;
+}
+
+
+/* =========================================================
+   BEAUTIFUL DARK OVERLAY
+========================================================= */
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(18, 12, 9, 0.88) 0%,
+      rgba(18, 12, 9, 0.68) 35%,
+      rgba(18, 12, 9, 0.38) 70%,
+      rgba(18, 12, 9, 0.52) 100%
+    );
+
+  z-index: 1;
+}
+
+
+/* subtle bottom fade */
+
+.hero-overlay::after {
+  content: "";
+
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  height: 180px;
+
+  background:
+    linear-gradient(
+      transparent,
+      rgba(18, 12, 9, 0.65)
+    );
+}
+
+
+/* =========================================================
+   HERO CONTENT
+========================================================= */
+
+.hero-content {
+  position: relative;
+
+  z-index: 3;
+
+  width: 100%;
+  max-width: 900px;
+
+  margin: 0 auto;
+
+  padding: 2rem;
+
+  text-align: center;
+
+  color: var(--white);
+}
+
+
+/* =========================================================
+   SMALL KICKER
+========================================================= */
+
+.hero-kicker {
+  display: inline-block;
+
+  margin-bottom: 1.25rem;
+
+  padding: 0.45rem 1rem;
+
+  border: 1px solid rgba(255,255,255,0.35);
+
+  border-radius: 999px;
+
+  background: rgba(255,255,255,0.08);
+
+  backdrop-filter: blur(8px);
+
+  color: var(--cashew-gold);
+
+  font-size: 0.78rem;
+
+  font-weight: 800;
+
+  letter-spacing: 0.18em;
+
+  opacity: 0;
+
+  transform: translateY(25px);
+
+  transition:
+    opacity 0.8s ease,
+    transform 0.8s ease;
+}
+
+
+/* =========================================================
+   HEADING
+========================================================= */
+
+.hero h1 {
+  margin: 0 0 1.4rem;
+
+  font-size: clamp(2.6rem, 6vw, 5rem);
+
+  line-height: 1.04;
+
+  letter-spacing: -0.035em;
+
+  color: var(--sand-base);
+
+  text-shadow:
+    0 6px 30px rgba(0,0,0,0.5);
+
+  opacity: 0;
+
+  transform: translateY(45px);
+
+  transition:
+    opacity 1s ease,
+    transform 1s cubic-bezier(.16,1,.3,1);
+}
+
+
+/* =========================================================
+   DESCRIPTION
+========================================================= */
+
+.hero p {
+  max-width: 720px;
+
+  margin: 0 auto 2rem;
+
+  color: var(--sand-light);
+
+  font-size: clamp(1rem, 1.7vw, 1.2rem);
+
+  line-height: 1.8;
+
+  text-shadow:
+    0 3px 15px rgba(0,0,0,0.5);
+
+  opacity: 0;
+
+  transform: translateY(35px);
+
+  transition:
+    opacity 1s ease,
+    transform 1s cubic-bezier(.16,1,.3,1);
+}
+
+
+/* =========================================================
+   BUTTON
+========================================================= */
+
+.hero .btn-primary {
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  min-height: 54px;
+
+  padding: 0.9rem 2.2rem;
+
+  border-radius: 999px;
+
+  background: var(--cashew-gold);
+
+  color: var(--earth-dark);
+
+  font-weight: 800;
+
+  text-decoration: none;
+
+  box-shadow:
+    0 12px 35px rgba(0,0,0,0.3);
+
+  opacity: 0;
+
+  transform: translateY(30px) scale(0.95);
+
+  transition:
+    opacity 0.8s ease,
+    transform 0.8s cubic-bezier(.16,1,.3,1),
+    background-color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+
+/* =========================================================
+   ACTIVE CONTENT ANIMATION
+========================================================= */
+
+.hero-slide.active .hero-kicker {
+  opacity: 1;
+
+  transform: translateY(0);
+
+  transition-delay: 0.35s;
+}
+
+
+.hero-slide.active h1 {
+  opacity: 1;
+
+  transform: translateY(0);
+
+  transition-delay: 0.55s;
+}
+
+
+.hero-slide.active p {
+  opacity: 1;
+
+  transform: translateY(0);
+
+  transition-delay: 0.8s;
+}
+
+
+.hero-slide.active .btn-primary {
+  opacity: 1;
+
+  transform:
+    translateY(0)
+    scale(1);
+
+  transition-delay: 1.05s;
+}
+
+
+/* =========================================================
+   BUTTON HOVER
+========================================================= */
+
+.hero .btn-primary:hover {
+  background: var(--sand-base);
+
+  transform:
+    translateY(-4px)
+    scale(1.03);
+
+  box-shadow:
+    0 18px 45px rgba(0,0,0,0.38);
+}
+
+
+/* =========================================================
+   ZOOM EFFECT
+========================================================= */
+
+@keyframes heroZoom {
+
+  0% {
+    transform: scale(1);
+  }
+
+  35% {
+    transform: scale(1.06);
+  }
+
+  65% {
+    transform: scale(1.09);
+  }
+
+  100% {
+    transform: scale(1.02);
+  }
+
+}
+
+
+/* =========================================================
+   SLIDER DOTS
+========================================================= */
+
+.hero-controls {
+  position: absolute;
+
+  z-index: 10;
+
+  bottom: 35px;
+  left: 50%;
+
+  transform: translateX(-50%);
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 10px;
+}
+
+
+/* DOT */
+
+.hero-dot {
+  width: 9px;
+  height: 9px;
+
+  padding: 0;
+
+  border: 0;
+
+  border-radius: 50%;
+
+  background: rgba(255,255,255,0.45);
+
+  cursor: pointer;
+
+  transition:
+    width 0.4s ease,
+    background 0.4s ease,
+    transform 0.4s ease;
+}
+
+
+/* ACTIVE DOT */
+
+.hero-dot.active {
+  width: 34px;
+
+  border-radius: 999px;
+
+  background: var(--cashew-gold);
+
+  transform: scale(1.05);
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 768px) {
+
+  .hero {
+    min-height: 600px;
+  }
+
+  .hero-content {
+    padding:
+      2rem 1.25rem;
+  }
+
+  .hero h1 {
+    font-size: clamp(2.2rem, 9vw, 3.5rem);
+
+    line-height: 1.08;
+  }
+
+  .hero p {
+    font-size: 1rem;
+
+    line-height: 1.7;
+  }
+
+  .hero-overlay {
+    background:
+      linear-gradient(
+        180deg,
+        rgba(18,12,9,0.55),
+        rgba(18,12,9,0.82)
+      );
+  }
+
+}
+
+
+/* =========================================================
+   SMALL PHONES
+========================================================= */
+
+@media (max-width: 480px) {
+
+  .hero {
+    min-height: 560px;
+  }
+
+  .hero-kicker {
+    font-size: 0.68rem;
+
+    letter-spacing: 0.13em;
+  }
+
+  .hero h1 {
+    font-size: 2.15rem;
+  }
+
+  .hero p {
+    font-size: 0.94rem;
+  }
+
+  .hero .btn-primary {
+    width: 100%;
+    max-width: 280px;
+  }
+
+  .hero-controls {
+    bottom: 22px;
+  }
+
+}
+
+
+/* =========================================================
+   ACCESSIBILITY
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .hero-slide.active {
+    animation: none;
+  }
+
+  .hero-kicker,
+  .hero h1,
+  .hero p,
+  .hero .btn-primary {
+    transition: none;
+  }
+
+}
+
+/* ---------------------------------------------------------
+   REDUCED MOTION ACCESSIBILITY
+--------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .hero::before,
+  .hero-content,
+  .btn-primary {
+    animation: none;
+    transition: none;
+  }
+
+  .hero::before {
+    transform: scale(1);
+  }
+}
+    /* SECTIONS COMMON */
+    section {
+      padding: 5rem 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .section-title {
+      text-align: center;
+      font-size: 2.2rem;
+      color: var(--earth-brown);
+      margin-bottom: 0.5rem;
+      position: relative;
+    }
+    .section-subtitle {
+      text-align: center;
+      color: var(--text-muted);
+      margin-bottom: 3rem;
+    }
+    .divider {
+      width: 60px;
+      height: 4px;
+      background-color: var(--cashew-gold);
+      margin: 0.5rem auto 1rem;
+      border-radius: 2px;
+    }
+    /* BUSINESSES / VENTURES GRID */
+    .business-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 2rem;
+    }
+    .business-card {
+      background-color: var(--white);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      border-bottom: 4px solid var(--cashew-gold);
+      transition: transform 0.3s ease;
+    }
+    .business-card:hover {
+      transform: translateY(-5px);
+    }
+    .business-card img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+    }
+    .business-card-body {
+      padding: 1.5rem;
+    }
+    .business-card-body h3 {
+      color: var(--earth-brown);
+      margin-bottom: 0.5rem;
+    }
+    /* GALLERY GRID */
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+    .gallery-item {
+      position: relative;
+      border-radius: 8px;
+      overflow: hidden;
+      height: 220px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .gallery-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+    }
+    .gallery-item:hover img {
+      transform: scale(1.08);
+    }
+    .gallery-caption {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(transparent, rgba(27, 18, 14, 0.9));
+      color: var(--sand-light);
+      padding: 1rem 0.8rem 0.5rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+    /* FAQ SECTION */
+    .faq-section {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .faq-intro {
+      max-width: 680px;
+      margin: 0 auto 3rem;
+      text-align: center;
+    }
+    .faq-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .faq-item {
+      background: var(--white);
+      border: 1px solid rgba(45, 30, 24, 0.08);
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 5px 20px rgba(45, 30, 24, 0.05);
+      transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    }
+    .faq-item:hover {
+      transform: translateY(-2px);
+      border-color: rgba(212, 163, 89, 0.35);
+      box-shadow: 0 10px 30px rgba(45, 30, 24, 0.08);
+    }
+    .faq-question {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1.35rem 1.5rem;
+      border: none;
+      background: transparent;
+      color: var(--earth-brown);
+      text-align: left;
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .faq-question:hover {
+      color: var(--crop-green);
+    }
+    .faq-icon {
+      flex-shrink: 0;
+      width: 34px;
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: rgba(212, 163, 89, 0.12);
+      color: var(--cashew-gold);
+      font-size: 1.4rem;
+      font-weight: 400;
+      transition: transform 0.3s ease, background 0.3s ease, color 0.3s ease;
+    }
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease, padding 0.4s ease;
+    }
+    .faq-answer-inner {
+      padding: 0 1.5rem 1.4rem;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      line-height: 1.8;
+    }
+    .faq-item.active {
+      border-color: rgba(212, 163, 89, 0.4);
+    }
+    .faq-item.active .faq-answer {
+      max-height: 300px;
+    }
+    .faq-item.active .faq-icon {
+      transform: rotate(45deg);
+      background: var(--cashew-gold);
+      color: var(--earth-dark);
+    }
+    .faq-cta {
+      margin-top: 3rem;
+      padding: 2rem;
+      border-radius: 16px;
+      text-align: center;
+      background: linear-gradient(135deg, var(--earth-dark), var(--earth-brown));
+      color: var(--sand-light);
+      box-shadow: 0 12px 35px rgba(27, 18, 14, 0.15);
+    }
+    .faq-cta h3 {
+      margin-bottom: 0.5rem;
+      color: var(--cashew-gold);
+      font-size: 1.4rem;
+    }
+    .faq-cta p {
+      margin-bottom: 1.2rem;
+      color: var(--sand-base);
+    }
+    .faq-cta a {
+      display: inline-block;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      background: var(--cashew-gold);
+      color: var(--earth-dark);
+      text-decoration: none;
+      font-weight: 700;
+      transition: transform 0.3s ease, background 0.3s ease;
+    }
+    .faq-cta a:hover {
+      background: var(--sand-base);
+      transform: translateY(-2px);
+    }
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      .about-container,
+      .contact-container {
+        grid-template-columns: 1fr;
+      }
+      .hero { margin-top: 1rem; }
+      .hero h1 { font-size: 2rem; }
+    }
+    /* extra polish for cards */
+    .bg-earth-50 { background-color: #faf8f3; }
+    .text-earth-500 { color: #9b7749; }
+    .text-earth-700 { color: #62462d; }
+    .text-earth-900 { color: #302218; }
+    .border-earth-600 { border-color: #7c5c37; }
+    .bg-earth-300 { background-color: #d2bc96; }
+    .bg-earth-800 { background-color: #483323; }
+    .hover\:bg-earth-100:hover { background-color: #f3eee4; }
+  </style>
+</head>
+<body>
+
+<!-- ===== NAVIGATION ===== -->
+
+
+<!-- ===== HERO ===== -->
+<!-- ===== HERO ===== -->
+<section class="hero" id="home">
+
+  <!-- SLIDE 1 -->
+  <div class="hero-slide active"
+       style="background-image: url('/static/images/cashew2.jpg');">
+
+    <div class="hero-overlay"></div>
+
+    <div class="hero-content">
+      <span class="hero-kicker">DIKUBS</span>
+
+      <h1>Growing Opportunities,<br>Serving Communities</h1>
+
+      <p>
+        From quality cashew processing to everyday essentials,
+        Dikubs is committed to quality, service, and sustainable growth.
+      </p>
+
+      <a href="#businesses" class="btn-primary">
+        Explore Our Businesses
+      </a>
+    </div>
+  </div>
+
+
+  <!-- SLIDE 2 -->
+  <div class="hero-slide"
+       style="background-image: url('https://images.unsplash.com/photo-1578916171728-46686eac8d58?auto=format&fit=crop&w=1600&q=80');">
+
+    <div class="hero-overlay"></div>
+
+    <div class="hero-content">
+      <span class="hero-kicker">QUALITY • SERVICE • TRUST</span>
+
+      <h1>Everything You Need,<br>All in One Place</h1>
+
+      <p>
+        Discover quality products, dependable service,
+        and everyday essentials carefully selected for our community.
+      </p>
+
+      <a href="#businesses" class="btn-primary">
+        Discover More
+      </a>
+    </div>
+  </div>
+
+
+  <!-- SLIDE 3 -->
+  <div class="hero-slide"
+       style="background-image: url('/static/images/images.jpg');">
+
+    <div class="hero-overlay"></div>
+
+    <div class="hero-content">
+      <span class="hero-kicker">FRESH • LOCAL • DELICIOUS</span>
+
+      <h1>Freshly Made,<br>Made With Care</h1>
+
+      <p>
+        From freshly baked goods to quality products,
+        we bring freshness and care to everything we do.
+      </p>
+
+      <a href="#businesses" class="btn-primary">
+        Visit Dikubs
+      </a>
+    </div>
+  </div>
+
+
+  <!-- SLIDE 4 -->
+  <div class="hero-slide"
+       style="background-image: url('/static/images/hero-cashew.jpg');">
+
+    <div class="hero-overlay"></div>
+
+    <div class="hero-content">
+      <span class="hero-kicker">FROM FARM TO FUTURE</span>
+
+      <h1>Building A Better<br>Future Together</h1>
+
+      <p>
+        Creating opportunities, supporting communities,
+        and building sustainable value for generations to come.
+      </p>
+
+      <a href="#businesses" class="btn-primary">
+        Learn About Us
+      </a>
+    </div>
+  </div>
+
+
+  <!-- SLIDER CONTROLS -->
+  <div class="hero-controls">
+
+    <button class="hero-dot active" data-slide="0"></button>
+    <button class="hero-dot" data-slide="1"></button>
+    <button class="hero-dot" data-slide="2"></button>
+    <button class="hero-dot" data-slide="3"></button>
+
+  </div>
+
+</section>
+
+<!-- ===== INTRO / WHO WE ARE ===== -->
+<section class="pt-24 lg:pt-32 bg-earth-50" style="max-width:100%; padding:5rem 2rem;">
+  <div class="max-w-7xl mx-auto px-6 lg:px-8">
+    <div class="grid lg:grid-cols-12 gap-12 lg:gap-20">
+      <div class="lg:col-span-4">
+        <p class="uppercase tracking-[0.3em] text-earth-500 text-xs font-semibold">Who We Are</p>
+        <h2 class="font-display text-4xl lg:text-5xl leading-tight mt-5">More than a business. <span class="italic text-earth-500">A growing ecosystem.</span></h2>
+      </div>
+      <div class="lg:col-span-8">
+        <p class="text-2xl lg:text-3xl leading-relaxed text-earth-700">DIKUBS brings together a growing collection of businesses connected by one philosophy: <strong class="font-medium text-earth-900">create value, serve people and build for the future.</strong></p>
+        <p class="mt-8 text-earth-600 leading-8 max-w-3xl">From agricultural operations and cashew activities to retail, bakery and energy services, our businesses operate across different sectors while sharing a common commitment to quality, reliability and sustainable growth.</p>
+        <a href="#about" class="inline-flex items-center gap-3 mt-8 text-earth-800 font-semibold group">Learn more about DIKUBS <span class="group-hover:translate-x-2 transition">→</span></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== BUSINESSES ===== -->
+<section id="businesses">
+  <h2 class="section-title">Our Businesses</h2>
+  <div class="divider"></div>
+  <p class="section-subtitle">Quality products and dependable services across agriculture, retail, and food production.</p>
+  <div class="business-grid">
+    <div class="business-card">
+      <img src="{% static 'images/cashew2.jpg' %}" alt="Cashew Processing">
+      <div class="business-card-body"><h3>Cashew Processing</h3><p>We specialize in producing carefully prepared, top-tier cashew products while directly supporting local farmers and driving sustainable agricultural development.</p></div>
+    </div>
+    <div class="business-card">
+      <img src="https://images.unsplash.com/photo-1578916171728-46686eac8d58?auto=format&fit=crop&w=600&q=80" alt="Dikubs Supermarket" />
+      <div class="business-card-body"><h3>Supermarket</h3><p>A convenient shopping destination for groceries, household essentials, food products, and everyday consumer needs.</p></div>
+    </div>
+    <div class="business-card">
+   <img src="https://images.unsplash.com/photo-1549931319-a545dcf3bc73?auto=format&fit=crop&w=600&q=80"
+     alt="Fresh Bread">     <div class="business-card-body"><h3>Bakery</h3><p>Freshly baked bread, pastries, cakes, and other quality bakery products prepared with care for individuals, families, and events.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CASHEW DETAIL (dry cashew export) ===== -->
+<section id="cashew-detail" class="relative overflow-hidden bg-[#f7f4ed] py-24 sm:py-28 lg:py-36" style="max-width:100%;">
+  <div class="pointer-events-none absolute inset-0 overflow-hidden">
+    <div class="absolute -left-40 top-20 h-96 w-96 rounded-full bg-[#d9a441]/10 blur-3xl"></div>
+    <div class="absolute -right-40 top-[35%] h-[30rem] w-[30rem] rounded-full bg-[#6f4326]/10 blur-3xl"></div>
+    <div class="absolute bottom-0 left-[40%] h-80 w-80 rounded-full bg-[#b87932]/10 blur-3xl"></div>
+  </div>
+  <div class="relative mx-auto max-w-7xl px-6 lg:px-8">
+    <div class="mx-auto max-w-4xl text-center">
+      <div class="mb-6 inline-flex items-center gap-3 rounded-full border border-[#6f4326]/15 bg-white/80 px-4 py-2 shadow-sm backdrop-blur">
+        <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#6f4326] text-xs font-bold text-white">D</span>
+        <span class="text-xs font-bold uppercase tracking-[0.22em] text-[#6f4326]">Dry Cashew Nut Export</span>
+      </div>
+      <h2 class="font-serif text-4xl font-semibold leading-[1.05] tracking-tight text-[#392318] sm:text-5xl lg:text-7xl">Naturally Dried.<br><span class="text-[#9a6428]">Carefully Handled.</span></h2>
+      <p class="mx-auto mt-7 max-w-3xl text-base leading-8 text-[#68594e] sm:text-lg">We source, dry, consolidate and supply quality Raw Cashew Nuts from farming communities, preparing carefully handled dry cashews for domestic and international commodity markets.</p>
+    </div>
+    <!-- metrics row -->
+    <div class="mx-auto mt-14 grid max-w-5xl overflow-hidden rounded-[2rem] border border-[#6f4326]/10 bg-white/80 shadow-[0_25px_70px_rgba(61,38,22,0.08)] backdrop-blur sm:grid-cols-2 lg:grid-cols-4">
+      <div class="border-b border-[#6f4326]/10 p-7 text-center lg:border-b-0 lg:border-r"><div class="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[#f7f0e5] text-[#6f4326]"><svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M12 3v18m9-9H3"/></svg></div><div class="mt-4 text-3xl font-bold text-[#392318]">RCN</div><p class="mt-2 text-xs font-semibold uppercase tracking-[0.15em] text-[#88766a]">Product</p></div>
+      <div class="border-b border-[#6f4326]/10 p-7 text-center sm:border-r lg:border-b-0"><div class="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[#fbf4df] text-[#a66d2e]"><svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M12 3a9 9 0 100 18 9 9 0 000-18z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M12 7v5l3 2"/></svg></div><div class="mt-4 text-3xl font-bold text-[#392318]">3–4</div><p class="mt-2 text-xs font-semibold uppercase tracking-[0.15em] text-[#88766a]">Drying Days*</p></div>
+      <div class="border-b border-[#6f4326]/10 p-7 text-center lg:border-b-0 lg:border-r"><div class="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[#eef5e9] text-[#56723d]"><svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9" stroke-width="1.7"/></svg></div><div class="mt-4 text-3xl font-bold text-[#392318]">Quality</div><p class="mt-2 text-xs font-semibold uppercase tracking-[0.15em] text-[#88766a]">Focused</p></div>
+      <div class="p-7 text-center"><div class="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[#edf4f2] text-[#466a62]"><svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M3 7h18M5 7v10a2 2 0 002 2h10a2 2 0 002-2V7M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2"/></svg></div><div class="mt-4 text-3xl font-bold text-[#392318]">Global</div><p class="mt-2 text-xs font-semibold uppercase tracking-[0.15em] text-[#88766a]">Market Ready</p></div>
+    </div>
+    <!-- feature image section -->
+    <div class="mt-20 overflow-hidden rounded-[2.5rem] bg-[#4b2c1c] shadow-[0_35px_100px_rgba(61,38,22,0.15)]">
+      <div class="grid lg:grid-cols-[1fr_1.1fr]">
+        <div class="relative min-h-[480px] overflow-hidden">
+          <img src="{% static 'images/cashew2.jpg' %}" alt="Dry raw cashew nuts being sun-dried" class="absolute inset-0 h-full w-full object-cover transition duration-700 hover:scale-105" />
+          <div class="absolute inset-0 bg-gradient-to-t from-[#2c1a10]/80 via-[#4b2c1c]/20 to-transparent"></div>
+          <div class="absolute bottom-7 left-7 right-7"><div class="rounded-2xl border border-white/15 bg-black/20 p-5 backdrop-blur-md"><p class="text-xs font-bold uppercase tracking-[0.2em] text-[#e0b35e]">Our Drying Yards</p><p class="mt-2 font-serif text-2xl font-semibold text-white">From fresh harvest<br>to dry RCN.</p></div></div>
+        </div>
+        <div class="p-8 text-white sm:p-12 lg:p-16">
+          <p class="text-xs font-bold uppercase tracking-[0.25em] text-[#e0b35e]">What We Do</p>
+          <h3 class="mt-4 max-w-xl font-serif text-3xl font-semibold leading-tight sm:text-4xl lg:text-5xl">We prepare <span class="text-[#e0b35e]">dry cashew nuts</span> for the market.</h3>
+          <p class="mt-6 max-w-xl text-sm leading-8 text-white/70 sm:text-base">Our role is focused on sourcing and preparing Raw Cashew Nuts for trade. We work with agricultural communities, consolidate harvested nuts and carefully dry them before storage and sale.</p>
+          <p class="mt-4 max-w-xl text-sm leading-8 text-white/70 sm:text-base">We do not process the nuts into kernels. Our product is <strong class="font-semibold text-white">dry Raw Cashew Nut (RCN)</strong> supplied to buyers and markets that require quality dried cashew for further processing or trade.</p>
+          <div class="mt-10 space-y-4">
+            <div class="flex items-start gap-4 rounded-2xl border border-white/10 bg-white/5 p-5"><div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#e0b35e]/10 text-[#e0b35e]"><svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M12 3v18m9-9H3"/></svg></div><div><h4 class="font-semibold">Direct Agricultural Sourcing</h4><p class="mt-1 text-sm leading-6 text-white/50">We work within farming and aggregation networks to source harvested raw cashew nuts.</p></div></div>
+            <div class="flex items-start gap-4 rounded-2xl border border-white/10 bg-white/5 p-5"><div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#e0b35e]/10 text-[#e0b35e]"><svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M12 3a9 9 0 100 18 9 9 0 000-18z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M12 7v5l3 2"/></svg></div><div><h4 class="font-semibold">Controlled Sun-Drying</h4><p class="mt-1 text-sm leading-6 text-white/50">Nuts are spread and regularly turned across suitable drying surfaces to encourage consistent moisture reduction.</p></div></div>
+            <div class="flex items-start gap-4 rounded-2xl border border-white/10 bg-white/5 p-5"><div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#e0b35e]/10 text-[#e0b35e]"><svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M5 13l4 4L19 7"/></svg></div><div><h4 class="font-semibold">Quality-Focused Handling</h4><p class="mt-1 text-sm leading-6 text-white/50">We pay close attention to cleanliness, moisture condition, storage and general quality throughout the handling process.</p></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- process -->
+    <div class="mx-auto mt-28 max-w-3xl text-center"><p class="text-xs font-bold uppercase tracking-[0.25em] text-[#a66d2e]">Our Supply Journey</p><h3 class="mt-3 font-serif text-3xl font-semibold text-[#392318] sm:text-4xl lg:text-5xl">From Farm to Export</h3><p class="mt-5 text-base leading-8 text-[#71645a]">A straightforward agricultural supply chain built around careful sourcing, drying, storage and reliable delivery.</p></div>
+    <div class="relative mx-auto mt-16 max-w-6xl">
+      <div class="absolute left-7 top-10 bottom-10 hidden w-px bg-gradient-to-b from-[#d9a441] via-[#b77938] to-[#6f4326] md:block"></div>
+      <div class="group relative mb-8 flex gap-6 md:gap-8"><div class="relative z-10 flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border-4 border-[#f7f4ed] bg-[#6f4326] text-sm font-bold text-white shadow-lg transition duration-300 group-hover:scale-110">01</div><div class="flex-1 rounded-3xl border border-[#6f4326]/10 bg-white p-7 shadow-sm transition duration-300 group-hover:-translate-y-1 group-hover:shadow-xl md:p-8"><p class="text-xs font-bold uppercase tracking-[0.18em] text-[#b37a38]">Sourcing</p><h4 class="mt-2 text-xl font-bold text-[#392318] sm:text-2xl">Farm Procurement</h4><p class="mt-4 max-w-3xl text-sm leading-7 text-[#6f6258] sm:text-base">We source raw cashew nuts through agricultural communities, farmers and aggregation networks, bringing harvested nuts into our supply chain for careful handling and drying.</p></div></div>
+      <div class="group relative mb-8 flex gap-6 md:gap-8"><div class="relative z-10 flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border-4 border-[#f7f4ed] bg-[#6f4326] text-sm font-bold text-white shadow-lg transition duration-300 group-hover:scale-110">02</div><div class="flex-1 rounded-3xl border border-[#6f4326]/10 bg-white p-7 shadow-sm transition duration-300 group-hover:-translate-y-1 group-hover:shadow-xl md:p-8"><p class="text-xs font-bold uppercase tracking-[0.18em] text-[#b37a38]">Intake</p><h4 class="mt-2 text-xl font-bold text-[#392318] sm:text-2xl">Inspection & Consolidation</h4><p class="mt-4 max-w-3xl text-sm leading-7 text-[#6f6258] sm:text-base">Incoming nuts are inspected and consolidated by batch. We pay attention to visible quality, foreign matter, general condition and other characteristics important to the intended market.</p></div></div>
+      <div class="group relative mb-8 flex gap-6 md:gap-8"><div class="relative z-10 flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border-4 border-[#f7f4ed] bg-[#6f4326] text-sm font-bold text-white shadow-lg transition duration-300 group-hover:scale-110">03</div><div class="flex-1 rounded-3xl border border-[#6f4326]/10 bg-white p-7 shadow-sm transition duration-300 group-hover:-translate-y-1 group-hover:shadow-xl md:p-8"><div class="flex flex-wrap items-start justify-between gap-4"><div><p class="text-xs font-bold uppercase tracking-[0.18em] text-[#b37a38]">Drying</p><h4 class="mt-2 text-xl font-bold text-[#392318] sm:text-2xl">Natural Sun-Drying</h4></div><span class="rounded-full bg-[#fbf4df] px-3 py-1 text-xs font-semibold text-[#76502e]">Solar Drying</span></div><p class="mt-4 max-w-3xl text-sm leading-7 text-[#6f6258] sm:text-base">Freshly harvested nuts are spread across suitable drying yards and regularly turned to encourage even exposure to sunlight and gradual moisture reduction.</p></div></div>
+      <div class="group relative mb-8 flex gap-6 md:gap-8"><div class="relative z-10 flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border-4 border-[#f7f4ed] bg-[#6f4326] text-sm font-bold text-white shadow-lg transition duration-300 group-hover:scale-110">04</div><div class="flex-1 rounded-3xl border border-[#6f4326]/10 bg-white p-7 shadow-sm transition duration-300 group-hover:-translate-y-1 group-hover:shadow-xl md:p-8"><p class="text-xs font-bold uppercase tracking-[0.18em] text-[#b37a38]">Quality</p><h4 class="mt-2 text-xl font-bold text-[#392318] sm:text-2xl">Moisture & Quality Checks</h4><p class="mt-4 max-w-3xl text-sm leading-7 text-[#6f6258] sm:text-base">Drying progress is monitored so that the nuts reach the condition required for appropriate storage, handling and sale.</p></div></div>
+      <div class="group relative mb-8 flex gap-6 md:gap-8"><div class="relative z-10 flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border-4 border-[#f7f4ed] bg-[#6f4326] text-sm font-bold text-white shadow-lg transition duration-300 group-hover:scale-110">05</div><div class="flex-1 rounded-3xl border border-[#6f4326]/10 bg-white p-7 shadow-sm transition duration-300 group-hover:-translate-y-1 group-hover:shadow-xl md:p-8"><p class="text-xs font-bold uppercase tracking-[0.18em] text-[#b37a38]">Storage</p><h4 class="mt-2 text-xl font-bold text-[#392318] sm:text-2xl">Dry RCN Storage</h4><p class="mt-4 max-w-3xl text-sm leading-7 text-[#6f6258] sm:text-base">Once adequately dried, the nuts are consolidated and stored under suitable conditions while awaiting buyer requirements, transportation or export.</p></div></div>
+      <div class="group relative flex gap-6 md:gap-8"><div class="relative z-10 flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border-4 border-[#f7f4ed] bg-[#9a6428] text-sm font-bold text-white shadow-lg transition duration-300 group-hover:scale-110">06</div><div class="flex-1 rounded-3xl border border-[#6f4326]/10 bg-white p-7 shadow-sm transition duration-300 group-hover:-translate-y-1 group-hover:shadow-xl md:p-8"><div class="flex flex-wrap items-start justify-between gap-4"><div><p class="text-xs font-bold uppercase tracking-[0.18em] text-[#b37a38]">Final Stage</p><h4 class="mt-2 text-xl font-bold text-[#392318] sm:text-2xl">Supply & Export</h4></div><span class="rounded-full bg-[#edf4f2] px-3 py-1 text-xs font-semibold text-[#466a62]">Market Ready</span></div><p class="mt-4 max-w-3xl text-sm leading-7 text-[#6f6258] sm:text-base">Our dry Raw Cashew Nuts are supplied to buyers and prepared for transportation and export according to agreed commercial and logistical requirements.</p></div></div>
+    </div>
+    <!-- product positioning -->
+    <div class="mt-28 overflow-hidden rounded-[2.5rem] bg-[#392318] shadow-[0_30px_80px_rgba(61,38,22,0.18)]">
+      <div class="grid lg:grid-cols-[1.15fr_0.85fr]">
+        <div class="p-8 sm:p-12 lg:p-16"><div class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2"><span class="h-2 w-2 rounded-full bg-[#e0b35e]"></span><span class="text-xs font-bold uppercase tracking-[0.2em] text-[#e0b35e]">Our Product</span></div><h3 class="mt-6 max-w-2xl font-serif text-3xl font-semibold leading-tight text-white sm:text-4xl lg:text-5xl">Dry Raw Cashew Nuts <span class="text-[#e0b35e]">for serious buyers.</span></h3><p class="mt-6 max-w-2xl text-sm leading-8 text-white/65 sm:text-base">We focus on one product and do it with care: <strong class="text-white">quality dry Raw Cashew Nuts.</strong> Our supply is intended for commodity buyers, processors, exporters, traders and other commercial partners seeking properly handled RCN.</p><div class="mt-10 grid gap-4 sm:grid-cols-2"><div class="rounded-2xl border border-white/10 bg-white/5 p-5"><p class="text-xs font-bold uppercase tracking-[0.18em] text-[#e0b35e]">Product</p><p class="mt-3 text-lg font-semibold text-white">Dry RCN</p><p class="mt-2 text-xs leading-6 text-white/45">Raw cashew nuts prepared for trade and further processing by buyers.</p></div><div class="rounded-2xl border border-white/10 bg-white/5 p-5"><p class="text-xs font-bold uppercase tracking-[0.18em] text-[#e0b35e]">Supply</p><p class="mt-3 text-lg font-semibold text-white">Bulk Orders</p><p class="mt-2 text-xs leading-6 text-white/45">Commercial supply for buyers with agreed quantity and logistical requirements.</p></div></div></div>
+        <div class="relative min-h-[400px] overflow-hidden">
+        <img src="{% static 'images/cashew3.jpg' %}" alt="Dry raw cashew nuts ready for sale and export" class="absolute inset-0 h-full w-full object-cover" /><div class="absolute inset-0 bg-gradient-to-r from-[#392318] via-[#392318]/20 to-transparent"></div><div class="absolute bottom-8 left-8 right-8 rounded-2xl border border-white/15 bg-black/20 p-6 backdrop-blur-md"><p class="text-xs font-bold uppercase tracking-[0.2em] text-[#e0b35e]">Dikubs</p><p class="mt-2 font-serif text-2xl font-semibold text-white">Agricultural commodities.<br>Carefully supplied.</p></div></div>
+      </div>
+    </div>
+    <div class="mt-24 text-center"><div class="mx-auto h-px w-24 bg-gradient-to-r from-transparent via-[#a66d2e] to-transparent"></div><h3 class="mx-auto mt-8 max-w-3xl font-serif text-3xl font-semibold leading-tight text-[#392318] sm:text-4xl">From African farms <span class="text-[#9a6428]">to global markets.</span></h3><p class="mx-auto mt-5 max-w-2xl text-sm leading-7 text-[#75685e] sm:text-base">We connect agricultural supply with commercial demand by carefully sourcing, drying and supplying Raw Cashew Nuts to buyers who value dependable quality and supply.</p><p class="mt-4 text-xs text-[#9a8b7e]">*Drying duration and final moisture condition may vary according to harvest condition, weather and batch characteristics.</p></div>
+  </div>
+</section>
+
+<!-- ===== WAREHOUSE & EXPORT ===== -->
+<section id="warehouse-export" class="relative overflow-hidden bg-[#f5f2eb] py-24 sm:py-28 lg:py-36" style="max-width:100%;">
+  <div class="pointer-events-none absolute inset-0 overflow-hidden"><div class="absolute -left-48 top-20 h-[32rem] w-[32rem] rounded-full bg-[#8b5a32]/10 blur-3xl"></div><div class="absolute -right-48 top-[30%] h-[34rem] w-[34rem] rounded-full bg-[#d6a54a]/10 blur-3xl"></div><div class="absolute bottom-0 left-[35%] h-96 w-96 rounded-full bg-[#58733a]/10 blur-3xl"></div></div>
+  <div class="relative mx-auto max-w-7xl px-6 lg:px-8">
+    <div class="mx-auto max-w-4xl text-center"><div class="mb-7 inline-flex items-center gap-3 rounded-full border border-[#6f4326]/15 bg-white/80 px-4 py-2 shadow-sm backdrop-blur"><span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#6f4326] text-xs font-bold text-white">D</span><span class="text-xs font-bold uppercase tracking-[0.22em] text-[#6f4326]">Warehouse & Global Trade</span></div><h2 class="font-serif text-4xl font-semibold leading-[1.05] tracking-tight text-[#35251b] sm:text-5xl lg:text-7xl">From Local Harvest<br><span class="text-[#8f602e]">to Global Markets.</span></h2><p class="mx-auto mt-7 max-w-3xl text-base leading-8 text-[#6f6258] sm:text-lg">Our warehouse and logistics operations are designed to help us receive, dry, consolidate, store and prepare Raw Cashew Nuts for reliable delivery to buyers across domestic and international markets.</p></div>
+    <div class="mx-auto mt-14 grid max-w-5xl overflow-hidden rounded-[2rem] border border-[#6f4326]/10 bg-white/80 shadow-[0_25px_70px_rgba(60,40,25,0.08)] backdrop-blur sm:grid-cols-2 lg:grid-cols-4">
+      <div class="border-b border-[#6f4326]/10 p-7 text-center lg:border-b-0 lg:border-r"><div class="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[#f7eee5] text-[#7b4c2d]"><svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M3 7h18M5 7v10a2 2 0 002 2h10a2 2 0 002-2V7"/></svg></div><div class="mt-4 text-2xl font-bold text-[#35251b]">Bulk</div><p class="mt-2 text-xs font-semibold uppercase tracking-[0.15em] text-[#8b7d72]">Commodity Supply</p></div>
+      <div class="border-b border-[#6f4326]/10 p-7 text-center sm:border-r lg:border-b-0"><div class="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[#eef4e7] text-[#58733a]"><svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M12 3v18M3 12h18"/></svg></div><div class="mt-4 text-2xl font-bold text-[#35251b]">Dry RCN</div><p class="mt-2 text-xs font-semibold uppercase tracking-[0.15em] text-[#8b7d72]">Core Product</p></div>
+      <div class="border-b border-[#6f4326]/10 p-7 text-center lg:border-b-0 lg:border-r"><div class="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[#fbf4df] text-[#a16c2d]"><svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M3 12h18M12 3l9 9-9 9"/></svg></div><div class="mt-4 text-2xl font-bold text-[#35251b]">Export</div><p class="mt-2 text-xs font-semibold uppercase tracking-[0.15em] text-[#8b7d72]">International Trade</p></div>
+      <div class="p-7 text-center"><div class="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[#edf4f2] text-[#466a62]"><svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M5 13l4 4L19 7"/></svg></div><div class="mt-4 text-2xl font-bold text-[#35251b]">Quality</div><p class="mt-2 text-xs font-semibold uppercase tracking-[0.15em] text-[#8b7d72]">Supply Focus</p></div>
+    </div>
+    <!-- warehouse feature -->
+    <div class="mt-20 overflow-hidden rounded-[2.5rem] bg-[#38251b] shadow-[0_35px_100px_rgba(50,30,20,0.15)]">
+      <div class="grid lg:grid-cols-[1.05fr_0.95fr]">
+        <div class="relative min-h-[540px] overflow-hidden">
+        <img src="{% static 'images/cashew4.jpg'%}" alt="Dikubs cashew warehouse" class="absolute inset-0 h-full w-full object-cover transition duration-700 hover:scale-105" /><div class="absolute inset-0 bg-gradient-to-t from-[#24160e]/90 via-[#38251b]/20 to-transparent"></div><div class="absolute bottom-7 left-7 right-7"><div class="rounded-2xl border border-white/15 bg-black/20 p-6 backdrop-blur-md"><p class="text-xs font-bold uppercase tracking-[0.22em] text-[#e0b35e]">Warehouse Operations</p><p class="mt-2 font-serif text-2xl font-semibold leading-tight text-white sm:text-3xl">Where every batch is<br>prepared for its next destination.</p></div></div></div>
+        <div class="p-8 text-white sm:p-12 lg:p-16"><p class="text-xs font-bold uppercase tracking-[0.25em] text-[#e0b35e]">Our Warehouse</p><h3 class="mt-4 max-w-xl font-serif text-3xl font-semibold leading-tight sm:text-4xl lg:text-5xl">Built around <span class="text-[#e0b35e]">careful handling.</span></h3><p class="mt-6 max-w-xl text-sm leading-8 text-white/65 sm:text-base">Our warehouse serves as an important link between agricultural sourcing and final delivery. After drying and quality checks, cashews are consolidated and held under suitable storage conditions while orders and transportation arrangements are coordinated.</p><p class="mt-4 max-w-xl text-sm leading-8 text-white/65 sm:text-base">Good warehouse management helps us maintain batch organization, reduce unnecessary handling and prepare commercial quantities for loading and transportation.</p><div class="mt-10 space-y-3"><div class="flex items-start gap-4 rounded-2xl border border-white/10 bg-white/5 p-4"><div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#e0b35e]/10 text-[#e0b35e]"><svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M4 7h16M4 12h16M4 17h16"/></svg></div><div><h4 class="font-semibold text-white">Organized Batch Storage</h4><p class="mt-1 text-xs leading-6 text-white/45">Cashews can be consolidated and organized according to batch, quantity and commercial requirements.</p></div></div><div class="flex items-start gap-4 rounded-2xl border border-white/10 bg-white/5 p-4"><div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#e0b35e]/10 text-[#e0b35e]"><svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M12 3a9 9 0 100 18 9 9 0 000-18z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M12 7v5l3 2"/></svg></div><div><h4 class="font-semibold text-white">Storage Monitoring</h4><p class="mt-1 text-xs leading-6 text-white/45">Storage practices are focused on protecting the condition of dry cashews while they await dispatch.</p></div></div><div class="flex items-start gap-4 rounded-2xl border border-white/10 bg-white/5 p-4"><div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#e0b35e]/10 text-[#e0b35e]"><svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M3 7h18M5 7v10a2 2 0 002 2h10a2 2 0 002-2V7"/></svg></div><div><h4 class="font-semibold text-white">Dispatch Preparation</h4><p class="mt-1 text-xs leading-6 text-white/45">Orders are prepared for collection, trucking and onward transportation according to agreed requirements.</p></div></div></div></div>
+      </div>
+    </div>
+    <!-- international shipping -->
+    <div class="mx-auto mt-28 max-w-3xl text-center"><p class="text-xs font-bold uppercase tracking-[0.25em] text-[#a66d2e]">International Logistics</p><h3 class="mt-3 font-serif text-3xl font-semibold text-[#35251b] sm:text-4xl lg:text-5xl">From our warehouse<br><span class="text-[#8f602e]">to the buyer's destination.</span></h3><p class="mt-5 text-base leading-8 text-[#71645a]">International shipment involves several coordinated stages. Our role is to organize the product and work with the appropriate logistics, transport and export partners to move the shipment from origin toward its final destination.</p></div>
+    <div class="relative mx-auto mt-16 max-w-6xl">
+      <div class="absolute left-7 top-10 bottom-10 hidden w-px bg-gradient-to-b from-[#d6a54a] via-[#a36d35] to-[#58733a] md:block"></div>
+      <div class="group relative mb-8 flex gap-6 md:gap-8"><div class="relative z-10 flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border-4 border-[#f5f2eb] bg-[#6f4326] text-sm font-bold text-white shadow-lg transition duration-300 group-hover:scale-110">01</div><div class="flex-1 rounded-3xl border border-[#6f4326]/10 bg-white p-7 shadow-sm transition duration-300 group-hover:-translate-y-1 group-hover:shadow-xl md:p-8"><div class="flex flex-wrap items-start justify-between gap-4"><div><p class="text-xs font-bold uppercase tracking-[0.18em] text-[#b37a38]">Origin</p><h4 class="mt-2 text-xl font-bold text-[#35251b] sm:text-2xl">Product Preparation</h4></div><span class="rounded-full bg-[#f7eee5] px-3 py-1 text-xs font-semibold text-[#76502e]">Warehouse</span></div><p class="mt-4 max-w-3xl text-sm leading-7 text-[#6f6258] sm:text-base">The required quantity of dry Raw Cashew Nuts is consolidated, checked and prepared for dispatch according to the agreed order specifications.</p></div></div>
+      <div class="group relative mb-8 flex gap-6 md:gap-8"><div class="relative z-10 flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border-4 border-[#f5f2eb] bg-[#6f4326] text-sm font-bold text-white shadow-lg transition duration-300 group-hover:scale-110">02</div><div class="flex-1 rounded-3xl border border-[#6f4326]/10 bg-white p-7 shadow-sm transition duration-300 group-hover:-translate-y-1 group-hover:shadow-xl md:p-8"><p class="text-xs font-bold uppercase tracking-[0.18em] text-[#b37a38]">Documentation</p><h4 class="mt-2 text-xl font-bold text-[#35251b] sm:text-2xl">Export & Commercial Documentation</h4><p class="mt-4 max-w-3xl text-sm leading-7 text-[#6f6258] sm:text-base">Depending on the destination, shipment structure and applicable regulations, the required commercial, shipping and export documentation is prepared or coordinated with the relevant parties.</p></div></div>
+      <div class="group relative mb-8 flex gap-6 md:gap-8"><div class="relative z-10 flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border-4 border-[#f5f2eb] bg-[#6f4326] text-sm font-bold text-white shadow-lg transition duration-300 group-hover:scale-110">03</div><div class="flex-1 rounded-3xl border border-[#6f4326]/10 bg-white p-7 shadow-sm transition duration-300 group-hover:-translate-y-1 group-hover:shadow-xl md:p-8"><p class="text-xs font-bold uppercase tracking-[0.18em] text-[#b37a38]">Inland Logistics</p><h4 class="mt-2 text-xl font-bold text-[#35251b] sm:text-2xl">Trucking to the Port</h4><p class="mt-4 max-w-3xl text-sm leading-7 text-[#6f6258] sm:text-base">Once the shipment is ready, appropriate transport is arranged to move the cargo from the warehouse or collection point to the designated port or export terminal.</p></div></div>
+      <div class="group relative mb-8 flex gap-6 md:gap-8"><div class="relative z-10 flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border-4 border-[#f5f2eb] bg-[#6f4326] text-sm font-bold text-white shadow-lg transition duration-300 group-hover:scale-110">04</div><div class="flex-1 rounded-3xl border border-[#6f4326]/10 bg-white p-7 shadow-sm transition duration-300 group-hover:-translate-y-1 group-hover:shadow-xl md:p-8"><p class="text-xs font-bold uppercase tracking-[0.18em] text-[#b37a38]">Port Operations</p><h4 class="mt-2 text-xl font-bold text-[#35251b] sm:text-2xl">Cargo Handling & Loading</h4><p class="mt-4 max-w-3xl text-sm leading-7 text-[#6f6258] sm:text-base">Cargo is delivered to the designated export terminal where it proceeds through applicable cargo handling, inspection and loading procedures before departure.</p></div></div>
+      <div class="group relative mb-8 flex gap-6 md:gap-8"><div class="relative z-10 flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border-4 border-[#f5f2eb] bg-[#6f4326] text-sm font-bold text-white shadow-lg transition duration-300 group-hover:scale-110">05</div><div class="flex-1 rounded-3xl border border-[#6f4326]/10 bg-white p-7 shadow-sm transition duration-300 group-hover:-translate-y-1 group-hover:shadow-xl md:p-8"><p class="text-xs font-bold uppercase tracking-[0.18em] text-[#b37a38]">Ocean Freight</p><h4 class="mt-2 text-xl font-bold text-[#35251b] sm:text-2xl">International Sea Shipment</h4><p class="mt-4 max-w-3xl text-sm leading-7 text-[#6f6258] sm:text-base">For international orders, cargo may be transported by sea freight to the buyer's designated destination port, subject to the agreed shipping arrangement and applicable trade terms.</p></div></div>
+      <div class="group relative flex gap-6 md:gap-8"><div class="relative z-10 flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border-4 border-[#f5f2eb] bg-[#58733a] text-sm font-bold text-white shadow-lg transition duration-300 group-hover:scale-110">06</div><div class="flex-1 rounded-3xl border border-[#6f4326]/10 bg-white p-7 shadow-sm transition duration-300 group-hover:-translate-y-1 group-hover:shadow-xl md:p-8"><p class="text-xs font-bold uppercase tracking-[0.18em] text-[#58733a]">Destination</p><h4 class="mt-2 text-xl font-bold text-[#35251b] sm:text-2xl">Arrival at the Buyer's Port</h4><p class="mt-4 max-w-3xl text-sm leading-7 text-[#6f6258] sm:text-base">The shipment reaches the agreed destination port, where destination-side customs clearance, import procedures and onward delivery are handled according to the agreed commercial arrangement.</p></div></div>
+    </div>
+    <!-- global trade visual -->
+    <div class="mt-28 overflow-hidden rounded-[2.5rem] bg-[#30412b] shadow-[0_35px_100px_rgba(40,60,30,0.16)]">
+      <div class="grid lg:grid-cols-[0.9fr_1.1fr]">
+        <div class="p-8 text-white sm:p-12 lg:p-16"><p class="text-xs font-bold uppercase tracking-[0.25em] text-[#d9b35e]">Global Reach</p><h3 class="mt-4 font-serif text-3xl font-semibold leading-tight sm:text-4xl lg:text-5xl">African agricultural<br><span class="text-[#d9b35e]">supply meets global demand.</span></h3><p class="mt-6 text-sm leading-8 text-white/65 sm:text-base">International trade is more than moving a product from one location to another. It requires coordination between the seller, buyer, transport providers, port operators, customs authorities and other relevant parties.</p><p class="mt-4 text-sm leading-8 text-white/65 sm:text-base">We approach every shipment with attention to quantity, product condition, documentation, logistics and agreed delivery requirements.</p><div class="mt-10 grid gap-4 sm:grid-cols-2"><div class="rounded-2xl border border-white/10 bg-white/5 p-5"><div class="text-[#d9b35e]"><svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M5 13l4 4L19 7"/></svg></div><h4 class="mt-4 font-semibold">Buyer Coordination</h4><p class="mt-2 text-xs leading-6 text-white/45">Shipment requirements are aligned with the buyer before dispatch.</p></div><div class="rounded-2xl border border-white/10 bg-white/5 p-5"><div class="text-[#d9b35e]"><svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M12 3v18M3 12h18"/></svg></div><h4 class="mt-4 font-semibold">Logistics Planning</h4><p class="mt-2 text-xs leading-6 text-white/45">Transportation and shipment arrangements are coordinated around the order.</p></div><div class="rounded-2xl border border-white/10 bg-white/5 p-5"><div class="text-[#d9b35e]"><svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M3 7h18M5 7v10a2 2 0 002 2h10a2 2 0 002-2V7"/></svg></div><h4 class="mt-4 font-semibold">Bulk Supply</h4><p class="mt-2 text-xs leading-6 text-white/45">Commercial quantities can be consolidated for suitable buyer orders.</p></div><div class="rounded-2xl border border-white/10 bg-white/5 p-5"><div class="text-[#d9b35e]"><svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M12 2a10 10 0 100 20 10 10 0 000-20z"/></svg></div><h4 class="mt-4 font-semibold">International Delivery</h4><p class="mt-2 text-xs leading-6 text-white/45">Shipments can be arranged toward agreed international destinations.</p></div></div></div>
+        <div class="relative min-h-[500px] overflow-hidden">
+        <img src="{% static 'images/cashew3.jpg' %}" alt="Cashew export and international shipping" class="absolute inset-0 h-full w-full object-cover" /><div class="absolute inset-0 bg-gradient-to-r from-[#30412b] via-[#30412b]/30 to-transparent"></div><div class="absolute bottom-8 left-8 right-8 rounded-2xl border border-white/15 bg-black/20 p-6 backdrop-blur-md"><div class="flex items-center gap-4"><div class="flex h-12 w-12 items-center justify-center rounded-xl bg-[#d9b35e] text-[#30412b]"><svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M3 17h18M5 17l1-5h12l1 5M8 12V8h8v4M9 20h6"/></svg></div><div><p class="text-xs font-bold uppercase tracking-[0.2em] text-[#d9b35e]">Export Logistics</p><p class="mt-1 text-lg font-semibold text-white">Warehouse → Port → Destination</p></div></div></div></div>
+      </div>
+    </div>
+    <!-- shipping options -->
+    <div class="mt-24"><div class="mx-auto max-w-3xl text-center"><p class="text-xs font-bold uppercase tracking-[0.25em] text-[#a66d2e]">Flexible Logistics</p><h3 class="mt-3 font-serif text-3xl font-semibold text-[#35251b] sm:text-4xl">Built around the order.</h3><p class="mt-4 text-sm leading-7 text-[#71645a] sm:text-base">International shipments can be structured according to the quantity, destination, delivery requirements and commercial terms agreed between buyer and seller.</p></div><div class="mt-12 grid gap-6 md:grid-cols-3"><div class="group rounded-[2rem] border border-[#6f4326]/10 bg-white p-8 shadow-sm transition duration-300 hover:-translate-y-2 hover:shadow-xl"><div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#f7eee5] text-[#7b4c2d]"><svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M3 7h18M5 7v10a2 2 0 002 2h10a2 2 0 002-2V7"/></svg></div><h4 class="mt-6 text-xl font-bold text-[#35251b]">Bulk Orders</h4><p class="mt-3 text-sm leading-7 text-[#71645a]">Commercial quantities can be consolidated and prepared for suitable domestic or international orders.</p></div><div class="group rounded-[2rem] border border-[#58733a]/10 bg-[#f8fbf5] p-8 shadow-sm transition duration-300 hover:-translate-y-2 hover:shadow-xl"><div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#e8f1df] text-[#58733a]"><svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M12 3v18M3 12h18"/></svg></div><h4 class="mt-6 text-xl font-bold text-[#35251b]">Port-to-Port</h4><p class="mt-3 text-sm leading-7 text-[#71645a]">Shipping arrangements can be structured around an agreed destination port and commercial terms.</p></div><div class="group rounded-[2rem] border border-[#d6a54a]/15 bg-[#fffaf0] p-8 shadow-sm transition duration-300 hover:-translate-y-2 hover:shadow-xl"><div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#f7eac7] text-[#9b6a2e]"><svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M5 13l4 4L19 7"/></svg></div><h4 class="mt-6 text-xl font-bold text-[#35251b]">Buyer-Specific Arrangements</h4><p class="mt-3 text-sm leading-7 text-[#71645a]">Shipping, documentation and delivery responsibilities can be agreed according to the specific transaction.</p></div></div></div>
+    <!-- call to action -->
+    <div class="relative mt-28 overflow-hidden rounded-[2.5rem] bg-[#6f4326] px-8 py-14 text-center shadow-[0_30px_80px_rgba(80,45,20,0.18)] sm:px-12 lg:px-16"><div class="absolute -left-24 -top-24 h-64 w-64 rounded-full border border-white/10"></div><div class="absolute -bottom-32 -right-20 h-80 w-80 rounded-full border border-white/10"></div><div class="relative"><p class="text-xs font-bold uppercase tracking-[0.25em] text-[#e4c77f]">Looking for Dry RCN?</p><h3 class="mx-auto mt-5 max-w-3xl font-serif text-3xl font-semibold leading-tight text-white sm:text-4xl lg:text-5xl">Let's discuss your next <span class="text-[#e4c77f]">cashew shipment.</span></h3><p class="mx-auto mt-5 max-w-2xl text-sm leading-7 text-white/65 sm:text-base">Tell us your required quantity, destination and preferred delivery arrangement. Our team can discuss availability, commercial terms and the logistics required for your order.</p><div class="mt-8 flex flex-col justify-center gap-3 sm:flex-row"><a href="#contact" class="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-6 py-3.5 text-sm font-bold text-[#6f4326] shadow-lg transition duration-300 hover:-translate-y-1 hover:bg-[#fff8ea]">Request a Quote <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M5 12h14M13 6l6 6-6 6"/></svg></a><a href="#contact" class="inline-flex items-center justify-center rounded-xl border border-white/20 bg-white/5 px-6 py-3.5 text-sm font-bold text-white backdrop-blur transition duration-300 hover:bg-white/10">Contact Export Team</a></div></div></div>
+    <p class="mx-auto mt-8 max-w-3xl text-center text-xs leading-6 text-[#8b8178]">International shipment procedures, documentation, customs requirements, duties, inspections and delivery responsibilities vary by origin, destination and agreed trade terms. Specific arrangements are confirmed for each transaction.</p>
+  </div>
+</section>
+
+<!-- ===== RETAIL & BAKERY ===== -->
+<section id="retail-detail" class="relative overflow-hidden bg-white py-24 sm:py-28 lg:py-36" style="max-width:100%;">
+  <div class="pointer-events-none absolute inset-0 overflow-hidden"><div class="absolute -left-40 top-20 h-96 w-96 rounded-full bg-[#5f7f3a]/10 blur-3xl"></div><div class="absolute -right-40 top-[35%] h-[30rem] w-[30rem] rounded-full bg-[#d9a441]/10 blur-3xl"></div><div class="absolute bottom-0 left-[40%] h-80 w-80 rounded-full bg-[#7b4a2f]/5 blur-3xl"></div></div>
+  <div class="relative mx-auto max-w-7xl px-6 lg:px-8">
+    <div class="mx-auto max-w-4xl text-center"><div class="mb-6 inline-flex items-center gap-3 rounded-full border border-[#5f7f3a]/15 bg-[#f7faf3] px-4 py-2 shadow-sm"><span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#5f7f3a] text-[10px] font-bold text-white">S&B</span><span class="text-xs font-bold uppercase tracking-[0.22em] text-[#4e6830]">Retail & Bakery</span></div><h2 class="font-serif text-4xl font-semibold leading-[1.05] tracking-tight text-[#30251d] sm:text-5xl lg:text-7xl">Everyday Shopping.<br><span class="text-[#5f7f3a]">Freshly Made.</span></h2><p class="mx-auto mt-7 max-w-3xl text-base leading-8 text-[#6d6259] sm:text-lg">From everyday household essentials to fresh food and freshly baked products, our retail operations are built around convenience, quality and a welcoming shopping experience.</p></div>
+    <div class="mx-auto mt-14 grid max-w-5xl overflow-hidden rounded-[2rem] border border-[#5f7f3a]/10 bg-[#fbfcf9] shadow-[0_25px_70px_rgba(50,70,30,0.07)] sm:grid-cols-2 lg:grid-cols-4">
+      <div class="border-b border-[#5f7f3a]/10 p-7 text-center lg:border-b-0 lg:border-r"><div class="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[#edf4e6] text-[#5f7f3a]"><svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M3 7h18M5 7v10a2 2 0 002 2h10a2 2 0 002-2V7M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2"/></svg></div><div class="mt-4 text-3xl font-bold text-[#30251d]">Retail</div><p class="mt-2 text-xs font-semibold uppercase tracking-[0.15em] text-[#8b8178]">Supermarket</p></div>
+      <div class="border-b border-[#5f7f3a]/10 p-7 text-center sm:border-r lg:border-b-0"><div class="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[#fbf4df] text-[#a66d2e]"><svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M12 3v18M3 12h18"/></svg></div><div class="mt-4 text-3xl font-bold text-[#30251d]">Fresh</div><p class="mt-2 text-xs font-semibold uppercase tracking-[0.15em] text-[#8b8178]">Food</p></div>
+      <div class="border-b border-[#5f7f3a]/10 p-7 text-center lg:border-b-0 lg:border-r"><div class="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[#f8eee8] text-[#8b5638]"><svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M12 4v16M4 12h16"/></svg></div><div class="mt-4 text-3xl font-bold text-[#30251d]">Bakery</div><p class="mt-2 text-xs font-semibold uppercase tracking-[0.15em] text-[#8b8178]">Freshly Baked</p></div>
+      <div class="p-7 text-center"><div class="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[#edf4f2] text-[#466a62]"><svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M5 13l4 4L19 7"/></svg></div><div class="mt-4 text-3xl font-bold text-[#30251d]">Quality</div><p class="mt-2 text-xs font-semibold uppercase tracking-[0.15em] text-[#8b8178]">Every Day</p></div>
+    </div>
+    <!-- supermarket feature -->
+    <div class="mt-20 overflow-hidden rounded-[2.5rem] bg-[#f4f7ef]"><div class="grid lg:grid-cols-[1.05fr_0.95fr]"><div class="relative min-h-[520px] overflow-hidden"><img src="{% static 'images/market2.jpg'%}" alt="Dikubs supermarket" class="absolute inset-0 h-full w-full object-cover transition duration-700 hover:scale-105" /><div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div><div class="absolute bottom-7 left-7 right-7"><div class="rounded-2xl border border-white/15 bg-black/20 p-5 backdrop-blur-md"><p class="text-xs font-bold uppercase tracking-[0.2em] text-[#dce9c9]">Retail Experience</p><p class="mt-2 font-serif text-2xl font-semibold text-white">A place for everyday<br>shopping and essentials.</p></div></div></div><div class="p-8 sm:p-12 lg:p-16"><div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#5f7f3a] text-white shadow-lg"><svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M3 7h18M5 7v10a2 2 0 002 2h10a2 2 0 002-2V7M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2"/></svg></div><p class="mt-8 text-xs font-bold uppercase tracking-[0.22em] text-[#5f7f3a]">Supermarket</p><h3 class="mt-3 font-serif text-3xl font-semibold leading-tight text-[#30251d] sm:text-4xl">Everything you need, <span class="text-[#5f7f3a]">under one roof.</span></h3><p class="mt-6 text-sm leading-8 text-[#6d6259] sm:text-base">Our supermarkets are designed to make everyday shopping convenient and enjoyable, bringing together food, household products and essential goods in one accessible retail environment.</p><div class="mt-10 grid gap-3 sm:grid-cols-2"><div class="rounded-2xl border border-[#5f7f3a]/10 bg-white p-5 transition duration-300 hover:-translate-y-1 hover:shadow-lg"><div class="flex items-center gap-3"><span class="flex h-9 w-9 items-center justify-center rounded-xl bg-[#edf4e6] text-[#5f7f3a]"><svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M12 3v18M3 12h18"/></svg></span><span class="font-semibold text-[#40352d]">Fresh Produce</span></div><p class="mt-3 text-xs leading-6 text-[#857a71]">Fruits, vegetables and selected agricultural products.</p></div><div class="rounded-2xl border border-[#5f7f3a]/10 bg-white p-5 transition duration-300 hover:-translate-y-1 hover:shadow-lg"><div class="flex items-center gap-3"><span class="flex h-9 w-9 items-center justify-center rounded-xl bg-[#edf4e6] text-[#5f7f3a]"><svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M5 4h14v16H5z"/></svg></span><span class="font-semibold text-[#40352d]">Pantry Essentials</span></div><p class="mt-3 text-xs leading-6 text-[#857a71]">Grains, oils, sugar and everyday food essentials.</p></div><div class="rounded-2xl border border-[#5f7f3a]/10 bg-white p-5 transition duration-300 hover:-translate-y-1 hover:shadow-lg"><div class="flex items-center gap-3"><span class="flex h-9 w-9 items-center justify-center rounded-xl bg-[#edf4e6] text-[#5f7f3a]"><svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M12 2l2.5 7.5H22l-6 4.5 2.5 7.5-6.5-4.5-6.5 4.5L8 14 2 9.5h7.5z"/></svg></span><span class="font-semibold text-[#40352d]">Household Goods</span></div><p class="mt-3 text-xs leading-6 text-[#857a71]">Cleaning products, toiletries and household essentials.</p></div><div class="rounded-2xl border border-[#5f7f3a]/10 bg-white p-5 transition duration-300 hover:-translate-y-1 hover:shadow-lg"><div class="flex items-center gap-3"><span class="flex h-9 w-9 items-center justify-center rounded-xl bg-[#edf4e6] text-[#5f7f3a]"><svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M3 7h18M5 7v10a2 2 0 002 2h10a2 2 0 002-2V7"/></svg></span><span class="font-semibold text-[#40352d]">Bulk Shopping</span></div><p class="mt-3 text-xs leading-6 text-[#857a71]">Larger quantities for households, businesses and commercial buyers.</p></div></div></div></div></div>
+    <!-- bakery feature -->
+    <div class="mt-8 overflow-hidden rounded-[2.5rem] bg-[#3b281f] shadow-[0_30px_90px_rgba(50,30,20,0.15)]"><div class="grid lg:grid-cols-[0.95fr_1.05fr]"><div class="order-2 p-8 text-white sm:p-12 lg:order-1 lg:p-16"><div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#d89a4b] text-white shadow-lg"><svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M4 12h16M6 12V9a6 6 0 0112 0v3M5 12v7h14v-7"/></svg></div><p class="mt-8 text-xs font-bold uppercase tracking-[0.22em] text-[#e0b35e]">Bakery</p><h3 class="mt-3 font-serif text-3xl font-semibold leading-tight sm:text-4xl">Fresh from the oven.<br><span class="text-[#e0b35e]">Made for every occasion.</span></h3><p class="mt-6 text-sm leading-8 text-white/65 sm:text-base">Our bakery brings freshly prepared breads, pastries and baked treats closer to the customer, combining familiar favourites with products made for everyday enjoyment and special occasions.</p><div class="mt-10 space-y-3"><div class="flex items-center gap-4 rounded-2xl border border-white/10 bg-white/5 p-4"><span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#e0b35e]/10 text-[#e0b35e]"><svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M12 3v18M3 12h18"/></svg></span><div><h4 class="font-semibold text-white">Fresh Bread</h4><p class="mt-1 text-xs text-white/45">Soft everyday loaves and family favourites.</p></div></div><div class="flex items-center gap-4 rounded-2xl border border-white/10 bg-white/5 p-4"><span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#e0b35e]/10 text-[#e0b35e]"><svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M5 12h14M12 5v14"/></svg></span><div><h4 class="font-semibold text-white">Pastries & Treats</h4><p class="mt-1 text-xs text-white/45">Sweet and savoury baked products for every occasion.</p></div></div><div class="flex items-center gap-4 rounded-2xl border border-white/10 bg-white/5 p-4"><span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#e0b35e]/10 text-[#e0b35e]"><svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M12 3v18M3 12h18"/></svg></span><div><h4 class="font-semibold text-white">Celebration Cakes</h4><p class="mt-1 text-xs text-white/45">Cakes and baked creations for birthdays and special moments.</p></div></div></div></div><div class="order-1 relative min-h-[500px] overflow-hidden lg:order-2">
+    <img
+  src="https://images.unsplash.com/photo-1517433670267-08bbd4be890f?auto=format&fit=crop&w=600&q=80"
+  alt="Freshly baked products from Dikubs bakery"
+  class="absolute inset-0 h-full w-full object-cover transition duration-700 hover:scale-105"
+/>
+<div class="absolute inset-0 bg-gradient-to-l from-transparent via-[#3b281f]/10 to-[#3b281f]/70"></div><div class="absolute bottom-7 left-7 right-7"><div class="rounded-2xl border border-white/15 bg-black/20 p-5 backdrop-blur-md"><p class="text-xs font-bold uppercase tracking-[0.2em] text-[#e0b35e]">Bakery Fresh</p><p class="mt-2 font-serif text-2xl font-semibold text-white">Made with care.<br>Served fresh.</p></div></div></div></div></div>
+    <!-- value cards -->
+    <div class="mt-20 grid gap-6 lg:grid-cols-3"><div class="rounded-[2rem] border border-[#5f7f3a]/10 bg-[#f7faf3] p-8 transition duration-300 hover:-translate-y-2 hover:shadow-xl"><div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#5f7f3a] text-white"><svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M12 3v18M3 12h18"/></svg></div><h4 class="mt-6 text-xl font-bold text-[#30251d]">Convenient Shopping</h4><p class="mt-3 text-sm leading-7 text-[#71665d]">A broad range of everyday products in one convenient retail environment.</p></div><div class="rounded-[2rem] border border-[#d9a441]/15 bg-[#fffbf2] p-8 transition duration-300 hover:-translate-y-2 hover:shadow-xl"><div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#d9a441] text-white"><svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M12 3v18M3 12h18"/></svg></div><h4 class="mt-6 text-xl font-bold text-[#30251d]">Fresh Food</h4><p class="mt-3 text-sm leading-7 text-[#71665d]">Fresh food and bakery products prepared to bring quality closer to our customers.</p></div><div class="rounded-[2rem] border border-[#8b5638]/10 bg-[#fbf5f0] p-8 transition duration-300 hover:-translate-y-2 hover:shadow-xl"><div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#8b5638] text-white"><svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M5 13l4 4L19 7"/></svg></div><h4 class="mt-6 text-xl font-bold text-[#30251d]">Everyday Reliability</h4><p class="mt-3 text-sm leading-7 text-[#71665d]">We aim to provide customers with dependable access to products they need for everyday life.</p></div></div>
+    <div class="mt-28 text-center"><div class="mx-auto h-px w-24 bg-gradient-to-r from-transparent via-[#5f7f3a] to-transparent"></div><h3 class="mx-auto mt-8 max-w-3xl font-serif text-3xl font-semibold leading-tight text-[#30251d] sm:text-4xl lg:text-5xl">More than a supermarket.<br><span class="text-[#5f7f3a]">Part of everyday life.</span></h3><p class="mx-auto mt-5 max-w-2xl text-sm leading-7 text-[#756b63] sm:text-base">From the products customers take home to the bread they enjoy fresh from the oven, our retail and bakery operations are built around serving everyday needs with care.</p></div>
+  </div>
+</section>
+
+<!-- ===== SUPERMARKET & BAKERY EXPERIENCE ===== -->
+<section id="supermarket-bakery" class="relative overflow-hidden bg-white py-24 sm:py-28 lg:py-36" style="max-width:100%;">
+  <div class="pointer-events-none absolute inset-0 overflow-hidden"><div class="absolute -left-40 top-20 h-96 w-96 rounded-full bg-[#58733a]/10 blur-3xl"></div><div class="absolute -right-40 top-[35%] h-[30rem] w-[30rem] rounded-full bg-[#d7a64b]/10 blur-3xl"></div><div class="absolute bottom-0 left-[45%] h-80 w-80 rounded-full bg-[#9b6337]/5 blur-3xl"></div></div>
+  <div class="relative mx-auto max-w-7xl px-6 lg:px-8">
+    <div class="mx-auto max-w-4xl text-center"><div class="mb-7 inline-flex items-center gap-3 rounded-full border border-[#58733a]/15 bg-[#f7faf3] px-4 py-2 shadow-sm"><span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#58733a] text-xs font-bold text-white">D</span><span class="text-xs font-bold uppercase tracking-[0.22em] text-[#58733a]">Supermarket & Bakery</span></div><h2 class="font-serif text-4xl font-semibold leading-[1.05] tracking-tight text-[#30251e] sm:text-5xl lg:text-7xl">Everything Your<br><span class="text-[#58733a]">Everyday Life Needs.</span></h2><p class="mx-auto mt-7 max-w-3xl text-base leading-8 text-[#71665d] sm:text-lg">From everyday provisions and household essentials to personal care products, toiletries, beverages, fresh foods and freshly baked treats, Dikubs brings the convenience of a well-stocked modern supermarket together under one roof.</p><div class="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row"><a href="#contact" class="inline-flex items-center justify-center gap-2 rounded-xl bg-[#58733a] px-6 py-3.5 text-sm font-bold text-white shadow-lg shadow-[#58733a]/15 transition duration-300 hover:-translate-y-1 hover:bg-[#49632f]">Visit Dikubs <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M5 12h14M13 6l6 6-6 6"/></svg></a><a href="#bakery" class="inline-flex items-center justify-center rounded-xl border border-[#30251e]/10 bg-white px-6 py-3.5 text-sm font-bold text-[#30251e] transition duration-300 hover:-translate-y-1 hover:bg-[#faf8f4]">Explore Our Bakery</a></div></div>
+    <div class="mx-auto mt-16 max-w-6xl overflow-hidden rounded-[2rem] border border-[#30251e]/10 bg-[#faf9f6] shadow-[0_25px_70px_rgba(50,40,30,0.07)]"><div class="grid sm:grid-cols-2 lg:grid-cols-4"><div class="group border-b border-[#30251e]/10 p-7 transition duration-300 hover:bg-white sm:border-r lg:border-b-0"><div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#eef4e7] text-[#58733a] transition group-hover:scale-110"><svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M3 3h18l-2 14H5L3 3z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M8 21h8"/></svg></div><h3 class="mt-5 font-bold text-[#30251e]">Everyday Provisions</h3><p class="mt-2 text-sm leading-6 text-[#776c62]">Groceries and essentials for everyday meals and household shopping.</p></div><div class="group border-b border-[#30251e]/10 p-7 transition duration-300 hover:bg-white lg:border-b-0 lg:border-r"><div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#f8eee6] text-[#996238] transition group-hover:scale-110"><svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M4 7h16M6 7l1 13h10l1-13"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M9 7V4h6v3"/></svg></div><h3 class="mt-5 font-bold text-[#30251e]">Personal Care</h3><p class="mt-2 text-sm leading-6 text-[#776c62]">Toiletries, personal-care products and everyday hygiene essentials.</p></div><div class="group border-b border-[#30251e]/10 p-7 transition duration-300 hover:bg-white sm:border-r lg:border-b-0"><div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#f8f2df] text-[#a6752f] transition group-hover:scale-110"><svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M5 12h14M12 5v14"/></svg></div><h3 class="mt-5 font-bold text-[#30251e]">Food & Beverages</h3><p class="mt-2 text-sm leading-6 text-[#776c62]">Drinks, snacks, pantry items and food products for the whole family.</p></div><div class="group p-7 transition duration-300 hover:bg-white"><div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#f3e9e0] text-[#795039] transition group-hover:scale-110"><svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M4 20h16M6 20V9l6-5 6 5v11"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M9 20v-5h6v5"/></svg></div><h3 class="mt-5 font-bold text-[#30251e]">Home Essentials</h3><p class="mt-2 text-sm leading-6 text-[#776c62]">Cleaning supplies, household products and practical everyday necessities.</p></div></div></div>
+    <!-- supermarket feature -->
+    <div class="mt-24 overflow-hidden rounded-[2.5rem] bg-[#34442d] shadow-[0_35px_100px_rgba(40,55,35,0.15)]"><div class="grid lg:grid-cols-[1.05fr_0.95fr]"><div class="relative min-h-[570px] overflow-hidden">
+    <img src="{% static '/images/market3.jpg' %}" alt="Dikubs supermarket" class="absolute inset-0 h-full w-full object-cover transition duration-700 hover:scale-105" /><div class="absolute inset-0 bg-gradient-to-t from-[#263321]/90 via-[#34442d]/20 to-transparent"></div><div class="absolute bottom-7 left-7 right-7"><div class="rounded-2xl border border-white/15 bg-black/20 p-6 backdrop-blur-md"><p class="text-xs font-bold uppercase tracking-[0.22em] text-[#d9b35e]">Your Everyday Shopping Destination</p><p class="mt-2 font-serif text-2xl font-semibold leading-tight text-white sm:text-3xl">More choice.<br>More convenience.<br>One destination.</p></div></div></div><div class="p-8 text-white sm:p-12 lg:p-16"><p class="text-xs font-bold uppercase tracking-[0.25em] text-[#d9b35e]">The Dikubs Supermarket</p><h3 class="mt-4 max-w-xl font-serif text-3xl font-semibold leading-tight sm:text-4xl lg:text-5xl">A store designed<br><span class="text-[#d9b35e]">around you.</span></h3><p class="mt-6 max-w-xl text-sm leading-8 text-white/65 sm:text-base">Whether you're shopping for your home, stocking up for the week, preparing for an event or simply looking for something you need right now, our supermarket is built around convenience, variety and everyday value.</p><p class="mt-4 max-w-xl text-sm leading-8 text-white/65 sm:text-base">We bring together the products people regularly need — from food and beverages to toiletries, household supplies, personal-care products and more.</p><div class="mt-10 space-y-3"><div class="flex items-start gap-4 rounded-2xl border border-white/10 bg-white/5 p-4"><div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#d9b35e]/10 text-[#d9b35e]"><svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M3 7h18M5 7v10a2 2 0 002 2h10a2 2 0 002-2V7"/></svg></div><div><h4 class="font-semibold">Wide Product Selection</h4><p class="mt-1 text-xs leading-6 text-white/45">A broad range of groceries, provisions, toiletries, beverages, household products and everyday essentials.</p></div></div><div class="flex items-start gap-4 rounded-2xl border border-white/10 bg-white/5 p-4"><div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#d9b35e]/10 text-[#d9b35e]"><svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M12 3v18M3 12h18"/></svg></div><div><h4 class="font-semibold">Convenient Shopping</h4><p class="mt-1 text-xs leading-6 text-white/45">Organized shopping spaces designed to make finding everyday products easier.</p></div></div><div class="flex items-start gap-4 rounded-2xl border border-white/10 bg-white/5 p-4"><div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#d9b35e]/10 text-[#d9b35e]"><svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M5 13l4 4L19 7"/></svg></div><div><h4 class="font-semibold">Everyday Value</h4><p class="mt-1 text-xs leading-6 text-white/45">A shopping experience focused on useful products, convenience and value for families and individuals.</p></div></div></div></div></div></div>
+    <!-- what you can find -->
+    <div class="mt-28"><div class="mx-auto max-w-3xl text-center"><p class="text-xs font-bold uppercase tracking-[0.25em] text-[#58733a]">There's More Inside</p><h3 class="mt-3 font-serif text-3xl font-semibold text-[#30251e] sm:text-4xl lg:text-5xl">One supermarket.<br><span class="text-[#8b633c]">Countless essentials.</span></h3><p class="mt-5 text-base leading-8 text-[#71665d]">From the things you buy every week to the things you only remember you need when you're already at the store, Dikubs brings a broad selection together in one convenient place.</p></div><div class="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-4"><div class="group relative overflow-hidden rounded-[1.75rem] border border-[#30251e]/10 bg-[#faf8f3] p-7 transition duration-300 hover:-translate-y-2 hover:bg-white hover:shadow-xl"><div class="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-[#58733a]/10 transition group-hover:scale-150"></div><div class="relative"><div class="text-3xl">🛒</div><h4 class="mt-5 text-lg font-bold text-[#30251e]">Groceries & Provisions</h4><p class="mt-3 text-sm leading-7 text-[#766b61]">Rice, pasta, cereals, grains, canned foods, cooking ingredients, oils, condiments, snacks and everyday pantry essentials.</p></div></div><div class="group relative overflow-hidden rounded-[1.75rem] border border-[#30251e]/10 bg-[#faf8f3] p-7 transition duration-300 hover:-translate-y-2 hover:bg-white hover:shadow-xl"><div class="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-[#d7a64b]/10 transition group-hover:scale-150"></div><div class="relative"><div class="text-3xl">🧴</div><h4 class="mt-5 text-lg font-bold text-[#30251e]">Toiletries & Personal Care</h4><p class="mt-3 text-sm leading-7 text-[#766b61]">Bath products, soaps, deodorants, skincare, hair-care, dental-care products and everyday personal essentials.</p></div></div><div class="group relative overflow-hidden rounded-[1.75rem] border border-[#30251e]/10 bg-[#faf8f3] p-7 transition duration-300 hover:-translate-y-2 hover:bg-white hover:shadow-xl"><div class="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-[#996238]/10 transition group-hover:scale-150"></div><div class="relative"><div class="text-3xl">🧹</div><h4 class="mt-5 text-lg font-bold text-[#30251e]">Home & Cleaning</h4><p class="mt-3 text-sm leading-7 text-[#766b61]">Laundry products, detergents, disinfectants, cleaning supplies, paper products and household necessities.</p></div></div><div class="group relative overflow-hidden rounded-[1.75rem] border border-[#30251e]/10 bg-[#faf8f3] p-7 transition duration-300 hover:-translate-y-2 hover:bg-white hover:shadow-xl"><div class="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-[#58733a]/10 transition group-hover:scale-150"></div><div class="relative"><div class="text-3xl">🥤</div><h4 class="mt-5 text-lg font-bold text-[#30251e]">Drinks & Refreshments</h4><p class="mt-3 text-sm leading-7 text-[#766b61]">Soft drinks, water, juices, beverages and refreshments for everyday use, gatherings and special occasions.</p></div></div><div class="group relative overflow-hidden rounded-[1.75rem] border border-[#30251e]/10 bg-[#faf8f3] p-7 transition duration-300 hover:-translate-y-2 hover:bg-white hover:shadow-xl"><div class="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-[#d7a64b]/10 transition group-hover:scale-150"></div><div class="relative"><div class="text-3xl">🥫</div><h4 class="mt-5 text-lg font-bold text-[#30251e]">Packaged Foods</h4><p class="mt-3 text-sm leading-7 text-[#766b61]">A broad range of packaged food products for households, offices, events and everyday consumption.</p></div></div><div class="group relative overflow-hidden rounded-[1.75rem] border border-[#30251e]/10 bg-[#faf8f3] p-7 transition duration-300 hover:-translate-y-2 hover:bg-white hover:shadow-xl"><div class="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-[#996238]/10 transition group-hover:scale-150"></div><div class="relative"><div class="text-3xl">👶</div><h4 class="mt-5 text-lg font-bold text-[#30251e]">Family Essentials</h4><p class="mt-3 text-sm leading-7 text-[#766b61]">Practical products for families, children and everyday household needs.</p></div></div><div class="group relative overflow-hidden rounded-[1.75rem] border border-[#30251e]/10 bg-[#faf8f3] p-7 transition duration-300 hover:-translate-y-2 hover:bg-white hover:shadow-xl"><div class="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-[#58733a]/10 transition group-hover:scale-150"></div><div class="relative"><div class="text-3xl">🎉</div><h4 class="mt-5 text-lg font-bold text-[#30251e]">Party & Event Needs</h4><p class="mt-3 text-sm leading-7 text-[#766b61]">Refreshments, packaged foods, snacks and other supplies useful for parties, celebrations and gatherings.</p></div></div><div class="group relative overflow-hidden rounded-[1.75rem] border border-[#30251e]/10 bg-[#faf8f3] p-7 transition duration-300 hover:-translate-y-2 hover:bg-white hover:shadow-xl"><div class="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-[#d7a64b]/10 transition group-hover:scale-150"></div><div class="relative"><div class="text-3xl">🧺</div><h4 class="mt-5 text-lg font-bold text-[#30251e]">And Much More</h4><p class="mt-3 text-sm leading-7 text-[#766b61]">A continuously evolving selection designed around the products our customers actually need.</p></div></div></div></div>
+    <!-- bakery -->
+    <div id="bakery" class="mt-28 overflow-hidden rounded-[2.5rem] bg-[#fff8ed] shadow-[0_30px_90px_rgba(100,65,35,0.10)]"><div class="grid lg:grid-cols-[0.95fr_1.05fr]"><div class="order-2 p-8 sm:p-12 lg:order-1 lg:p-16"><p class="text-xs font-bold uppercase tracking-[0.25em] text-[#a26835]">Fresh From The Oven</p><h3 class="mt-4 font-serif text-3xl font-semibold leading-tight text-[#3a291e] sm:text-4xl lg:text-5xl">The smell of<br><span class="text-[#a26835]">something freshly baked.</span></h3><p class="mt-6 text-sm leading-8 text-[#71645d] sm:text-base">Our bakery adds another dimension to the Dikubs shopping experience. Alongside the products on our supermarket shelves, customers can enjoy freshly prepared breads, pastries, cakes and other baked treats.</p><p class="mt-4 text-sm leading-8 text-[#71645d] sm:text-base">Whether you're picking up breakfast, buying something for the family, preparing refreshments for an event or celebrating a special occasion, our bakery gives you another reason to make Dikubs part of your day.</p><div class="mt-9 grid gap-3 sm:grid-cols-2"><div class="rounded-2xl border border-[#a26835]/10 bg-white p-5"><div class="text-2xl">🍞</div><h4 class="mt-3 font-bold text-[#3a291e]">Fresh Bread</h4><p class="mt-1 text-xs leading-6 text-[#766b61]">Freshly baked bread for everyday family meals.</p></div><div class="rounded-2xl border border-[#a26835]/10 bg-white p-5"><div class="text-2xl">🥐</div><h4 class="mt-3 font-bold text-[#3a291e]">Pastries</h4><p class="mt-1 text-xs leading-6 text-[#766b61]">Sweet and savory baked treats for every occasion.</p></div><div class="rounded-2xl border border-[#a26835]/10 bg-white p-5"><div class="text-2xl">🎂</div><h4 class="mt-3 font-bold text-[#3a291e]">Celebration Cakes</h4><p class="mt-1 text-xs leading-6 text-[#766b61]">Cakes for birthdays, celebrations and special moments.</p></div><div class="rounded-2xl border border-[#a26835]/10 bg-white p-5"><div class="text-2xl">🥯</div><h4 class="mt-3 font-bold text-[#3a291e]">Everyday Treats</h4><p class="mt-1 text-xs leading-6 text-[#766b61]">Freshly prepared treats for breakfast, snacks and sharing.</p></div></div><a href="#contact" class="mt-9 inline-flex items-center gap-2 rounded-xl bg-[#a26835] px-6 py-3.5 text-sm font-bold text-white shadow-lg shadow-[#a26835]/15 transition duration-300 hover:-translate-y-1 hover:bg-[#8c562b]">Order From Our Bakery <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M5 12h14M13 6l6 6-6 6"/></svg></a></div><div class="order-1 relative min-h-[560px] overflow-hidden lg:order-2">
+    <img src="https://images.unsplash.com/photo-1586444248902-2f64eddc13df?auto=format&fit=crop&w=600&q=80" alt="Dikubs bakery" class="absolute inset-0 h-full w-full object-cover transition duration-700 hover:scale-105" /><div class="absolute inset-0 bg-gradient-to-t from-[#5c351e]/75 via-transparent to-transparent"></div><div class="absolute bottom-7 left-7 right-7"><div class="rounded-2xl border border-white/15 bg-black/20 p-6 backdrop-blur-md"><p class="text-xs font-bold uppercase tracking-[0.2em] text-[#f0cc8b]">Dikubs Bakery</p><p class="mt-2 font-serif text-2xl font-semibold text-white sm:text-3xl">Freshly baked.<br>Ready to enjoy.</p></div></div></div></div></div>
+    <!-- why shop -->
+    <div class="mt-28"><div class="mx-auto max-w-3xl text-center"><p class="text-xs font-bold uppercase tracking-[0.25em] text-[#58733a]">Why Customers Choose Dikubs</p><h3 class="mt-3 font-serif text-3xl font-semibold text-[#30251e] sm:text-4xl lg:text-5xl">Shopping should be <span class="text-[#58733a]">simple.</span></h3></div><div class="mt-14 grid gap-5 md:grid-cols-2 lg:grid-cols-4"><div class="rounded-[1.75rem] border border-[#30251e]/10 bg-white p-7 shadow-sm"><div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#eef4e7] text-[#58733a]"><span class="text-xl">01</span></div><h4 class="mt-5 font-bold text-[#30251e]">Variety</h4><p class="mt-2 text-sm leading-7 text-[#766b61]">A broad range of everyday products in one shopping destination.</p></div><div class="rounded-[1.75rem] border border-[#30251e]/10 bg-white p-7 shadow-sm"><div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#f8eee6] text-[#996238]"><span class="text-xl">02</span></div><h4 class="mt-5 font-bold text-[#30251e]">Convenience</h4><p class="mt-2 text-sm leading-7 text-[#766b61]">Save time by getting many of your household essentials from one place.</p></div><div class="rounded-[1.75rem] border border-[#30251e]/10 bg-white p-7 shadow-sm"><div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#f8f2df] text-[#a6752f]"><span class="text-xl">03</span></div><h4 class="mt-5 font-bold text-[#30251e]">Freshness</h4><p class="mt-2 text-sm leading-7 text-[#766b61]">Enjoy bakery products prepared fresh for customers and everyday occasions.</p></div><div class="rounded-[1.75rem] border border-[#30251e]/10 bg-white p-7 shadow-sm"><div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#f3e9e0] text-[#795039]"><span class="text-xl">04</span></div><h4 class="mt-5 font-bold text-[#30251e]">Everyday Value</h4><p class="mt-2 text-sm leading-7 text-[#766b61]">A practical shopping destination built around the needs of everyday customers.</p></div></div></div>
+    <!-- big CTA -->
+    <div class="relative mt-28 overflow-hidden rounded-[2.5rem] bg-[#58733a] px-8 py-16 text-center shadow-[0_30px_90px_rgba(70,95,45,0.18)] sm:px-12 lg:px-16"><div class="absolute -left-28 -top-28 h-72 w-72 rounded-full border border-white/10"></div><div class="absolute -bottom-36 -right-24 h-96 w-96 rounded-full border border-white/10"></div><div class="relative"><p class="text-xs font-bold uppercase tracking-[0.25em] text-[#d9e6bd]">Your Next Shopping Trip Starts Here</p><h3 class="mx-auto mt-5 max-w-4xl font-serif text-3xl font-semibold leading-tight text-white sm:text-4xl lg:text-6xl">Come for what you need.<br><span class="text-[#e4c77f]">Stay for what you discover.</span></h3><p class="mx-auto mt-6 max-w-2xl text-sm leading-8 text-white/65 sm:text-base">Whether you're stocking your kitchen, refreshing your home, shopping for the family or picking up something freshly baked, make Dikubs your destination for everyday shopping.</p><div class="mt-9 flex flex-col justify-center gap-3 sm:flex-row"><a href="#contact" class="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-7 py-4 text-sm font-bold text-[#58733a] shadow-xl transition duration-300 hover:-translate-y-1 hover:bg-[#fffdf6]">Visit Dikubs Supermarket <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M5 12h14M13 6l6 6-6 6"/></svg></a><a href="#contact" class="inline-flex items-center justify-center rounded-xl border border-white/20 bg-white/5 px-7 py-4 text-sm font-bold text-white backdrop-blur transition duration-300 hover:bg-white/10">Contact Us</a></div></div></div>
+  </div>
+</section>
+
+<!-- ===== ABOUT US ===== -->
+<section id="about" class="relative overflow-hidden bg-[#f8f5ed] py-24 sm:py-28 lg:py-36" style="max-width:100%;">
+  <div class="pointer-events-none absolute inset-0 overflow-hidden"><div class="absolute -left-40 top-20 h-96 w-96 rounded-full bg-[#58733a]/10 blur-3xl"></div><div class="absolute -right-40 top-[40%] h-[32rem] w-[32rem] rounded-full bg-[#c7954d]/10 blur-3xl"></div><div class="absolute bottom-0 left-[40%] h-72 w-72 rounded-full bg-[#8c603b]/5 blur-3xl"></div></div>
+  <div class="relative mx-auto max-w-7xl px-6 lg:px-8">
+    <div class="max-w-4xl"><div class="mb-7 inline-flex items-center gap-3 rounded-full border border-[#58733a]/15 bg-white/70 px-4 py-2 shadow-sm backdrop-blur"><span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#58733a] text-xs font-bold text-white">D</span><span class="text-xs font-bold uppercase tracking-[0.24em] text-[#58733a]">About Dikubs</span></div><h2 class="max-w-4xl font-serif text-4xl font-semibold leading-[1.05] tracking-tight text-[#30251e] sm:text-5xl lg:text-7xl">Building a business<br><span class="text-[#58733a]">with purpose.</span></h2><p class="mt-7 max-w-3xl text-base leading-8 text-[#71665d] sm:text-lg">Dikubs is a growing Nigerian enterprise built around a simple principle: create lasting value by providing quality products, dependable services and experiences that people can trust.</p></div>
+    <div class="mt-16 grid gap-8 lg:grid-cols-[1.15fr_0.85fr]"><div class="rounded-[2rem] border border-[#30251e]/10 bg-white p-8 shadow-[0_20px_70px_rgba(50,40,30,0.06)] sm:p-10 lg:p-14"><p class="text-xs font-bold uppercase tracking-[0.22em] text-[#a16c3b]">Who We Are</p><h3 class="mt-4 font-serif text-3xl font-semibold leading-tight text-[#30251e] sm:text-4xl">From local enterprise<br>to a broader vision.</h3><div class="mt-7 space-y-5 text-sm leading-8 text-[#6f655d] sm:text-base"><p>Dikubs is a diversified enterprise based in Anyigba, Kogi State, Nigeria, with business interests spanning agricultural commodities, retail and bakery operations.</p><p>Our business is built around serving people and businesses with products they can rely on. From the sourcing and international trade of quality dried cashew nuts to everyday supermarket shopping and freshly baked products, we continue to develop businesses that respond to real market needs.</p><p>We believe that a successful business should do more than generate revenue. It should create opportunities, build relationships, support its community and continuously improve the value it provides to customers and partners.</p><p>As Dikubs grows, our ambition is to build a respected Nigerian business group with strong operational standards, trusted relationships and the capacity to serve markets both within Nigeria and internationally.</p></div><div class="mt-9 border-l-4 border-[#58733a] rounded-r-2xl bg-[#f5f8ef] px-6 py-5"><p class="font-serif text-lg font-medium leading-8 text-[#3c4734] sm:text-xl">"We are building for the long term — one customer, one relationship and one opportunity at a time."</p></div></div><div class="flex flex-col gap-5"><div class="rounded-[2rem] bg-[#34442d] p-8 text-white shadow-[0_25px_70px_rgba(50,70,40,0.14)] sm:p-10"><p class="text-xs font-bold uppercase tracking-[0.22em] text-[#d9b35e]">Our Business</p><h3 class="mt-4 font-serif text-3xl font-semibold leading-tight">Multiple businesses.<br>One growing vision.</h3><p class="mt-5 text-sm leading-7 text-white/60">Our operations allow Dikubs to participate across different areas of the value chain while maintaining a consistent focus on quality, service and sustainable growth.</p><div class="mt-8 space-y-3"><div class="flex items-center gap-4 rounded-2xl border border-white/10 bg-white/5 p-4"><span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#d9b35e]/10 text-[#d9b35e]">01</span><div><h4 class="font-semibold">Agricultural Commodities</h4><p class="mt-1 text-xs text-white/45">Dried cashew nut sourcing and export.</p></div></div><div class="flex items-center gap-4 rounded-2xl border border-white/10 bg-white/5 p-4"><span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#d9b35e]/10 text-[#d9b35e]">02</span><div><h4 class="font-semibold">Supermarket Retail</h4><p class="mt-1 text-xs text-white/45">Everyday products and household essentials.</p></div></div><div class="flex items-center gap-4 rounded-2xl border border-white/10 bg-white/5 p-4"><span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#d9b35e]/10 text-[#d9b35e]">03</span><div><h4 class="font-semibold">Bakery</h4><p class="mt-1 text-xs text-white/45">Fresh breads, pastries and baked products.</p></div></div></div></div><div class="flex-1 rounded-[2rem] border border-[#30251e]/10 bg-white p-8 shadow-sm sm:p-10"><div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#f1f5e9] text-[#58733a]"><svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M12 21s7-6.2 7-12a7 7 0 10-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="9" r="2.2" stroke-width="1.7"/></svg></div><h3 class="mt-5 font-serif text-2xl font-semibold text-[#30251e]">Rooted in Anyigba.<br>Thinking beyond.</h3><p class="mt-4 text-sm leading-7 text-[#71665d]">Our roots are in Anyigba, Kogi State, Nigeria. From here, we continue to build relationships, serve customers and develop opportunities with a wider national and international outlook.</p><div class="mt-6 flex items-center gap-3 text-sm font-semibold text-[#58733a]"><span class="h-2 w-2 rounded-full bg-[#58733a]"></span>Anyigba, Kogi State, Nigeria</div></div></div></div>
+    <!-- approach -->
+    <div class="mt-24"><div class="max-w-3xl"><p class="text-xs font-bold uppercase tracking-[0.25em] text-[#58733a]">What Guides Us</p><h3 class="mt-3 font-serif text-3xl font-semibold leading-tight text-[#30251e] sm:text-4xl lg:text-5xl">The principles behind <span class="text-[#8b633c]">Dikubs.</span></h3><p class="mt-5 text-base leading-8 text-[#71665d]">Our businesses may operate in different sectors, but the principles behind them remain consistent.</p></div><div class="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-4"><div class="group rounded-[1.75rem] border border-[#30251e]/10 bg-white p-7 transition duration-300 hover:-translate-y-2 hover:shadow-[0_20px_50px_rgba(50,40,30,0.08)]"><div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#eef4e7] text-[#58733a]"><svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M12 3l7 4v5c0 4.4-3 7.5-7 9-4-1.5-7-4.6-7-9V7l7-4z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M9 12l2 2 4-4"/></svg></div><h4 class="mt-5 text-lg font-bold text-[#30251e]">Quality</h4><p class="mt-3 text-sm leading-7 text-[#766b61]">We strive to maintain quality across the products we source, sell and deliver to our customers.</p></div><div class="group rounded-[1.75rem] border border-[#30251e]/10 bg-white p-7 transition duration-300 hover:-translate-y-2 hover:shadow-[0_20px_50px_rgba(50,40,30,0.08)]"><div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#f8eee6] text-[#996238]"><svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M16 11a4 4 0 10-8 0"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M4 21a8 8 0 0116 0"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M18 8a3 3 0 10-3-3"/></svg></div><h4 class="mt-5 text-lg font-bold text-[#30251e]">Integrity</h4><p class="mt-3 text-sm leading-7 text-[#766b61]">We value honest relationships, responsible business practices and keeping our commitments.</p></div><div class="group rounded-[1.75rem] border border-[#30251e]/10 bg-white p-7 transition duration-300 hover:-translate-y-2 hover:shadow-[0_20px_50px_rgba(50,40,30,0.08)]"><div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#f8f2df] text-[#a6752f]"><svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M12 20V10"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M7 20V14"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M17 20V6"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M4 20h16"/></svg></div><h4 class="mt-5 text-lg font-bold text-[#30251e]">Growth</h4><p class="mt-3 text-sm leading-7 text-[#766b61]">We continuously look for responsible ways to improve, expand our capabilities and create greater value.</p></div><div class="group rounded-[1.75rem] border border-[#30251e]/10 bg-white p-7 transition duration-300 hover:-translate-y-2 hover:shadow-[0_20px_50px_rgba(50,40,30,0.08)]"><div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#f3e9e0] text-[#795039]"><svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M12 21a9 9 0 100-18 9 9 0 000 18z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M8 12h8M12 8v8"/></svg></div><h4 class="mt-5 text-lg font-bold text-[#30251e]">Community</h4><p class="mt-3 text-sm leading-7 text-[#766b61]">We believe businesses can contribute positively to the people, communities and markets around them.</p></div></div></div>
+    <!-- mission vision -->
+    <div class="mt-24 grid gap-6 lg:grid-cols-2"><div class="relative overflow-hidden rounded-[2rem] bg-[#34442d] p-8 text-white sm:p-12"><div class="absolute -right-20 -top-20 h-52 w-52 rounded-full border border-white/10"></div><div class="relative"><div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/10 text-[#d9b35e]"><svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M4 19V5M4 5l16 5-16 5"/></svg></div><p class="mt-7 text-xs font-bold uppercase tracking-[0.24em] text-[#d9b35e]">Our Mission</p><h3 class="mt-4 font-serif text-3xl font-semibold leading-tight sm:text-4xl">To create value<br>through excellence.</h3><p class="mt-6 max-w-xl text-sm leading-8 text-white/60">To provide quality products and dependable services while building lasting relationships with customers, suppliers, partners and the communities in which we operate.</p></div></div><div class="relative overflow-hidden rounded-[2rem] border border-[#30251e]/10 bg-white p-8 shadow-sm sm:p-12"><div class="absolute -right-20 -top-20 h-52 w-52 rounded-full bg-[#58733a]/5"></div><div class="relative"><div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#eef4e7] text-[#58733a]"><svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="2.5" stroke-width="1.7"/></svg></div><p class="mt-7 text-xs font-bold uppercase tracking-[0.24em] text-[#58733a]">Our Vision</p><h3 class="mt-4 font-serif text-3xl font-semibold leading-tight text-[#30251e] sm:text-4xl">A trusted enterprise<br>built to last.</h3><p class="mt-6 max-w-xl text-sm leading-8 text-[#71665d]">To grow Dikubs into a respected and sustainable enterprise recognized for quality, reliability, innovation and positive impact across the markets we serve.</p></div></div></div>
+    <!-- leadership -->
+    <div class="mt-28 overflow-hidden rounded-[2.5rem] bg-[#30251e] text-white"><div class="grid lg:grid-cols-[0.8fr_1.2fr]"><div class="relative min-h-[500px] overflow-hidden">
+    <img src="{% static 'images/ceo.jpg'%}" alt="Dikubs Leadership" class="absolute inset-0 h-full w-full object-cover" /><div class="absolute inset-0 bg-gradient-to-t from-[#30251e] via-transparent to-transparent"></div><div class="absolute bottom-8 left-8"><p class="text-xs font-bold uppercase tracking-[0.2em] text-[#d9b35e]">Leadership</p><h3 class="mt-2 font-serif text-3xl font-semibold">The people behind Dikubs.</h3></div></div><div class="p-8 sm:p-12 lg:p-16"><p class="text-xs font-bold uppercase tracking-[0.25em] text-[#d9b35e]">Leadership & Direction</p><h3 class="mt-4 font-serif text-3xl font-semibold leading-tight sm:text-4xl lg:text-5xl">Building with <span class="text-[#d9b35e]">long-term thinking.</span></h3><p class="mt-7 max-w-2xl text-sm leading-8 text-white/60 sm:text-base">Dikubs is guided by a commitment to building a business that customers, suppliers, employees and partners can confidently grow with.</p><p class="mt-4 max-w-2xl text-sm leading-8 text-white/60 sm:text-base">Our leadership approach focuses on responsible growth, strong relationships, operational discipline and identifying opportunities where Dikubs can create meaningful value.</p><div class="mt-10 border-l-2 border-[#d9b35e] pl-6"><p class="font-serif text-xl leading-8 text-white/90">"The goal is not simply to build a bigger business. It is to build a better one."</p><p class="mt-3 text-xs font-semibold uppercase tracking-[0.18em] text-[#d9b35e]">Dikubs Leadership</p></div><div class="mt-10 grid gap-4 sm:grid-cols-3"><div class="rounded-2xl border border-white/10 bg-white/5 p-5"><p class="text-xs uppercase tracking-wider text-white/40">Focus</p><p class="mt-2 font-semibold">Quality</p></div><div class="rounded-2xl border border-white/10 bg-white/5 p-5"><p class="text-xs uppercase tracking-wider text-white/40">Approach</p><p class="mt-2 font-semibold">Integrity</p></div><div class="rounded-2xl border border-white/10 bg-white/5 p-5"><p class="text-xs uppercase tracking-wider text-white/40">Direction</p><p class="mt-2 font-semibold">Growth</p></div></div></div></div></div>
+    <!-- timeline -->
+    <div class="mt-28"><div class="mx-auto max-w-3xl text-center"><p class="text-xs font-bold uppercase tracking-[0.25em] text-[#58733a]">Our Journey</p><h3 class="mt-3 font-serif text-3xl font-semibold text-[#30251e] sm:text-4xl lg:text-5xl">Growing one opportunity<br><span class="text-[#8b633c]">at a time.</span></h3><p class="mt-5 text-base leading-8 text-[#71665d]">Dikubs continues to evolve as new opportunities emerge and our understanding of the markets we serve grows.</p></div><div class="relative mx-auto mt-16 max-w-4xl"><div class="absolute bottom-0 left-5 top-0 w-px bg-[#30251e]/10 md:left-1/2"></div><div class="relative mb-12 grid gap-8 md:grid-cols-2 md:gap-16"><div class="md:text-right"><span class="inline-flex rounded-full bg-[#eef4e7] px-4 py-2 text-xs font-bold text-[#58733a]">FOUNDATION</span><h4 class="mt-4 font-serif text-2xl font-semibold text-[#30251e]">Establishing the Dikubs vision</h4><p class="mt-3 text-sm leading-7 text-[#71665d]">Building a foundation around enterprise, customer value, responsible growth and long-term opportunity.</p></div><div class="relative hidden md:block"></div><span class="absolute left-5 top-0 flex h-3 w-3 -translate-x-1/2 rounded-full bg-[#58733a] md:left-1/2"></span></div><div class="relative mb-12 grid gap-8 md:grid-cols-2 md:gap-16"><div class="relative hidden md:block"></div><div><span class="inline-flex rounded-full bg-[#f8eee6] px-4 py-2 text-xs font-bold text-[#996238]">EXPANSION</span><h4 class="mt-4 font-serif text-2xl font-semibold text-[#30251e]">Growing into multiple sectors</h4><p class="mt-3 text-sm leading-7 text-[#71665d]">Expanding business activities into agricultural commodity trading, supermarket retail and bakery operations.</p></div><span class="absolute left-5 top-0 flex h-3 w-3 -translate-x-1/2 rounded-full bg-[#996238] md:left-1/2"></span></div><div class="relative grid gap-8 md:grid-cols-2 md:gap-16"><div class="md:text-right"><span class="inline-flex rounded-full bg-[#f8f2df] px-4 py-2 text-xs font-bold text-[#a6752f]">THE FUTURE</span><h4 class="mt-4 font-serif text-2xl font-semibold text-[#30251e]">Building for a wider market</h4><p class="mt-3 text-sm leading-7 text-[#71665d]">Continuing to strengthen operations, develop relationships and pursue opportunities across Nigeria and international markets.</p></div><div class="relative hidden md:block"></div><span class="absolute left-5 top-0 flex h-3 w-3 -translate-x-1/2 rounded-full bg-[#a6752f] md:left-1/2"></span></div></div></div>
+    <!-- about CTA -->
+    <div class="relative mt-28 overflow-hidden rounded-[2.5rem] bg-[#58733a] px-8 py-16 text-center shadow-[0_30px_90px_rgba(70,95,45,0.18)] sm:px-12 lg:px-16"><div class="absolute -left-24 -top-24 h-72 w-72 rounded-full border border-white/10"></div><div class="absolute -bottom-40 -right-20 h-96 w-96 rounded-full border border-white/10"></div><div class="relative"><p class="text-xs font-bold uppercase tracking-[0.25em] text-[#dce8c7]">The Dikubs Story Continues</p><h3 class="mx-auto mt-5 max-w-4xl font-serif text-3xl font-semibold leading-tight text-white sm:text-4xl lg:text-6xl">We're building something<br><span class="text-[#e4c77f]">worth growing together.</span></h3><p class="mx-auto mt-6 max-w-2xl text-sm leading-8 text-white/65 sm:text-base">Whether you are a customer, supplier, business partner, distributor or simply looking to learn more about Dikubs, we welcome the opportunity to connect.</p><div class="mt-9 flex flex-col justify-center gap-3 sm:flex-row"><a href="#contact" class="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-7 py-4 text-sm font-bold text-[#58733a] shadow-xl transition duration-300 hover:-translate-y-1">Get In Touch <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M5 12h14M13 6l6 6-6 6"/></svg></a></div></div></div>
+  </div>
+</section>
+
+<!-- ===== WHY PATRONIZE US ===== -->
+<section id="why-patronize-us" class="relative overflow-hidden bg-[#f8f5ed] py-24 sm:py-28 lg:py-36" style="max-width:100%;">
+  <div class="pointer-events-none absolute inset-0 overflow-hidden"><div class="absolute -left-40 top-10 h-96 w-96 rounded-full bg-[#58733a]/10 blur-3xl"></div><div class="absolute -right-40 top-[35%] h-[30rem] w-[30rem] rounded-full bg-[#c7954d]/10 blur-3xl"></div><div class="absolute bottom-0 left-[35%] h-72 w-72 rounded-full bg-[#8b633c]/5 blur-3xl"></div></div>
+  <div class="relative mx-auto max-w-7xl px-6 lg:px-8">
+    <div class="max-w-5xl"><div class="mb-7 inline-flex items-center gap-3 rounded-full border border-[#58733a]/15 bg-white/80 px-4 py-2 shadow-sm backdrop-blur"><span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#58733a] text-xs font-bold text-white">D</span><span class="text-xs font-bold uppercase tracking-[0.24em] text-[#58733a]">Why Patronize Dikubs</span></div><h2 class="max-w-5xl font-serif text-4xl font-semibold leading-[1.05] tracking-tight text-[#30251e] sm:text-5xl lg:text-7xl">More than a place<br><span class="text-[#58733a]">to buy.</span><br>A business you can trust.</h2><p class="mt-8 max-w-3xl text-base leading-8 text-[#71665d] sm:text-lg">At Dikubs, we believe patronage should be built on more than a single transaction. It should be built on quality, reliability, good service, honest relationships and the confidence that customers and business partners are making the right choice.</p><p class="mt-4 max-w-3xl text-base leading-8 text-[#71665d] sm:text-lg">Whether you are shopping for your household, buying fresh bakery products, sourcing everyday essentials or looking for a dependable supplier of dry cashew nuts, we are committed to giving you a reason to come back.</p></div>
+    <div class="mt-14 grid overflow-hidden rounded-[2rem] border border-[#30251e]/10 bg-white shadow-[0_20px_60px_rgba(50,40,30,0.06)] sm:grid-cols-2 lg:grid-cols-4"><div class="border-b border-[#30251e]/10 p-6 sm:border-r lg:border-b-0"><p class="text-xs font-bold uppercase tracking-[0.18em] text-[#58733a]">01</p><h3 class="mt-2 font-semibold text-[#30251e]">Quality First</h3><p class="mt-2 text-sm leading-6 text-[#766b61]">We prioritize quality across our products and operations.</p></div><div class="border-b border-[#30251e]/10 p-6 lg:border-b-0 lg:border-r"><p class="text-xs font-bold uppercase tracking-[0.18em] text-[#58733a]">02</p><h3 class="mt-2 font-semibold text-[#30251e]">Dependable Service</h3><p class="mt-2 text-sm leading-6 text-[#766b61]">We aim to make every interaction straightforward and reliable.</p></div><div class="border-b border-[#30251e]/10 p-6 sm:border-r sm:border-b-0"><p class="text-xs font-bold uppercase tracking-[0.18em] text-[#58733a]">03</p><h3 class="mt-2 font-semibold text-[#30251e]">Genuine Value</h3><p class="mt-2 text-sm leading-6 text-[#766b61]">We focus on products and services that provide real value.</p></div><div class="p-6"><p class="text-xs font-bold uppercase tracking-[0.18em] text-[#58733a]">04</p><h3 class="mt-2 font-semibold text-[#30251e]">Long-Term Relationships</h3><p class="mt-2 text-sm leading-6 text-[#766b61]">We want customers and partners to keep choosing Dikubs.</p></div></div>
+    <div class="mt-24"><div class="max-w-3xl"><p class="text-xs font-bold uppercase tracking-[0.25em] text-[#58733a]">Why Choose Us</p><h3 class="mt-3 font-serif text-3xl font-semibold leading-tight text-[#30251e] sm:text-4xl lg:text-5xl">The Dikubs difference <span class="text-[#8b633c]">starts with you.</span></h3><p class="mt-5 text-base leading-8 text-[#71665d]">Every part of our business is designed around creating a better experience for the people and businesses we serve.</p></div><div class="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3"><div class="group rounded-[1.75rem] border border-[#30251e]/10 bg-white p-8 transition duration-300 hover:-translate-y-2 hover:shadow-[0_25px_60px_rgba(50,40,30,0.08)]"><div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#eef4e7] text-[#58733a] transition group-hover:scale-110"><svg class="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M12 3l7 4v5c0 4.4-3 7.5-7 9-4-1.5-7-4.6-7-9V7l7-4z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M9 12l2 2 4-4"/></svg></div><h4 class="mt-6 font-serif text-2xl font-semibold text-[#30251e]">Quality You Can Depend On</h4><p class="mt-4 text-sm leading-7 text-[#71665d]">We understand that customers do not simply buy products. They buy confidence. That is why we place strong emphasis on the quality, condition and presentation of the products we offer.</p><p class="mt-4 text-sm leading-7 text-[#71665d]">From carefully handled dry cashew nuts to supermarket essentials and freshly baked products, our goal is to consistently deliver products that meet customer expectations.</p></div><div class="group rounded-[1.75rem] border border-[#30251e]/10 bg-white p-8 transition duration-300 hover:-translate-y-2 hover:shadow-[0_25px_60px_rgba(50,40,30,0.08)]"><div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#f8eee6] text-[#996238] transition group-hover:scale-110"><svg class="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M3 7h18M5 7v12h14V7M8 7V5a4 4 0 018 0v2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M8 12h8"/></svg></div><h4 class="mt-6 font-serif text-2xl font-semibold text-[#30251e]">A Wide Range of Products</h4><p class="mt-4 text-sm leading-7 text-[#71665d]">Our supermarket is designed to make everyday shopping easier by bringing a broad range of household and personal essentials together in one convenient place.</p><p class="mt-4 text-sm leading-7 text-[#71665d]">From provisions and groceries to toiletries, beverages, cleaning products, household supplies and other everyday necessities, customers can shop for many of their needs without having to visit multiple locations.</p></div><div class="group rounded-[1.75rem] border border-[#30251e]/10 bg-white p-8 transition duration-300 hover:-translate-y-2 hover:shadow-[0_25px_60px_rgba(50,40,30,0.08)]"><div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#f8f2df] text-[#a6752f] transition group-hover:scale-110"><svg class="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M12 3v18M3 12h18"/><circle cx="12" cy="12" r="8" stroke-width="1.7"/></svg></div><h4 class="mt-6 font-serif text-2xl font-semibold text-[#30251e]">One Business, Multiple Solutions</h4><p class="mt-4 text-sm leading-7 text-[#71665d]">Dikubs brings several business activities together under one growing enterprise. This gives customers, buyers and partners access to different products and opportunities through a business they can build a relationship with.</p><p class="mt-4 text-sm leading-7 text-[#71665d]">Whether your need is retail shopping, bakery products or agricultural commodities, we are building capabilities to serve different customer needs.</p></div><div class="group rounded-[1.75rem] border border-[#30251e]/10 bg-white p-8 transition duration-300 hover:-translate-y-2 hover:shadow-[0_25px_60px_rgba(50,40,30,0.08)]"><div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#f3e9e0] text-[#795039] transition group-hover:scale-110"><svg class="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M12 21s7-6.2 7-12a7 7 0 10-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="9" r="2.2" stroke-width="1.7"/></svg></div><h4 class="mt-6 font-serif text-2xl font-semibold text-[#30251e]">Conveniently Rooted in Our Community</h4><p class="mt-4 text-sm leading-7 text-[#71665d]">Being based in Anyigba means we understand the needs, shopping habits and business environment of the community we serve.</p><p class="mt-4 text-sm leading-7 text-[#71665d]">We aim to remain accessible, responsive and connected to the people and businesses around us while growing our reach beyond our immediate location.</p></div><div class="group rounded-[1.75rem] border border-[#30251e]/10 bg-white p-8 transition duration-300 hover:-translate-y-2 hover:shadow-[0_25px_60px_rgba(50,40,30,0.08)]"><div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#eef4e7] text-[#58733a] transition group-hover:scale-110"><svg class="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M4 7h16M4 12h16M4 17h10"/></svg></div><h4 class="mt-6 font-serif text-2xl font-semibold text-[#30251e]">Straightforward Business</h4><p class="mt-4 text-sm leading-7 text-[#71665d]">We believe business should be clear and professional. Customers should understand what they are buying, businesses should know who they are dealing with, and commitments should be treated seriously.</p><p class="mt-4 text-sm leading-7 text-[#71665d]">Our goal is to build relationships based on transparency, communication and mutual value.</p></div><div class="group rounded-[1.75rem] border border-[#30251e]/10 bg-white p-8 transition duration-300 hover:-translate-y-2 hover:shadow-[0_25px_60px_rgba(50,40,30,0.08)]"><div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#f8eee6] text-[#996238] transition group-hover:scale-110"><svg class="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M12 20V10"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M7 20V14"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M17 20V6"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M4 20h16"/></svg></div><h4 class="mt-6 font-serif text-2xl font-semibold text-[#30251e]">A Business Built to Grow With You</h4><p class="mt-4 text-sm leading-7 text-[#71665d]">We are not positioning Dikubs as a short-term venture. We are building a business with a long-term outlook and a commitment to continuously improve our products, services and operations.</p><p class="mt-4 text-sm leading-7 text-[#71665d]">As we grow, our customers and partners should be able to grow with us and benefit from the opportunities we create.</p></div></div></div>
+    <!-- cashew buyer section -->
+    <div class="mt-24 overflow-hidden rounded-[2.5rem] bg-[#34442d] text-white"><div class="grid lg:grid-cols-[1fr_1fr]"><div class="p-8 sm:p-12 lg:p-16"><p class="text-xs font-bold uppercase tracking-[0.25em] text-[#d9b35e]">For Cashew Buyers</p><h3 class="mt-4 font-serif text-3xl font-semibold leading-tight sm:text-4xl lg:text-5xl">Looking for quality <span class="text-[#d9b35e]">dry cashew nuts?</span></h3><p class="mt-6 text-sm leading-8 text-white/65 sm:text-base">Dikubs participates in the sourcing and supply of dry raw cashew nuts for buyers looking for agricultural commodities from Nigeria.</p><p class="mt-4 text-sm leading-8 text-white/65 sm:text-base">We understand that serious commodity buyers need more than a product listing. They need clear communication, reliable documentation, appropriate handling and a supplier who understands the importance of fulfilling agreed commercial requirements.</p><div class="mt-8 grid gap-3 sm:grid-cols-2"><div class="rounded-2xl border border-white/10 bg-white/5 p-5"><p class="font-semibold">Dry Cashew Nuts</p><p class="mt-2 text-xs leading-5 text-white/45">Sourced and supplied for commodity buyers.</p></div><div class="rounded-2xl border border-white/10 bg-white/5 p-5"><p class="font-semibold">Bulk Supply</p><p class="mt-2 text-xs leading-5 text-white/45">Suitable for commercial purchasing requirements.</p></div><div class="rounded-2xl border border-white/10 bg-white/5 p-5"><p class="font-semibold">Export Outlook</p><p class="mt-2 text-xs leading-5 text-white/45">Built with international trade opportunities in mind.</p></div><div class="rounded-2xl border border-white/10 bg-white/5 p-5"><p class="font-semibold">Direct Communication</p><p class="mt-2 text-xs leading-5 text-white/45">Clear communication from enquiry to fulfilment.</p></div></div><a href="#contact" class="mt-9 inline-flex items-center gap-3 rounded-xl bg-white px-7 py-4 text-sm font-bold text-[#34442d] transition hover:-translate-y-1 hover:shadow-xl">Discuss a Cashew Order <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M5 12h14M13 6l6 6-6 6"/></svg></a></div><div class="relative min-h-[420px] overflow-hidden lg:min-h-full"><img src="{% static 'images/cashew3.jpg'%}" alt="Dikubs dry cashew nuts" class="absolute inset-0 h-full w-full object-cover" /><div class="absolute inset-0 bg-gradient-to-r from-[#34442d] via-[#34442d]/30 to-transparent lg:bg-gradient-to-r"></div><div class="absolute bottom-8 left-8 right-8 rounded-2xl border border-white/10 bg-black/20 p-5 backdrop-blur-md"><p class="text-xs font-bold uppercase tracking-[0.18em] text-[#d9b35e]">Agricultural Commodities</p><p class="mt-2 text-sm leading-6 text-white/80">From sourcing to supply, we aim to make agricultural commodity trading more dependable.</p></div></div></div></div>
+    <!-- supermarket section -->
+    <div class="mt-8 grid gap-8 lg:grid-cols-[0.9fr_1.1fr]"><div class="relative min-h-[500px] overflow-hidden rounded-[2.5rem]"><img src="{% static 'images/marketfront.jpg'%}" alt="Dikubs supermarket" class="absolute inset-0 h-full w-full object-cover" /><div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent"></div><div class="absolute bottom-8 left-8 right-8 text-white"><p class="text-xs font-bold uppercase tracking-[0.2em] text-[#e4c77f]">Dikubs Supermarket</p><h3 class="mt-3 font-serif text-3xl font-semibold sm:text-4xl">Everyday shopping, made easier.</h3><p class="mt-4 max-w-lg text-sm leading-7 text-white/70">A broad selection of everyday products for households, individuals and shoppers looking for convenience.</p></div></div><div class="rounded-[2.5rem] border border-[#30251e]/10 bg-white p-8 sm:p-12"><p class="text-xs font-bold uppercase tracking-[0.24em] text-[#58733a]">For Everyday Customers</p><h3 class="mt-4 font-serif text-3xl font-semibold leading-tight text-[#30251e] sm:text-4xl">One convenient destination for everyday essentials.</h3><p class="mt-6 text-sm leading-8 text-[#71665d]">Shopping should not feel unnecessarily complicated. Our supermarket is designed to give customers access to a wide range of everyday products in one convenient place.</p><div class="mt-8 space-y-4"><div class="flex gap-4"><span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#eef4e7] text-sm font-bold text-[#58733a]">✓</span><div><h4 class="font-semibold text-[#30251e]">Provisions & Groceries</h4><p class="mt-1 text-sm leading-6 text-[#766b61]">Everyday food products and household provisions.</p></div></div><div class="flex gap-4"><span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#eef4e7] text-sm font-bold text-[#58733a]">✓</span><div><h4 class="font-semibold text-[#30251e]">Toiletries & Personal Care</h4><p class="mt-1 text-sm leading-6 text-[#766b61]">Personal-care products and everyday toiletries.</p></div></div><div class="flex gap-4"><span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#eef4e7] text-sm font-bold text-[#58733a]">✓</span><div><h4 class="font-semibold text-[#30251e]">Household Essentials</h4><p class="mt-1 text-sm leading-6 text-[#766b61]">Cleaning products, home supplies and useful essentials.</p></div></div><div class="flex gap-4"><span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#eef4e7] text-sm font-bold text-[#58733a]">✓</span><div><h4 class="font-semibold text-[#30251e]">A Better Shopping Experience</h4><p class="mt-1 text-sm leading-6 text-[#766b61]">A convenient environment designed around everyday customer needs.</p></div></div></div></div></div>
+    <!-- bakery section -->
+    <div class="mt-8 overflow-hidden rounded-[2.5rem] border border-[#30251e]/10 bg-[#fffaf4]"><div class="grid lg:grid-cols-[1.1fr_0.9fr]"><div class="p-8 sm:p-12 lg:p-16"><p class="text-xs font-bold uppercase tracking-[0.24em] text-[#996238]">Fresh From Our Bakery</p><h3 class="mt-4 font-serif text-3xl font-semibold leading-tight text-[#30251e] sm:text-4xl">Freshly baked products made for everyday moments.</h3><p class="mt-6 text-sm leading-8 text-[#71665d]">Our bakery adds another layer of convenience to the Dikubs experience by offering freshly prepared baked products for individuals, families, celebrations and everyday enjoyment.</p><div class="mt-8 grid gap-3 sm:grid-cols-2"><div class="rounded-2xl bg-white p-5 shadow-sm"><h4 class="font-semibold text-[#30251e]">Fresh Bread</h4><p class="mt-2 text-sm leading-6 text-[#766b61]">Freshly baked bread for households and everyday meals.</p></div><div class="rounded-2xl bg-white p-5 shadow-sm"><h4 class="font-semibold text-[#30251e]">Pastries</h4><p class="mt-2 text-sm leading-6 text-[#766b61]">A selection of baked treats for different occasions.</p></div><div class="rounded-2xl bg-white p-5 shadow-sm"><h4 class="font-semibold text-[#30251e]">Celebration Cakes</h4><p class="mt-2 text-sm leading-6 text-[#766b61]">Products suitable for celebrations and special moments.</p></div><div class="rounded-2xl bg-white p-5 shadow-sm"><h4 class="font-semibold text-[#30251e]">Everyday Convenience</h4><p class="mt-2 text-sm leading-6 text-[#766b61]">Fresh bakery products conveniently available alongside supermarket shopping.</p></div></div></div><div class="relative min-h-[400px]"><img src="https://images.unsplash.com/photo-1549931319-a545dcf3bc73?auto=format&fit=crop&w=600&q=80" alt="Dikubs bakery" class="absolute inset-0 h-full w-full object-cover" /><div class="absolute inset-0 bg-gradient-to-t from-[#30251e]/70 to-transparent"></div><div class="absolute bottom-8 left-8 right-8 text-white"><p class="text-xs font-bold uppercase tracking-[0.2em] text-[#e4c77f]">Made Fresh</p><p class="mt-2 font-serif text-2xl font-semibold">Something good is always worth coming back for.</p></div></div></div></div>
+    <!-- service promise -->
+    <div class="mt-24"><div class="mx-auto max-w-3xl text-center"><p class="text-xs font-bold uppercase tracking-[0.25em] text-[#58733a]">Our Customer Promise</p><h3 class="mt-3 font-serif text-3xl font-semibold text-[#30251e] sm:text-4xl lg:text-5xl">What you should expect <span class="text-[#8b633c]">from Dikubs.</span></h3></div><div class="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4"><div class="rounded-[1.75rem] border border-[#30251e]/10 bg-white p-7 text-center"><div class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#eef4e7] text-[#58733a] text-xl font-bold">01</div><h4 class="mt-5 font-semibold text-[#30251e]">Listen</h4><p class="mt-3 text-sm leading-6 text-[#766b61]">We listen to customer needs and feedback.</p></div><div class="rounded-[1.75rem] border border-[#30251e]/10 bg-white p-7 text-center"><div class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#f8eee6] text-[#996238] text-xl font-bold">02</div><h4 class="mt-5 font-semibold text-[#30251e]">Deliver</h4><p class="mt-3 text-sm leading-6 text-[#766b61]">We focus on providing products and service as promised.</p></div><div class="rounded-[1.75rem] border border-[#30251e]/10 bg-white p-7 text-center"><div class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#f8f2df] text-[#a6752f] text-xl font-bold">03</div><h4 class="mt-5 font-semibold text-[#30251e]">Improve</h4><p class="mt-3 text-sm leading-6 text-[#766b61]">We continuously look for ways to improve the experience.</p></div><div class="rounded-[1.75rem] border border-[#30251e]/10 bg-white p-7 text-center"><div class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#f3e9e0] text-[#795039] text-xl font-bold">04</div><h4 class="mt-5 font-semibold text-[#30251e]">Build Relationships</h4><p class="mt-3 text-sm leading-6 text-[#766b61]">We aim to turn transactions into lasting relationships.</p></div></div></div>
+    <!-- trust statement -->
+    <div class="mt-24 rounded-[2.5rem] border border-[#30251e]/10 bg-white p-8 shadow-sm sm:p-12 lg:p-16"><div class="grid gap-10 lg:grid-cols-[0.75fr_1.25fr]"><div><p class="text-xs font-bold uppercase tracking-[0.25em] text-[#58733a]">Our Commitment</p><h3 class="mt-4 font-serif text-3xl font-semibold leading-tight text-[#30251e] sm:text-4xl">We want your <span class="text-[#58733a]">next experience</span> to be better than the last.</h3></div><div class="text-sm leading-8 text-[#71665d] sm:text-base"><p>Patronizing Dikubs means choosing a business that is committed to growing through the value it creates for its customers and partners.</p><p class="mt-5">We know that trust is earned over time. Every product sold, every customer served and every business relationship created is an opportunity to demonstrate what Dikubs stands for.</p><p class="mt-5">As our business grows, we intend to keep improving our standards, broadening our offerings and strengthening the experience we provide.</p><p class="mt-5 font-semibold text-[#30251e]">Your patronage is not simply a sale to us. It is part of the reason we continue to build.</p></div></div></div>
+    <!-- final cta -->
+    <div class="relative mt-24 overflow-hidden rounded-[2.5rem] bg-[#58733a] px-8 py-16 text-center shadow-[0_30px_90px_rgba(70,95,45,0.18)] sm:px-12 lg:px-16"><div class="absolute -left-24 -top-24 h-72 w-72 rounded-full border border-white/10"></div><div class="absolute -bottom-40 -right-20 h-96 w-96 rounded-full border border-white/10"></div><div class="relative"><p class="text-xs font-bold uppercase tracking-[0.25em] text-[#dce8c7]">Choose Dikubs</p><h3 class="mx-auto mt-5 max-w-4xl font-serif text-3xl font-semibold leading-tight text-white sm:text-4xl lg:text-6xl">Come for the products.<br><span class="text-[#e4c77f]">Stay for the experience.</span></h3><p class="mx-auto mt-6 max-w-2xl text-sm leading-8 text-white/65 sm:text-base">Whether you are shopping for your home, buying fresh bakery products or looking to do business with us, we would be pleased to serve you.</p><div class="mt-9 flex flex-col justify-center gap-3 sm:flex-row"><a href="#contact" class="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-7 py-4 text-sm font-bold text-[#58733a] shadow-xl transition hover:-translate-y-1">Contact Dikubs <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M5 12h14M13 6l6 6-6 6"/></svg></a><a href="#businesses" class="inline-flex items-center justify-center rounded-xl border border-white/20 bg-white/5 px-7 py-4 text-sm font-bold text-white backdrop-blur transition hover:bg-white/10">Explore Our Businesses</a></div></div></div>
+  </div>
+</section>
+
+<!-- ===== GALLERY ===== -->
+<section id="gallery">
+  <h2 class="section-title">Gallery</h2>
+  <div class="divider"></div>
+  <p class="section-subtitle">A visual showcase of our operations, products, facilities, and services.</p>
+  <div class="gallery-grid">
+    <div class="gallery-item"><img src="{% static 'images/cashew3.jpg'%}" alt="Cashew Operations" /><div class="gallery-caption">Cashew Processing & Operations</div></div>
+    <div class="gallery-item"><img src="https://images.unsplash.com/photo-1604719312566-8912e9227c6a?auto=format&fit=crop&w=600&q=80" alt="Supermarket" /><div class="gallery-caption">Supermarket</div></div>
+    <div class="gallery-item"><img src="https://images.unsplash.com/photo-1586444248902-2f64eddc13df?auto=format&fit=crop&w=600&q=80" alt="Bakery" /><div class="gallery-caption">Bakery Production</div></div>
+    <div class="gallery-item"><img src="{% static 'images/marketfront.jpg'%}" alt="Dikubs Community" /><div class="gallery-caption">Dikubs Community & Business Activities</div></div>
+  </div>
+</section>
+
+<!-- ===== EVENTS ===== -->
+<section id="events" class="py-24 lg:py-32 bg-earth-50" style="max-width:100%;">
+  <div class="max-w-7xl mx-auto px-6 lg:px-8">
+    <div class="mb-14"><p class="uppercase tracking-[0.3em] text-earth-500 text-xs font-semibold">Moments & Milestones</p><h2 class="font-display text-5xl lg:text-6xl mt-4">The people, <span class="italic text-earth-500">the moments.</span></h2></div>
+    <div class="grid md:grid-cols-3 gap-7">
+      <article><div class="overflow-hidden rounded-2xl"><img src="{% static 'images/mandy.jpg'%}" alt="Company event" class="w-full h-72 object-cover hover:scale-105 transition duration-500" /></div><div class="mt-5"><p class="text-xs uppercase tracking-widest text-earth-500">Company Event</p><h3 class="font-display text-2xl mt-2">Building Together</h3><p class="mt-3 text-earth-600 leading-7">Celebrating the people behind our continued growth.</p></div></article>
+      <article><div class="overflow-hidden rounded-2xl"><img src="{% static 'images/ceo2.jpg'%}" alt="Business meeting" class="w-full h-72 object-center hover:scale-105 transition duration-500" /></div><div class="mt-5"><p class="text-xs uppercase tracking-widest text-earth-500">Leadership</p><h3 class="font-display text-2xl mt-2">Ideas Into Action</h3><p class="mt-3 text-earth-600 leading-7">Turning opportunities into sustainable ventures.</p></div></article>
+      <article><div class="overflow-hidden rounded-2xl"><img src="{% static 'images/manvid.mp4'%}" alt="Community event" class="w-full h-72 object-cover hover:scale-105 transition duration-500" /></div><div class="mt-5"><p class="text-xs uppercase tracking-widest text-earth-500">Community</p><h3 class="font-display text-2xl mt-2">Growing Beyond Business</h3><p class="mt-3 text-earth-600 leading-7">Creating positive impact beyond our operations.</p></div></article>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CONTACT ===== -->
+<section id="contact" class="relative py-28 lg:py-36 overflow-hidden bg-earth-800 text-white" style="max-width:100%;">
+  <div class="absolute -right-32 -top-32 w-96 h-96 rounded-full border border-earth-600"></div>
+  <div class="absolute -left-40 -bottom-40 w-96 h-96 rounded-full border border-earth-600"></div>
+  <div class="relative max-w-5xl mx-auto px-6 text-center">
+    <p class="uppercase tracking-[0.35em] text-earth-300 text-xs">Start a conversation</p>
+    <h2 class="font-display text-5xl sm:text-6xl lg:text-7xl leading-tight mt-6">Let's build <span class="italic text-earth-300">something meaningful.</span></h2>
+    <p class="mt-7 text-white/60 text-lg max-w-2xl mx-auto leading-8">Whether you want to work with us, partner with us, visit one of our businesses or simply learn more, we'd love to hear from you.</p>
+    <div class="mt-10 flex flex-wrap justify-center gap-4">
+      <a href="mailto:info@dikubs.com" class="px-8 py-4 rounded-full bg-earth-300 text-earth-900 font-semibold hover:bg-white transition">Email DIKUBS</a>
+      <a href="tel:+2340000000000" class="px-8 py-4 rounded-full border border-white/20 hover:bg-white/10 transition">Call Us</a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FAQ ===== -->
+<section id="faq">
+  <div class="faq-section">
+    <h2 class="section-title">Frequently Asked Questions</h2>
+    <div class="divider"></div>
+    <div class="faq-intro"><p class="section-subtitle">Find answers to some of the most common questions about Dikubs, our products, and our services.</p></div>
+    <div class="faq-list">
+      <div class="faq-item"><button class="faq-question" type="button"><span>What is Dikubs?</span><span class="faq-icon">+</span></button><div class="faq-answer"><div class="faq-answer-inner">Dikubs is a growing enterprise based in Anyigba, Kogi State, Nigeria, with business interests in cashew processing, supermarket retail, and bakery production.</div></div></div>
+      <div class="faq-item"><button class="faq-question" type="button"><span>Where is Dikubs located?</span><span class="faq-icon">+</span></button><div class="faq-answer"><div class="faq-answer-inner">Dikubs is located in Anyigba, Kogi State, Nigeria. Our location allows us to serve customers and businesses within Anyigba and surrounding communities.</div></div></div>
+      <div class="faq-item"><button class="faq-question" type="button"><span>What businesses does Dikubs operate?</span><span class="faq-icon">+</span></button><div class="faq-answer"><div class="faq-answer-inner">Dikubs currently operates across three main areas: cashew processing, supermarket retail, and bakery production.</div></div></div>
+      <div class="faq-item"><button class="faq-question" type="button"><span>Do you process cashew nuts?</span><span class="faq-icon">+</span></button><div class="faq-answer"><div class="faq-answer-inner">Yes. Our cashew processing business focuses on quality processing and preparation of cashew products, with an emphasis on quality and consistency.</div></div></div>
+      <div class="faq-item"><button class="faq-question" type="button"><span>What can I buy from the Dikubs Supermarket?</span><span class="faq-icon">+</span></button><div class="faq-answer"><div class="faq-answer-inner">Our supermarket provides everyday shopping essentials, groceries, food products, household supplies, and other consumer goods.</div></div></div>
+      <div class="faq-item"><button class="faq-question" type="button"><span>What products does the bakery offer?</span><span class="faq-icon">+</span></button><div class="faq-answer"><div class="faq-answer-inner">Our bakery produces freshly baked bread, pastries, cakes, and other bakery products for individuals, families, and special occasions.</div></div></div>
+      <div class="faq-item"><button class="faq-question" type="button"><span>Can I place a bakery order?</span><span class="faq-icon">+</span></button><div class="faq-answer"><div class="faq-answer-inner">Yes. You can contact Dikubs through our contact section to make an enquiry about bakery products and available orders.</div></div></div>
+      <div class="faq-item"><button class="faq-question" type="button"><span>Does Dikubs accept business or wholesale enquiries?</span><span class="faq-icon">+</span></button><div class="faq-answer"><div class="faq-answer-inner">Yes. Businesses interested in cashew processing, supermarket products, bakery products, or other business opportunities can contact us for enquiries.</div></div></div>
+      <div class="faq-item"><button class="faq-question" type="button"><span>How can I contact Dikubs?</span><span class="faq-icon">+</span></button><div class="faq-answer"><div class="faq-answer-inner">You can contact us through the contact form on this website or visit us in Anyigba, Kogi State, Nigeria.</div></div></div>
+      <div class="faq-item"><button class="faq-question" type="button"><span>What are Dikubs' operating hours?</span><span class="faq-icon">+</span></button><div class="faq-answer"><div class="faq-answer-inner">Our general business hours are Monday to Saturday, from 8:00 AM to 6:00 PM.</div></div></div>
+    </div>
+    <div class="faq-cta"><h3>Still Have Questions?</h3><p>Our team is happy to help with your enquiry.</p><a href="#contact">Contact Dikubs</a></div>
+  </div>
+  <script>
+    document.querySelectorAll('.faq-question').forEach(button => {
+      button.addEventListener('click', () => {
+        const faqItem = button.parentElement;
+        const isActive = faqItem.classList.contains('active');
+        document.querySelectorAll('.faq-item').forEach(item => item.classList.remove('active'));
+        if (!isActive) faqItem.classList.add('active');
+      });
+    });
+  </script>
+</section>
+
+<!-- ===== FOOTER ===== -->
+
+<footer class="bg-earth-800 text-white">
+
+    <div class="max-w-7xl mx-auto px-6 lg:px-8 py-16">
+
+        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-12">
+
+            <!-- BRAND -->
+
+            <div class="lg:col-span-2">
+
+                <div class="text-2xl tracking-[0.25em]
+                            font-semibold">
+                    DIKUBS
+                </div>
+
+                <p
+                    class="mt-5 max-w-md text-white/50
+                           leading-7"
+                >
+                    A diversified business group growing across
+                    agriculture, retail, food, energy and beyond.
+                </p>
+
+            </div>
+
+
+            <!-- NAVIGATION -->
+
+            <div>
+
+                <h4
+                    class="text-xs uppercase tracking-[0.25em]
+                           text-earth-300"
+                >
+                    Explore
+                </h4>
+
+                <div
+                    class="mt-5 space-y-3 text-white/60"
+                >
+
+                    <a href="#about"
+                       class="block hover:text-white transition">
+                        About
+                    </a>
+
+                    <a href="#businesses"
+                       class="block hover:text-white transition">
+                        Businesses
+                    </a>
+
+                    <a href="#gallery"
+                       class="block hover:text-white transition">
+                        Gallery
+                    </a>
+
+                    <a href="#events"
+                       class="block hover:text-white transition">
+                        Events
+                    </a>
+
+                    <a href="#contact"
+                       class="block hover:text-white transition">
+                        Contact
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <!-- CONTACT -->
+
+            <div>
+
+                <h4
+                    class="text-xs uppercase tracking-[0.25em]
+                           text-earth-300"
+                >
+                    Contact
+                </h4>
+
+                <div
+                    class="mt-5 space-y-3 text-white/60"
+                >
+
+                    <p>
+                        Head Office<br>
+                        Nigeria
+                    </p>
+
+                    <a
+                        href="mailto:info@dikubs.com"
+                        class="block hover:text-white"
+                    >
+                        info@dikubs.com
+                    </a>
+
+                    <a
+                        href="tel:+2340000000000"
+                        class="block hover:text-white"
+                    >
+                        +234 000 000 0000
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div
+            class="mt-16 pt-7 border-t
+                   border-white/10
+                   flex flex-col sm:flex-row
+                   justify-between gap-4
+                   text-sm text-white/40"
+        >
+
+            <p>
+                © 2026 DIKUBS. All rights reserved.
+            </p>
+
+            <p>
+                Growing businesses. Creating value.
+            </p>
+
+        </div>
+
+    </div>
+
+</footer>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+  const slides = document.querySelectorAll(".hero-slide");
+  const dots = document.querySelectorAll(".hero-dot");
+
+  let currentSlide = 0;
+  let slideTimer;
+
+  const SLIDE_DURATION = 7000;
+
+
+  function showSlide(index) {
+
+    slides.forEach((slide, i) => {
+      slide.classList.toggle("active", i === index);
+    });
+
+    dots.forEach((dot, i) => {
+      dot.classList.toggle("active", i === index);
+    });
+
+    currentSlide = index;
+  }
+
+
+  function nextSlide() {
+
+    const next =
+      (currentSlide + 1) % slides.length;
+
+    showSlide(next);
+  }
+
+
+  function startSlider() {
+
+    clearInterval(slideTimer);
+
+    slideTimer = setInterval(
+      nextSlide,
+      SLIDE_DURATION
+    );
+  }
+
+
+  dots.forEach((dot, index) => {
+
+    dot.addEventListener("click", function () {
+
+      showSlide(index);
+
+      startSlider();
+
+    });
+
+  });
+
+
+  showSlide(0);
+
+  startSlider();
+
+});
+</script>
+
+</body>
+{%endblock%}
+
+
+

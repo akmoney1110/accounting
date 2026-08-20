@@ -80,7 +80,7 @@
                         <i class="fas fa-arrow-down"></i> Money In
                     </span>
                 </div>
-                <p class="text-sm text-[#8D7B6B] font-medium">Money Buyers Paid You</p>
+                <p class="text-sm text-[#8D7B6B] font-medium">Value of Goods Sold</p>
                 <h3 class="text-2xl font-bold text-[#4E342E] mt-1">₦<span class="counter" data-target="{{ total_sales|default:'0' }}">{{ total_sales|default:"0.00" }}</span></h3>
                 <div class="explain-box mt-2">
                     <p>💡 This is all the cash buyers gave you when they bought your dried cashew nuts.</p>
@@ -100,7 +100,7 @@
                         <i class="fas fa-wheat-awn"></i> Money Out
                     </span>
                 </div>
-                <p class="text-sm text-[#8D7B6B] font-medium">Money You Paid Farmers</p>
+                <p class="text-sm text-[#8D7B6B] font-medium">Value of Goods Purchased</p>
                 <h3 class="text-2xl font-bold text-[#4E342E] mt-1">₦<span class="counter" data-target="{{ total_purchases|default:'0' }}">{{ total_purchases|default:"0.00" }}</span></h3>
                 <div class="explain-box mt-2">
                     <p>💡 You pay farmers this money to collect fresh cashew nuts from their farm.</p>
@@ -452,7 +452,7 @@
                 <div>
                     <div class="flex justify-between items-center mb-2 text-sm font-semibold">
                         <span class="text-[#C9952C] flex items-center gap-2">
-                            <i class="fas fa-circle text-[8px]"></i> Money You Paid Farmers to Buy Cashew
+                            <i class="fas fa-circle text-[8px]"></i> Value of Goods Purchased
                         </span>
                         <span class="text-[#4E342E] font-bold">₦{{ total_purchases|default:"0.00" }}</span>
                     </div>

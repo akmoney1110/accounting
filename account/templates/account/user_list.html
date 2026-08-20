@@ -5,388 +5,1655 @@
 {% block page_title %}Partners Directory{% endblock %}
 
 {% block content %}
+
 <div class="max-w-7xl mx-auto space-y-6 px-4 py-8 bg-[#FAF6F0] bg-[radial-gradient(#4E342E_0.75px,transparent_0.75px)] [background-size:16px_16px] rounded-3xl text-[#4E342E]">
 
-    <!-- ====== BALANCE SUMMARY CARDS ====== -->
+    <!-- ========================================================= -->
+    <!-- BALANCE SUMMARY CARDS -->
+    <!-- ========================================================= -->
+
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+
         <!-- Clients Owe Us -->
         <div class="bg-white rounded-2xl border border-[#C75B39]/30 shadow-sm p-5 relative overflow-hidden">
-            <div class="absolute top-0 right-0 p-4 opacity-10"><i class="fas fa-hand-holding-usd text-5xl text-[#C75B39]"></i></div>
-            <p class="text-[10px] font-bold text-[#8D6E63] uppercase tracking-wider">Clients Owe Us</p>
-            <p class="text-2xl font-bold text-[#C75B39] mt-1">₦{{ total_clients_owe|floatformat:2 }}</p>
-            <p class="text-xs text-[#8D6E63] mt-1">Buyers with outstanding debt</p>
+            <div class="absolute top-0 right-0 p-4 opacity-10">
+                <i class="fas fa-hand-holding-usd text-5xl text-[#C75B39]"></i>
+            </div>
+
+            <p class="text-[10px] font-bold text-[#8D6E63] uppercase tracking-wider">
+                Clients Owe Us
+            </p>
+
+            <p class="text-2xl font-bold text-[#C75B39] mt-1">
+                ₦{{ total_clients_owe|floatformat:2 }}
+            </p>
+
+            <p class="text-xs text-[#8D6E63] mt-1">
+                Buyers with outstanding debt
+            </p>
         </div>
+
 
         <!-- We Owe Vendors -->
         <div class="bg-white rounded-2xl border border-[#C75B39]/30 shadow-sm p-5 relative overflow-hidden">
-            <div class="absolute top-0 right-0 p-4 opacity-10"><i class="fas fa-money-bill-wave text-5xl text-[#C75B39]"></i></div>
-            <p class="text-[10px] font-bold text-[#8D6E63] uppercase tracking-wider">We Owe Vendors</p>
-            <p class="text-2xl font-bold text-[#C75B39] mt-1">₦{{ total_we_owe_vendors|floatformat:2 }}</p>
-            <p class="text-xs text-[#8D6E63] mt-1">Outstanding disbursements</p>
-        </div>
-
-        <!-- Vendors Owe Us (Goods) -->
-        <div class="bg-white rounded-2xl border border-[#6B8E23]/30 shadow-sm p-5 relative overflow-hidden">
-            <div class="absolute top-0 right-0 p-4 opacity-10"><i class="fas fa-weight-hanging text-5xl text-[#6B8E23]"></i></div>
-            <p class="text-[10px] font-bold text-[#8D6E63] uppercase tracking-wider">Vendors Owe Us</p>
-            <p class="text-2xl font-bold text-[#6B8E23] mt-1">{{ total_vendors_owe_us_kg|floatformat:2 }} <span class="text-sm font-normal">kg</span></p>
-            <p class="text-xs text-[#8D6E63] mt-1">≈ ₦{{ total_vendors_owe_us|floatformat:2 }} in goods</p>
-        </div>
-
-        <!-- We Owe Clients (Goods) -->
-        <div class="bg-white rounded-2xl border border-[#6B8E23]/30 shadow-sm p-5 relative overflow-hidden">
-            <div class="absolute top-0 right-0 p-4 opacity-10"><i class="fas fa-box-open text-5xl text-[#6B8E23]"></i></div>
-            <p class="text-[10px] font-bold text-[#8D6E63] uppercase tracking-wider">We Owe Clients</p>
-            <p class="text-2xl font-bold text-[#6B8E23] mt-1">{{ total_we_owe_clients_kg|floatformat:2 }} <span class="text-sm font-normal">kg</span></p>
-            <p class="text-xs text-[#8D6E63] mt-1">≈ ₦{{ total_we_owe_clients|floatformat:2 }} in goods</p>
-        </div>
-    </div>
-
-    <!-- ====== FILTERS & VIEW TOGGLE ====== -->
-    <div class="bg-white rounded-2xl border border-[#4E342E]/15 shadow-sm p-4">
-        <div class="flex flex-col lg:flex-row gap-4 items-center justify-between">
-            <form method="get" class="flex flex-col sm:flex-row gap-3 flex-1 w-full">
-                <div class="flex-1 relative">
-                    <i class="fas fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-[#4E342E]/40"></i>
-                    <input type="text" name="search" value="{{ search_query }}" placeholder="Find person by name, username, or phone..."
-                        class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-[#4E342E]/20 text-[#4E342E] bg-white focus:outline-none focus:ring-2 focus:ring-[#C9952C] focus:border-transparent text-sm transition-all">
-                </div>
-                <div class="sm:w-44">
-                    <select name="role" onchange="this.form.submit()"
-                        class="w-full px-4 py-2.5 rounded-xl border border-[#4E342E]/20 text-[#4E342E] bg-white focus:outline-none focus:ring-2 focus:ring-[#C9952C] focus:border-transparent text-sm transition-all cursor-pointer font-bold">
-                        {% for value, label in role_choices %}
-                        <option value="{{ value }}" {% if selected_role == value %}selected{% endif %}>{{ label }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="sm:w-52">
-                    <select name="filter_type" onchange="this.form.submit()"
-                        class="w-full px-4 py-2.5 rounded-xl border border-[#4E342E]/20 text-[#4E342E] bg-white focus:outline-none focus:ring-2 focus:ring-[#C9952C] focus:border-transparent text-sm transition-all cursor-pointer font-bold">
-                        {% for value, label in filter_choices %}
-                        <option value="{{ value }}" {% if selected_filter == value %}selected{% endif %}>{{ label }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                {% if search_query or selected_role or selected_filter != 'all' %}
-                <a href="{% url 'user_list' %}" class="px-4 py-2.5 bg-[#C75B39]/10 hover:bg-[#C75B39]/20 text-[#C75B39] text-sm font-bold rounded-xl transition-colors whitespace-nowrap flex items-center justify-center border border-[#C75B39]/20">
-                    <i class="fas fa-times mr-1"></i> Clear
-                </a>
-                {% endif %}
-            </form>
-
-            <div class="flex items-center gap-1 bg-[#4E342E]/5 p-1 rounded-xl border border-[#4E342E]/10 self-end lg:self-auto">
-                <button type="button" id="gridToggleBtn" onclick="setViewMode('grid')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1">
-                    <i class="fas fa-th-large"></i> Grid
-                </button>
-                <button type="button" id="listToggleBtn" onclick="setViewMode('list')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1">
-                    <i class="fas fa-list"></i> Table
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- ====== GRID VIEW ====== -->
-    <div id="gridView" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-        {% for data in user_data %}
-        <a href="{% url 'user_profile' data.user.pk %}" class="group block bg-white rounded-2xl border border-[#4E342E]/15 shadow-sm hover:shadow-md hover:border-[#C9952C] transition-all duration-200 overflow-hidden relative">
-            
-            <!-- Card Header -->
-            <div class="p-5 relative">
-                <div class="absolute top-0 right-0 w-24 h-24 
-                    {% if data.user.role == 'VENDOR' %}bg-[#6B8E23]/10{% else %}bg-[#C9952C]/10{% endif %} 
-                    rounded-bl-full -mr-4 -mt-4 opacity-60 group-hover:scale-110 transition-transform"></div>
-                
-                <div class="relative flex items-start justify-between">
-                    <div class="flex items-center gap-3">
-                        <div class="w-14 h-14 rounded-2xl 
-                            {% if data.user.role == 'VENDOR' %}bg-[#6B8E23] text-white border border-[#6B8E23]
-                            {% else %}bg-[#C9952C] text-white border border-[#C9952C]{% endif %} 
-                            flex items-center justify-center text-xl font-bold shadow-sm flex-shrink-0">
-                            {{ data.user.username|first|upper }}
-                        </div>
-                        <div>
-                            <h3 class="font-bold text-[#4E342E] group-hover:text-[#C9952C] transition-colors">{{ data.user.get_full_name|default:data.user.username }}</h3>
-                            <p class="text-xs text-[#4E342E]/60 font-mono">@{{ data.user.username }}</p>
-                            <span class="inline-flex items-center gap-1 mt-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide
-                                {% if data.user.role == 'VENDOR' %}bg-[#6B8E23]/20 text-[#6B8E23] border border-[#6B8E23]/30
-                                {% else %}bg-[#C9952C]/20 text-[#C9952C] border border-[#C9952C]/30{% endif %}">
-                                {% if data.user.role == 'VENDOR' %}<i class="fas fa-tractor mr-1"></i> Farmer{% else %}<i class="fas fa-store mr-1"></i> Buyer{% endif %}
-                            </span>
-                        </div>
-                    </div>
-                    <i class="fas fa-chevron-right text-[#4E342E]/20 group-hover:text-[#C9952C] group-hover:translate-x-1 transition-all"></i>
-                </div>
+            <div class="absolute top-0 right-0 p-4 opacity-10">
+                <i class="fas fa-money-bill-wave text-5xl text-[#C75B39]"></i>
             </div>
 
-            <!-- Balance Section (NEW) -->
-            <div class="px-5 pb-3">
-                {% if data.user.role == 'CLIENT' %}
-                    {% if data.is_debtor %}
-                    <div class="bg-[#C75B39]/10 border border-[#C75B39]/30 rounded-xl p-3 mb-3">
-                        <div class="flex items-center justify-between">
-                            <span class="text-xs font-bold text-[#C75B39] uppercase tracking-wider"><i class="fas fa-exclamation-circle mr-1"></i> Owes Us</span>
-                            <span class="text-xs font-mono text-[#8D6E63]">Rate: ₦{{ data.rate|floatformat:2 }}</span>
-                        </div>
-                        <p class="text-lg font-bold text-[#C75B39] mt-1">₦{{ data.owes_us_money|floatformat:2 }}</p>
-                        <p class="text-xs text-[#8D6E63]">≈ {{ data.owes_us_kg|floatformat:2 }} kg worth of goods</p>
-                    </div>
-                    {% elif data.is_creditor %}
-                    <div class="bg-[#6B8E23]/10 border border-[#6B8E23]/30 rounded-xl p-3 mb-3">
-                        <div class="flex items-center justify-between">
-                            <span class="text-xs font-bold text-[#6B8E23] uppercase tracking-wider"><i class="fas fa-check-circle mr-1"></i> We Owe Client</span>
-                            <span class="text-xs font-mono text-[#8D6E63]">Rate: ₦{{ data.rate|floatformat:2 }}</span>
-                        </div>
-                        <p class="text-lg font-bold text-[#6B8E23] mt-1">₦{{ data.we_owe_money|floatformat:2 }}</p>
-                        <p class="text-xs text-[#8D6E63]">≈ {{ data.we_owe_kg|floatformat:2 }} kg goods to deliver</p>
-                    </div>
-                    {% else %}
-                    <div class="bg-[#4E342E]/5 border border-[#4E342E]/10 rounded-xl p-3 mb-3 text-center">
-                        <span class="text-xs font-bold text-[#6B8E23] uppercase tracking-wider"><i class="fas fa-check-double mr-1"></i> All Settled</span>
-                    </div>
-                    {% endif %}
-                {% else %}
-                    {% if data.is_creditor %}
-                    <div class="bg-[#C75B39]/10 border border-[#C75B39]/30 rounded-xl p-3 mb-3">
-                        <div class="flex items-center justify-between">
-                            <span class="text-xs font-bold text-[#C75B39] uppercase tracking-wider"><i class="fas fa-hand-holding-usd mr-1"></i> We Owe Vendor</span>
-                            <span class="text-xs font-mono text-[#8D6E63]">Rate: ₦{{ data.rate|floatformat:2 }}</span>
-                        </div>
-                        <p class="text-lg font-bold text-[#C75B39] mt-1">₦{{ data.we_owe_money|floatformat:2 }}</p>
-                        <p class="text-xs text-[#8D6E63]">Outstanding payment due</p>
-                    </div>
-                    {% elif data.is_debtor %}
-                    <div class="bg-[#6B8E23]/10 border border-[#6B8E23]/30 rounded-xl p-3 mb-3">
-                        <div class="flex items-center justify-between">
-                            <span class="text-xs font-bold text-[#6B8E23] uppercase tracking-wider"><i class="fas fa-check-circle mr-1"></i> Vendor Owes Us</span>
-                            <span class="text-xs font-mono text-[#8D6E63]">Rate: ₦{{ data.rate|floatformat:2 }}</span>
-                        </div>
-                        <p class="text-lg font-bold text-[#6B8E23] mt-1">₦{{ data.owes_us_money|floatformat:2 }}</p>
-                        <p class="text-xs text-[#8D6E63]">≈ {{ data.owes_us_kg|floatformat:2 }} kg goods to collect</p>
-                    </div>
-                    {% else %}
-                    <div class="bg-[#4E342E]/5 border border-[#4E342E]/10 rounded-xl p-3 mb-3 text-center">
-                        <span class="text-xs font-bold text-[#6B8E23] uppercase tracking-wider"><i class="fas fa-check-double mr-1"></i> All Settled</span>
-                    </div>
-                    {% endif %}
-                {% endif %}
-            </div>
+            <p class="text-[10px] font-bold text-[#8D6E63] uppercase tracking-wider">
+                We Owe Vendors
+            </p>
 
-            <!-- Stats Row -->
-            <div class="px-5 pb-4">
-                <div class="grid grid-cols-3 gap-2 mb-4">
-                    <div class="text-center p-2 bg-[#4E342E]/5 rounded-xl border border-[#4E342E]/10">
-                        <p class="text-[10px] text-[#4E342E]/70 uppercase font-bold tracking-wider">Crop Loads</p>
-                        <p class="text-lg font-bold text-[#4E342E] font-mono">{{ data.batch_count }}</p>
-                    </div>
-                    <div class="text-center p-2 bg-[#4E342E]/5 rounded-xl border border-[#4E342E]/10">
-                        <p class="text-[10px] text-[#4E342E]/70 uppercase font-bold tracking-wider">Weight</p>
-                        <p class="text-lg font-bold text-[#4E342E] font-mono">{{ data.user.batches.all|length|default:"0" }} <span class="text-[10px] font-normal">kg</span></p>
-                    </div>
-                    <div class="text-center p-2 bg-[#4E342E]/5 rounded-xl border border-[#4E342E]/10">
-                        <p class="text-[10px] text-[#4E342E]/70 uppercase font-bold tracking-wider">Crops</p>
-                        <p class="text-lg font-bold text-[#4E342E] font-mono">{{ data.product_count }}</p>
-                    </div>
-                </div>
+            <p class="text-2xl font-bold text-[#C75B39] mt-1">
+                ₦{{ total_we_owe_vendors|floatformat:2 }}
+            </p>
 
-                <!-- Payment Status Badges -->
-                <div class="flex flex-wrap items-center gap-1.5">
-                    {% if data.paid_count > 0 %}
-                    <span class="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-[#6B8E23]/20 text-[#6B8E23] border border-[#6B8E23]/30">
-                        <i class="fas fa-check mr-1"></i>{{ data.paid_count }} Paid
-                    </span>
-                    {% endif %}
-                    {% if data.partial_count > 0 %}
-                    <span class="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-[#C9952C]/20 text-[#C9952C] border border-[#C9952C]/30">
-                        <i class="fas fa-adjust mr-1"></i>{{ data.partial_count }} Partial
-                    </span>
-                    {% endif %}
-                    {% if data.unpaid_count > 0 %}
-                    <span class="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-[#C75B39]/20 text-[#C75B39] border border-[#C75B39]/30">
-                        <i class="fas fa-times mr-1"></i>{{ data.unpaid_count }} Unpaid
-                    </span>
-                    {% endif %}
-                    {% if data.unallocated > 0 %}
-                    <span class="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-[#4E342E]/10 text-[#4E342E] border border-[#4E342E]/20 ml-auto font-mono">
-                        <i class="fas fa-wallet mr-1 text-[#C9952C]"></i>₦{{ data.unallocated|floatformat:2 }}
-                    </span>
-                    {% endif %}
-                </div>
-
-                <!-- Contact Info -->
-                {% if data.user.phone or data.user.email %}
-                <div class="mt-3 pt-3 border-t border-[#4E342E]/10 flex flex-wrap gap-3 text-xs text-[#4E342E]/70 font-mono">
-                    {% if data.user.phone %}<span><i class="fas fa-phone text-[#C9952C] mr-1"></i> {{ data.user.phone }}</span>{% endif %}
-                    {% if data.user.email %}<span class="truncate"><i class="fas fa-envelope text-[#C9952C] mr-1"></i> {{ data.user.email }}</span>{% endif %}
-                </div>
-                {% endif %}
-            </div>
-        </a>
-        {% empty %}
-        <div class="md:col-span-2 xl:col-span-3 bg-white rounded-2xl border border-[#4E342E]/15 shadow-sm p-12 text-center">
-            <i class="fas fa-users text-4xl text-[#4E342E]/30 mb-3"></i>
-            <p class="text-lg font-bold text-[#4E342E]">No partners found</p>
-            <p class="text-xs text-[#4E342E]/70 mt-1">Try adjusting your search or filter.</p>
-        </div>
-        {% endfor %}
-    </div>
-
-    <!-- ====== TABLE LIST VIEW ====== -->
-    <div id="listView" class="hidden bg-white rounded-2xl border border-[#4E342E]/15 shadow-sm overflow-hidden">
-        <div class="overflow-x-auto">
-            <table class="w-full text-sm text-[#4E342E]">
-                <thead>
-                    <tr class="bg-[#4E342E]/10 text-[#4E342E] text-xs uppercase tracking-wider border-b border-[#4E342E]/10">
-                        <th class="px-6 py-3.5 text-left font-bold">Partner</th>
-                        <th class="px-6 py-3.5 text-left font-bold">Role</th>
-                        <th class="px-6 py-3.5 text-center font-bold">Loads</th>
-                        <th class="px-6 py-3.5 text-right font-bold">Balance (₦)</th>
-                        <th class="px-6 py-3.5 text-right font-bold">Balance (kg)</th>
-                        <th class="px-6 py-3.5 text-center font-bold">Status</th>
-                        <th class="px-6 py-3.5 text-left font-bold">Contact</th>
-                        <th class="px-6 py-3.5 text-center font-bold">Action</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-[#4E342E]/10">
-                    {% for data in user_data %}
-                    <tr class="hover:bg-[#4E342E]/5 transition-colors">
-                        <td class="px-6 py-4">
-                            <div class="flex items-center gap-3">
-                                <div class="w-9 h-9 rounded-xl 
-                                    {% if data.user.role == 'VENDOR' %}bg-[#6B8E23] text-white{% else %}bg-[#C9952C] text-white{% endif %} 
-                                    flex items-center justify-center font-bold text-sm flex-shrink-0">
-                                    {{ data.user.username|first|upper }}
-                                </div>
-                                <div>
-                                    <a href="{% url 'user_profile' data.user.pk %}" class="font-bold text-[#4E342E] hover:text-[#C9952C] transition-colors">
-                                        {{ data.user.get_full_name|default:data.user.username }}
-                                    </a>
-                                    <p class="text-xs text-[#4E342E]/60 font-mono">@{{ data.user.username }}</p>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="px-6 py-4">
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold
-                                {% if data.user.role == 'VENDOR' %}bg-[#6B8E23]/20 text-[#6B8E23] border border-[#6B8E23]/30
-                                {% else %}bg-[#C9952C]/20 text-[#C9952C] border border-[#C9952C]/30{% endif %}">
-                                {% if data.user.role == 'VENDOR' %}Farmer{% else %}Buyer{% endif %}
-                            </span>
-                        </td>
-                        <td class="px-6 py-4 text-center font-mono font-bold">
-                            {{ data.batch_count }}
-                            {% if data.unpaid_count > 0 %}
-                            <span class="block text-[10px] text-[#C75B39]">{{ data.unpaid_count }} unpaid</span>
-                            {% elif data.partial_count > 0 %}
-                            <span class="block text-[10px] text-[#C9952C]">{{ data.partial_count }} partial</span>
-                            {% endif %}
-                        </td>
-                        <td class="px-6 py-4 text-right font-mono font-bold">
-                            {% if data.user.role == 'CLIENT' %}
-                                {% if data.is_debtor %}
-                                <span class="text-[#C75B39]">₦{{ data.owes_us_money|floatformat:2 }}</span>
-                                {% elif data.is_creditor %}
-                                <span class="text-[#6B8E23]">-₦{{ data.we_owe_money|floatformat:2 }}</span>
-                                {% else %}
-                                <span class="text-[#8D6E63]">₦0.00</span>
-                                {% endif %}
-                            {% else %}
-                                {% if data.is_creditor %}
-                                <span class="text-[#C75B39]">₦{{ data.we_owe_money|floatformat:2 }}</span>
-                                {% elif data.is_debtor %}
-                                <span class="text-[#6B8E23]">-₦{{ data.owes_us_money|floatformat:2 }}</span>
-                                {% else %}
-                                <span class="text-[#8D6E63]">₦0.00</span>
-                                {% endif %}
-                            {% endif %}
-                        </td>
-                        <td class="px-6 py-4 text-right font-mono font-bold">
-                            {% if data.user.role == 'CLIENT' %}
-                                {% if data.is_debtor %}
-                                <span class="text-[#C75B39]">{{ data.owes_us_kg|floatformat:2 }} kg</span>
-                                {% elif data.is_creditor %}
-                                <span class="text-[#6B8E23]">{{ data.we_owe_kg|floatformat:2 }} kg</span>
-                                {% else %}
-                                <span class="text-[#8D6E63]">—</span>
-                                {% endif %}
-                            {% else %}
-                                {% if data.is_debtor %}
-                                <span class="text-[#6B8E23]">{{ data.owes_us_kg|floatformat:2 }} kg</span>
-                                {% else %}
-                                <span class="text-[#8D6E63]">—</span>
-                                {% endif %}
-                            {% endif %}
-                        </td>
-                        <td class="px-6 py-4 text-center">
-                            {% if data.is_debtor %}
-                            <span class="px-2 py-1 rounded-md text-[10px] font-bold bg-[#C75B39]/20 text-[#C75B39] border border-[#C75B39]/30">Debtor</span>
-                            {% elif data.is_creditor %}
-                            <span class="px-2 py-1 rounded-md text-[10px] font-bold bg-[#C9952C]/20 text-[#C9952C] border border-[#C9952C]/30">Creditor</span>
-                            {% else %}
-                            <span class="px-2 py-1 rounded-md text-[10px] font-bold bg-[#6B8E23]/20 text-[#6B8E23] border border-[#6B8E23]/30">Settled</span>
-                            {% endif %}
-                        </td>
-                        <td class="px-6 py-4 text-xs font-mono text-[#4E342E]/80">
-                            {{ data.user.phone|default:"—" }}
-                        </td>
-                        <td class="px-6 py-4 text-center">
-                            <a href="{% url 'user_profile' data.user.pk %}" class="inline-flex items-center gap-1 text-xs font-bold bg-[#C9952C]/20 hover:bg-[#C9952C]/30 text-[#4E342E] px-3 py-1.5 rounded-xl transition-colors">
-                                View <i class="fas fa-arrow-right text-[10px]"></i>
-                            </a>
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="8" class="px-6 py-12 text-center text-[#4E342E]/60">
-                            <i class="fas fa-users text-3xl text-[#4E342E]/30 mb-2"></i>
-                            <p class="font-bold">No partners match your filter</p>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <!-- Quick Tip -->
-    <div class="bg-[#C9952C]/10 border border-[#C9952C]/30 rounded-2xl p-4 flex items-start gap-3">
-        <i class="fas fa-lightbulb text-[#C9952C] mt-0.5 text-base"></i>
-        <div>
-            <p class="text-sm font-bold text-[#4E342E]">💡 Balance Legend</p>
-            <p class="text-xs text-[#4E342E]/80">
-                <span class="text-[#C75B39] font-bold">Red</span> = Money owed TO us (clients) or BY us (vendors). 
-                <span class="text-[#6B8E23] font-bold">Green</span> = Money/goods owed BY them (vendors owing goods, clients we overpaid). 
-                <strong>kg</strong> is calculated using each partner's latest registered rate.
+            <p class="text-xs text-[#8D6E63] mt-1">
+                Outstanding disbursements
             </p>
         </div>
+
+
+        <!-- Vendors Owe Us -->
+        <div class="bg-white rounded-2xl border border-[#6B8E23]/30 shadow-sm p-5 relative overflow-hidden">
+            <div class="absolute top-0 right-0 p-4 opacity-10">
+                <i class="fas fa-weight-hanging text-5xl text-[#6B8E23]"></i>
+            </div>
+
+            <p class="text-[10px] font-bold text-[#8D6E63] uppercase tracking-wider">
+                Vendors Owe Us
+            </p>
+
+            <p class="text-2xl font-bold text-[#6B8E23] mt-1">
+                {{ total_vendors_owe_us_kg|floatformat:2 }}
+                <span class="text-sm font-normal">kg</span>
+            </p>
+
+            <p class="text-xs text-[#8D6E63] mt-1">
+                ≈ ₦{{ total_vendors_owe_us|floatformat:2 }} in goods
+            </p>
+        </div>
+
+
+        <!-- We Owe Clients -->
+        <div class="bg-white rounded-2xl border border-[#6B8E23]/30 shadow-sm p-5 relative overflow-hidden">
+            <div class="absolute top-0 right-0 p-4 opacity-10">
+                <i class="fas fa-box-open text-5xl text-[#6B8E23]"></i>
+            </div>
+
+            <p class="text-[10px] font-bold text-[#8D6E63] uppercase tracking-wider">
+                We Owe Clients
+            </p>
+
+            <p class="text-2xl font-bold text-[#6B8E23] mt-1">
+                {{ total_we_owe_clients_kg|floatformat:2 }}
+                <span class="text-sm font-normal">kg</span>
+            </p>
+
+            <p class="text-xs text-[#8D6E63] mt-1">
+                ≈ ₦{{ total_we_owe_clients|floatformat:2 }} in goods
+            </p>
+        </div>
+
+    </div>
+
+
+    <!-- ========================================================= -->
+    <!-- FILTERS + VIEW TOGGLE -->
+    <!-- ========================================================= -->
+
+    <div class="bg-white rounded-2xl border border-[#4E342E]/15 shadow-sm p-4">
+
+        <div class="flex flex-col lg:flex-row gap-4 items-center justify-between">
+
+            <form method="get" class="flex flex-col sm:flex-row gap-3 flex-1 w-full">
+
+                <!-- Search -->
+                <div class="flex-1 relative">
+
+                    <i class="fas fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-[#4E342E]/40"></i>
+
+                    <input
+                        type="text"
+                        name="search"
+                        value="{{ search_query }}"
+                        placeholder="Find person by name, username, or phone..."
+                        class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-[#4E342E]/20 text-[#4E342E] bg-white focus:outline-none focus:ring-2 focus:ring-[#C9952C] focus:border-transparent text-sm transition-all"
+                    >
+
+                </div>
+
+
+                <!-- Role -->
+                <div class="sm:w-44">
+
+                    <select
+                        name="role"
+                        onchange="this.form.submit()"
+                        class="w-full px-4 py-2.5 rounded-xl border border-[#4E342E]/20 text-[#4E342E] bg-white focus:outline-none focus:ring-2 focus:ring-[#C9952C] focus:border-transparent text-sm transition-all cursor-pointer font-bold"
+                    >
+
+                        {% for value, label in role_choices %}
+                            <option value="{{ value }}" {% if selected_role == value %}selected{% endif %}>
+                                {{ label }}
+                            </option>
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <!-- Balance Filter -->
+                <div class="sm:w-52">
+
+                    <select
+                        name="filter_type"
+                        onchange="this.form.submit()"
+                        class="w-full px-4 py-2.5 rounded-xl border border-[#4E342E]/20 text-[#4E342E] bg-white focus:outline-none focus:ring-2 focus:ring-[#C9952C] focus:border-transparent text-sm transition-all cursor-pointer font-bold"
+                    >
+
+                        {% for value, label in filter_choices %}
+                            <option value="{{ value }}" {% if selected_filter == value %}selected{% endif %}>
+                                {{ label }}
+                            </option>
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <!-- Clear -->
+                {% if search_query or selected_role or selected_filter != 'all' %}
+
+                    <a
+                        href="{% url 'user_list' %}"
+                        class="px-4 py-2.5 bg-[#C75B39]/10 hover:bg-[#C75B39]/20 text-[#C75B39] text-sm font-bold rounded-xl transition-colors whitespace-nowrap flex items-center justify-center border border-[#C75B39]/20"
+                    >
+                        <i class="fas fa-times mr-1"></i>
+                        Clear
+                    </a>
+
+                {% endif %}
+
+            </form>
+
+
+            <!-- View Toggle -->
+            <div class="flex items-center gap-1 bg-[#4E342E]/5 p-1 rounded-xl border border-[#4E342E]/10 self-end lg:self-auto">
+
+                <button
+                    type="button"
+                    id="gridToggleBtn"
+                    onclick="setViewMode('grid')"
+                    class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1"
+                >
+                    <i class="fas fa-th-large"></i>
+                    Grid
+                </button>
+
+                <button
+                    type="button"
+                    id="listToggleBtn"
+                    onclick="setViewMode('list')"
+                    class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1"
+                >
+                    <i class="fas fa-list"></i>
+                    Table
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ========================================================= -->
+    <!-- GRID VIEW -->
+    <!-- ========================================================= -->
+
+    <div
+        id="gridView"
+        class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5"
+    >
+
+        {% for data in user_data %}
+
+        <!-- IMPORTANT:
+             This is now a DIV instead of an <a>.
+             This allows admin buttons to exist inside the card.
+        -->
+
+        <div
+            class="group block bg-white rounded-2xl border
+            {% if not data.user.is_active %}
+                border-[#C75B39]/40
+            {% else %}
+                border-[#4E342E]/15
+            {% endif %}
+            shadow-sm hover:shadow-md hover:border-[#C9952C]
+            transition-all duration-200 overflow-hidden relative"
+        >
+
+            <!-- ================================================= -->
+            <!-- CARD HEADER -->
+            <!-- ================================================= -->
+
+            <div class="p-5 relative">
+
+                <div
+                    class="absolute top-0 right-0 w-24 h-24
+                    {% if data.user.role == 'VENDOR' %}
+                        bg-[#6B8E23]/10
+                    {% else %}
+                        bg-[#C9952C]/10
+                    {% endif %}
+                    rounded-bl-full -mr-4 -mt-4 opacity-60
+                    group-hover:scale-110 transition-transform"
+                ></div>
+
+
+                <div class="relative flex items-start justify-between gap-3">
+
+                    <div class="flex items-center gap-3 min-w-0">
+
+                        <!-- Avatar -->
+                        <div
+                            class="w-14 h-14 rounded-2xl flex items-center justify-center
+                            text-xl font-bold shadow-sm flex-shrink-0
+
+                            {% if data.user.role == 'VENDOR' %}
+                                bg-[#6B8E23] text-white border border-[#6B8E23]
+                            {% else %}
+                                bg-[#C9952C] text-white border border-[#C9952C]
+                            {% endif %}"
+                        >
+                            {{ data.user.username|first|upper }}
+                        </div>
+
+
+                        <!-- User Info -->
+                        <div class="min-w-0">
+
+                            <a
+                                href="{% url 'user_profile' data.user.pk %}"
+                                class="font-bold text-[#4E342E] hover:text-[#C9952C] transition-colors block truncate"
+                            >
+                                {{ data.user.get_full_name|default:data.user.username }}
+                            </a>
+
+                            <p class="text-xs text-[#4E342E]/60 font-mono truncate">
+                                @{{ data.user.username }}
+                            </p>
+
+
+                            <!-- Role -->
+                            <span
+                                class="inline-flex items-center gap-1 mt-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide
+
+                                {% if data.user.role == 'VENDOR' %}
+                                    bg-[#6B8E23]/20 text-[#6B8E23] border border-[#6B8E23]/30
+                                {% else %}
+                                    bg-[#C9952C]/20 text-[#C9952C] border border-[#C9952C]/30
+                                {% endif %}"
+                            >
+
+                                {% if data.user.role == 'VENDOR' %}
+                                    <i class="fas fa-tractor mr-1"></i>
+                                    Farmer
+                                {% else %}
+                                    <i class="fas fa-store mr-1"></i>
+                                    Buyer
+                                {% endif %}
+
+                            </span>
+
+
+                            <!-- Account Status -->
+                            {% if data.user.is_active %}
+
+                                <span class="inline-flex items-center gap-1 mt-1 ml-1 px-2 py-0.5 rounded-full text-[9px] font-bold bg-[#6B8E23]/10 text-[#6B8E23] border border-[#6B8E23]/20">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-[#6B8E23]"></span>
+                                    ACTIVE
+                                </span>
+
+                            {% else %}
+
+                                <span class="inline-flex items-center gap-1 mt-1 ml-1 px-2 py-0.5 rounded-full text-[9px] font-bold bg-[#C75B39]/10 text-[#C75B39] border border-[#C75B39]/30">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-[#C75B39]"></span>
+                                    SUSPENDED
+                                </span>
+
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+
+                    <a
+                        href="{% url 'user_profile' data.user.pk %}"
+                        class="flex-shrink-0 w-8 h-8 rounded-lg bg-[#4E342E]/5 hover:bg-[#C9952C]/15 flex items-center justify-center text-[#4E342E]/40 hover:text-[#C9952C] transition-all"
+                        title="View profile"
+                    >
+                        <i class="fas fa-chevron-right text-xs"></i>
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <!-- ================================================= -->
+            <!-- SUSPENDED WARNING -->
+            <!-- ================================================= -->
+
+            {% if not data.user.is_active %}
+
+            <div class="mx-5 mb-3 px-3 py-2.5 rounded-xl bg-[#C75B39]/10 border border-[#C75B39]/25 flex items-center gap-2">
+
+                <i class="fas fa-user-slash text-[#C75B39]"></i>
+
+                <div>
+                    <p class="text-xs font-bold text-[#C75B39]">
+                        Account Suspended
+                    </p>
+
+                    <p class="text-[10px] text-[#8D6E63]">
+                        This partner cannot log in.
+                    </p>
+                </div>
+
+            </div>
+
+            {% endif %}
+
+
+            <!-- ================================================= -->
+            <!-- BALANCE SECTION -->
+            <!-- ================================================= -->
+
+            <div class="px-5 pb-3">
+
+                {% if data.user.role == 'CLIENT' %}
+
+                    {% if data.is_debtor %}
+
+                    <div class="bg-[#C75B39]/10 border border-[#C75B39]/30 rounded-xl p-3 mb-3">
+
+                        <div class="flex items-center justify-between">
+
+                            <span class="text-xs font-bold text-[#C75B39] uppercase tracking-wider">
+                                <i class="fas fa-exclamation-circle mr-1"></i>
+                                Owes Us
+                            </span>
+
+                            <span class="text-xs font-mono text-[#8D6E63]">
+                                Rate: ₦{{ data.rate|floatformat:2 }}
+                            </span>
+
+                        </div>
+
+                        <p class="text-lg font-bold text-[#C75B39] mt-1">
+                            ₦{{ data.owes_us_money|floatformat:2 }}
+                        </p>
+
+                        <p class="text-xs text-[#8D6E63]">
+                            ≈ {{ data.owes_us_kg|floatformat:2 }} kg worth of goods
+                        </p>
+
+                    </div>
+
+                    {% elif data.is_creditor %}
+
+                    <div class="bg-[#6B8E23]/10 border border-[#6B8E23]/30 rounded-xl p-3 mb-3">
+
+                        <div class="flex items-center justify-between">
+
+                            <span class="text-xs font-bold text-[#6B8E23] uppercase tracking-wider">
+                                <i class="fas fa-check-circle mr-1"></i>
+                                We Owe Client
+                            </span>
+
+                            <span class="text-xs font-mono text-[#8D6E63]">
+                                Rate: ₦{{ data.rate|floatformat:2 }}
+                            </span>
+
+                        </div>
+
+                        <p class="text-lg font-bold text-[#6B8E23] mt-1">
+                            ₦{{ data.we_owe_money|floatformat:2 }}
+                        </p>
+
+                        <p class="text-xs text-[#8D6E63]">
+                            ≈ {{ data.we_owe_kg|floatformat:2 }} kg goods to deliver
+                        </p>
+
+                    </div>
+
+                    {% else %}
+
+                    <div class="bg-[#4E342E]/5 border border-[#4E342E]/10 rounded-xl p-3 mb-3 text-center">
+
+                        <span class="text-xs font-bold text-[#6B8E23] uppercase tracking-wider">
+                            <i class="fas fa-check-double mr-1"></i>
+                            All Settled
+                        </span>
+
+                    </div>
+
+                    {% endif %}
+
+                {% else %}
+
+                    {% if data.is_creditor %}
+
+                    <div class="bg-[#C75B39]/10 border border-[#C75B39]/30 rounded-xl p-3 mb-3">
+
+                        <div class="flex items-center justify-between">
+
+                            <span class="text-xs font-bold text-[#C75B39] uppercase tracking-wider">
+                                <i class="fas fa-hand-holding-usd mr-1"></i>
+                                We Owe Vendor
+                            </span>
+
+                            <span class="text-xs font-mono text-[#8D6E63]">
+                                Rate: ₦{{ data.rate|floatformat:2 }}
+                            </span>
+
+                        </div>
+
+                        <p class="text-lg font-bold text-[#C75B39] mt-1">
+                            ₦{{ data.we_owe_money|floatformat:2 }}
+                        </p>
+
+                        <p class="text-xs text-[#8D6E63]">
+                            Outstanding payment due
+                        </p>
+
+                    </div>
+
+                    {% elif data.is_debtor %}
+
+                    <div class="bg-[#6B8E23]/10 border border-[#6B8E23]/30 rounded-xl p-3 mb-3">
+
+                        <div class="flex items-center justify-between">
+
+                            <span class="text-xs font-bold text-[#6B8E23] uppercase tracking-wider">
+                                <i class="fas fa-check-circle mr-1"></i>
+                                Vendor Owes Us
+                            </span>
+
+                            <span class="text-xs font-mono text-[#8D6E63]">
+                                Rate: ₦{{ data.rate|floatformat:2 }}
+                            </span>
+
+                        </div>
+
+                        <p class="text-lg font-bold text-[#6B8E23] mt-1">
+                            ₦{{ data.owes_us_money|floatformat:2 }}
+                        </p>
+
+                        <p class="text-xs text-[#8D6E63]">
+                            ≈ {{ data.owes_us_kg|floatformat:2 }} kg goods to collect
+                        </p>
+
+                    </div>
+
+                    {% else %}
+
+                    <div class="bg-[#4E342E]/5 border border-[#4E342E]/10 rounded-xl p-3 mb-3 text-center">
+
+                        <span class="text-xs font-bold text-[#6B8E23] uppercase tracking-wider">
+                            <i class="fas fa-check-double mr-1"></i>
+                            All Settled
+                        </span>
+
+                    </div>
+
+                    {% endif %}
+
+                {% endif %}
+
+            </div>
+
+
+            <!-- ================================================= -->
+            <!-- STATS -->
+            <!-- ================================================= -->
+
+            <div class="px-5 pb-4">
+
+                <div class="grid grid-cols-3 gap-2 mb-4">
+
+                    <div class="text-center p-2 bg-[#4E342E]/5 rounded-xl border border-[#4E342E]/10">
+
+                        <p class="text-[10px] text-[#4E342E]/70 uppercase font-bold tracking-wider">
+                            Crop Loads
+                        </p>
+
+                        <p class="text-lg font-bold text-[#4E342E] font-mono">
+                            {{ data.batch_count }}
+                        </p>
+
+                    </div>
+
+
+                    <div class="text-center p-2 bg-[#4E342E]/5 rounded-xl border border-[#4E342E]/10">
+
+                        <p class="text-[10px] text-[#4E342E]/70 uppercase font-bold tracking-wider">
+                            Weight
+                        </p>
+
+                        <p class="text-lg font-bold text-[#4E342E] font-mono">
+                            {{ data.user.batches.all|length|default:"0" }}
+                            <span class="text-[10px] font-normal">kg</span>
+                        </p>
+
+                    </div>
+
+
+                    <div class="text-center p-2 bg-[#4E342E]/5 rounded-xl border border-[#4E342E]/10">
+
+                        <p class="text-[10px] text-[#4E342E]/70 uppercase font-bold tracking-wider">
+                            Crops
+                        </p>
+
+                        <p class="text-lg font-bold text-[#4E342E] font-mono">
+                            {{ data.product_count }}
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Payment Status -->
+
+                <div class="flex flex-wrap items-center gap-1.5">
+
+                    {% if data.paid_count > 0 %}
+
+                    <span class="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-[#6B8E23]/20 text-[#6B8E23] border border-[#6B8E23]/30">
+                        <i class="fas fa-check mr-1"></i>
+                        {{ data.paid_count }} Paid
+                    </span>
+
+                    {% endif %}
+
+
+                    {% if data.partial_count > 0 %}
+
+                    <span class="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-[#C9952C]/20 text-[#C9952C] border border-[#C9952C]/30">
+                        <i class="fas fa-adjust mr-1"></i>
+                        {{ data.partial_count }} Partial
+                    </span>
+
+                    {% endif %}
+
+
+                    {% if data.unpaid_count > 0 %}
+
+                    <span class="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-[#C75B39]/20 text-[#C75B39] border border-[#C75B39]/30">
+                        <i class="fas fa-times mr-1"></i>
+                        {{ data.unpaid_count }} Unpaid
+                    </span>
+
+                    {% endif %}
+
+
+                    {% if data.unallocated > 0 %}
+
+                    <span class="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-[#4E342E]/10 text-[#4E342E] border border-[#4E342E]/20 ml-auto font-mono">
+
+                        <i class="fas fa-wallet mr-1 text-[#C9952C]"></i>
+
+                        ₦{{ data.unallocated|floatformat:2 }}
+
+                    </span>
+
+                    {% endif %}
+
+                </div>
+
+
+                <!-- Contact -->
+
+                {% if data.user.phone or data.user.email %}
+
+                <div class="mt-3 pt-3 border-t border-[#4E342E]/10 flex flex-wrap gap-3 text-xs text-[#4E342E]/70 font-mono">
+
+                    {% if data.user.phone %}
+
+                    <span>
+                        <i class="fas fa-phone text-[#C9952C] mr-1"></i>
+                        {{ data.user.phone }}
+                    </span>
+
+                    {% endif %}
+
+
+                    {% if data.user.email %}
+
+                    <span class="truncate">
+
+                        <i class="fas fa-envelope text-[#C9952C] mr-1"></i>
+
+                        {{ data.user.email }}
+
+                    </span>
+
+                    {% endif %}
+
+                </div>
+
+                {% endif %}
+
+
+                <!-- ================================================= -->
+                <!-- ADMIN ACTIONS -->
+                <!-- ================================================= -->
+
+                {% if request.user.is_superuser %}
+
+                <div class="mt-4 pt-4 border-t border-[#4E342E]/10">
+
+                    <div class="flex items-center justify-between mb-2">
+
+                        <span class="text-[10px] font-bold uppercase tracking-widest text-[#8D6E63]">
+                            <i class="fas fa-shield-alt mr-1 text-[#C9952C]"></i>
+                            Administrator Controls
+                        </span>
+
+                    </div>
+
+
+                    <div class="grid grid-cols-2 gap-2">
+
+                        <!-- Suspend / Activate -->
+
+                        {% if data.user.is_active %}
+
+                        <form
+                            method="post"
+                            action="{% url 'user_suspend' data.user.pk %}"
+                            onsubmit="return confirmSuspend('{{ data.user.get_full_name|default:data.user.username|escapejs }}');"
+                        >
+
+                            {% csrf_token %}
+
+                            <button
+                                type="submit"
+                                class="w-full inline-flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-xs font-bold bg-[#C9952C]/10 hover:bg-[#C9952C]/20 text-[#8D6E63] hover:text-[#4E342E] border border-[#C9952C]/30 transition-all"
+                                title="Suspend this user"
+                            >
+                                <i class="fas fa-user-slash"></i>
+                                Suspend
+                            </button>
+
+                        </form>
+
+                        {% else %}
+
+                        <!-- Reactivate suspended account -->
+
+                        <form
+                            method="post"
+                            action="{% url 'user_suspend' data.user.pk %}"
+                            onsubmit="return confirmActivate('{{ data.user.get_full_name|default:data.user.username|escapejs }}');"
+                        >
+
+                            {% csrf_token %}
+
+                            <button
+                                type="submit"
+                                class="w-full inline-flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-xs font-bold bg-[#6B8E23]/10 hover:bg-[#6B8E23]/20 text-[#6B8E23] border border-[#6B8E23]/30 transition-all"
+                                title="Reactivate this user"
+                            >
+                                <i class="fas fa-user-check"></i>
+                                Activate
+                            </button>
+
+                        </form>
+
+                        {% endif %}
+
+
+                        <!-- DELETE -->
+
+                        <form
+                            method="post"
+                            action="{% url 'user_delete' data.user.pk %}"
+                            onsubmit="return confirmDelete('{{ data.user.get_full_name|default:data.user.username|escapejs }}');"
+                        >
+
+                            {% csrf_token %}
+
+                            <button
+                                type="submit"
+                                class="w-full inline-flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-xs font-bold bg-[#C75B39]/10 hover:bg-[#C75B39]/20 text-[#C75B39] border border-[#C75B39]/30 transition-all"
+                                title="Permanently delete this user"
+                            >
+                                <i class="fas fa-trash-alt"></i>
+                                Delete
+                            </button>
+
+                        </form>
+
+                    </div>
+
+                </div>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+
+        {% empty %}
+
+        <div class="md:col-span-2 xl:col-span-3 bg-white rounded-2xl border border-[#4E342E]/15 shadow-sm p-12 text-center">
+
+            <i class="fas fa-users text-4xl text-[#4E342E]/30 mb-3"></i>
+
+            <p class="text-lg font-bold text-[#4E342E]">
+                No partners found
+            </p>
+
+            <p class="text-xs text-[#4E342E]/70 mt-1">
+                Try adjusting your search or filter.
+            </p>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+
+    <!-- ========================================================= -->
+    <!-- TABLE / LIST VIEW -->
+    <!-- ========================================================= -->
+
+    <div
+        id="listView"
+        class="hidden bg-white rounded-2xl border border-[#4E342E]/15 shadow-sm overflow-hidden"
+    >
+
+        <div class="overflow-x-auto">
+
+            <table class="w-full text-sm text-[#4E342E]">
+
+                <thead>
+
+                    <tr class="bg-[#4E342E]/10 text-[#4E342E] text-xs uppercase tracking-wider border-b border-[#4E342E]/10">
+
+                        <th class="px-6 py-3.5 text-left font-bold">
+                            Partner
+                        </th>
+
+                        <th class="px-6 py-3.5 text-left font-bold">
+                            Role
+                        </th>
+
+                        <th class="px-6 py-3.5 text-center font-bold">
+                            Loads
+                        </th>
+
+                        <th class="px-6 py-3.5 text-right font-bold">
+                            Balance (₦)
+                        </th>
+
+                        <th class="px-6 py-3.5 text-right font-bold">
+                            Balance (kg)
+                        </th>
+
+                        <th class="px-6 py-3.5 text-center font-bold">
+                            Status
+                        </th>
+
+                        <th class="px-6 py-3.5 text-left font-bold">
+                            Contact
+                        </th>
+
+                        {% if request.user.is_superuser %}
+                        <th class="px-6 py-3.5 text-center font-bold">
+                            Admin Actions
+                        </th>
+                        {% else %}
+                        <th class="px-6 py-3.5 text-center font-bold">
+                            Action
+                        </th>
+                        {% endif %}
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody class="divide-y divide-[#4E342E]/10">
+
+                    {% for data in user_data %}
+
+                    <tr
+                        class="hover:bg-[#4E342E]/5 transition-colors
+                        {% if not data.user.is_active %}
+                            bg-[#C75B39]/5
+                        {% endif %}"
+                    >
+
+                        <!-- Partner -->
+
+                        <td class="px-6 py-4">
+
+                            <div class="flex items-center gap-3">
+
+                                <div
+                                    class="w-9 h-9 rounded-xl flex items-center justify-center font-bold text-sm flex-shrink-0
+                                    {% if data.user.role == 'VENDOR' %}
+                                        bg-[#6B8E23] text-white
+                                    {% else %}
+                                        bg-[#C9952C] text-white
+                                    {% endif %}"
+                                >
+                                    {{ data.user.username|first|upper }}
+                                </div>
+
+
+                                <div class="min-w-0">
+
+                                    <a
+                                        href="{% url 'user_profile' data.user.pk %}"
+                                        class="font-bold text-[#4E342E] hover:text-[#C9952C] transition-colors"
+                                    >
+                                        {{ data.user.get_full_name|default:data.user.username }}
+                                    </a>
+
+                                    <p class="text-xs text-[#4E342E]/60 font-mono">
+                                        @{{ data.user.username }}
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+                        </td>
+
+
+                        <!-- Role -->
+
+                        <td class="px-6 py-4">
+
+                            <span
+                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold
+                                {% if data.user.role == 'VENDOR' %}
+                                    bg-[#6B8E23]/20 text-[#6B8E23] border border-[#6B8E23]/30
+                                {% else %}
+                                    bg-[#C9952C]/20 text-[#C9952C] border border-[#C9952C]/30
+                                {% endif %}"
+                            >
+
+                                {% if data.user.role == 'VENDOR' %}
+                                    <i class="fas fa-tractor mr-1"></i>
+                                    Farmer
+                                {% else %}
+                                    <i class="fas fa-store mr-1"></i>
+                                    Buyer
+                                {% endif %}
+
+                            </span>
+
+                        </td>
+
+
+                        <!-- Loads -->
+
+                        <td class="px-6 py-4 text-center font-mono font-bold">
+
+                            {{ data.batch_count }}
+
+                            {% if data.unpaid_count > 0 %}
+
+                            <span class="block text-[10px] text-[#C75B39]">
+                                {{ data.unpaid_count }} unpaid
+                            </span>
+
+                            {% elif data.partial_count > 0 %}
+
+                            <span class="block text-[10px] text-[#C9952C]">
+                                {{ data.partial_count }} partial
+                            </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- Money Balance -->
+
+                        <td class="px-6 py-4 text-right font-mono font-bold">
+
+                            {% if data.user.role == 'CLIENT' %}
+
+                                {% if data.is_debtor %}
+
+                                <span class="text-[#C75B39]">
+                                    ₦{{ data.owes_us_money|floatformat:2 }}
+                                </span>
+
+                                {% elif data.is_creditor %}
+
+                                <span class="text-[#6B8E23]">
+                                    -₦{{ data.we_owe_money|floatformat:2 }}
+                                </span>
+
+                                {% else %}
+
+                                <span class="text-[#8D6E63]">
+                                    ₦0.00
+                                </span>
+
+                                {% endif %}
+
+                            {% else %}
+
+                                {% if data.is_creditor %}
+
+                                <span class="text-[#C75B39]">
+                                    ₦{{ data.we_owe_money|floatformat:2 }}
+                                </span>
+
+                                {% elif data.is_debtor %}
+
+                                <span class="text-[#6B8E23]">
+                                    -₦{{ data.owes_us_money|floatformat:2 }}
+                                </span>
+
+                                {% else %}
+
+                                <span class="text-[#8D6E63]">
+                                    ₦0.00
+                                </span>
+
+                                {% endif %}
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- KG Balance -->
+
+                        <td class="px-6 py-4 text-right font-mono font-bold">
+
+                            {% if data.user.role == 'CLIENT' %}
+
+                                {% if data.is_debtor %}
+
+                                <span class="text-[#C75B39]">
+                                    {{ data.owes_us_kg|floatformat:2 }} kg
+                                </span>
+
+                                {% elif data.is_creditor %}
+
+                                <span class="text-[#6B8E23]">
+                                    {{ data.we_owe_kg|floatformat:2 }} kg
+                                </span>
+
+                                {% else %}
+
+                                <span class="text-[#8D6E63]">
+                                    —
+                                </span>
+
+                                {% endif %}
+
+                            {% else %}
+
+                                {% if data.is_debtor %}
+
+                                <span class="text-[#6B8E23]">
+                                    {{ data.owes_us_kg|floatformat:2 }} kg
+                                </span>
+
+                                {% else %}
+
+                                <span class="text-[#8D6E63]">
+                                    —
+                                </span>
+
+                                {% endif %}
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- Account / Balance Status -->
+
+                        <td class="px-6 py-4 text-center">
+
+                            <!-- Account status -->
+
+                            {% if not data.user.is_active %}
+
+                                <span class="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-bold bg-[#C75B39]/20 text-[#C75B39] border border-[#C75B39]/30">
+                                    <i class="fas fa-user-slash"></i>
+                                    Suspended
+                                </span>
+
+                            {% elif data.is_debtor %}
+
+                                <span class="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-bold bg-[#C75B39]/20 text-[#C75B39] border border-[#C75B39]/30">
+                                    Debtor
+                                </span>
+
+                            {% elif data.is_creditor %}
+
+                                <span class="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-bold bg-[#C9952C]/20 text-[#C9952C] border border-[#C9952C]/30">
+                                    Creditor
+                                </span>
+
+                            {% else %}
+
+                                <span class="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-bold bg-[#6B8E23]/20 text-[#6B8E23] border border-[#6B8E23]/30">
+                                    Settled
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- Contact -->
+
+                        <td class="px-6 py-4 text-xs font-mono text-[#4E342E]/80">
+
+                            {% if data.user.phone %}
+
+                                <div>
+                                    <i class="fas fa-phone text-[#C9952C] mr-1"></i>
+                                    {{ data.user.phone }}
+                                </div>
+
+                            {% endif %}
+
+                            {% if data.user.email %}
+
+                                <div class="mt-1 truncate max-w-[220px]">
+                                    <i class="fas fa-envelope text-[#C9952C] mr-1"></i>
+                                    {{ data.user.email }}
+                                </div>
+
+                            {% endif %}
+
+                            {% if not data.user.phone and not data.user.email %}
+                                —
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- ================================================= -->
+                        <!-- ACTIONS -->
+                        <!-- ================================================= -->
+
+                        <td class="px-6 py-4">
+
+                            {% if request.user.is_superuser %}
+
+                            <div class="flex items-center justify-center gap-1.5">
+
+                                <!-- View -->
+
+                                <a
+                                    href="{% url 'user_profile' data.user.pk %}"
+                                    class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-[#C9952C]/10 hover:bg-[#C9952C]/20 text-[#4E342E] hover:text-[#C9952C] transition-all"
+                                    title="View profile"
+                                >
+                                    <i class="fas fa-eye text-xs"></i>
+                                </a>
+
+
+                                <!-- Suspend / Activate -->
+
+                                {% if data.user.is_active %}
+
+                                <form
+                                    method="post"
+                                    action="{% url 'user_suspend' data.user.pk %}"
+                                    onsubmit="return confirmSuspend('{{ data.user.get_full_name|default:data.user.username|escapejs }}');"
+                                    class="inline"
+                                >
+
+                                    {% csrf_token %}
+
+                                    <button
+                                        type="submit"
+                                        class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-[#C9952C]/10 hover:bg-[#C9952C]/20 text-[#8D6E63] hover:text-[#4E342E] transition-all"
+                                        title="Suspend user"
+                                    >
+                                        <i class="fas fa-user-slash text-xs"></i>
+                                    </button>
+
+                                </form>
+
+                                {% else %}
+
+                                <form
+                                    method="post"
+                                    action="{% url 'user_suspend' data.user.pk %}"
+                                    onsubmit="return confirmActivate('{{ data.user.get_full_name|default:data.user.username|escapejs }}');"
+                                    class="inline"
+                                >
+
+                                    {% csrf_token %}
+
+                                    <button
+                                        type="submit"
+                                        class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-[#6B8E23]/10 hover:bg-[#6B8E23]/20 text-[#6B8E23] transition-all"
+                                        title="Activate user"
+                                    >
+                                        <i class="fas fa-user-check text-xs"></i>
+                                    </button>
+
+                                </form>
+
+                                {% endif %}
+
+
+                                <!-- Delete -->
+
+                                <form
+                                    method="post"
+                                    action="{% url 'user_delete' data.user.pk %}"
+                                    onsubmit="return confirmDelete('{{ data.user.get_full_name|default:data.user.username|escapejs }}');"
+                                    class="inline"
+                                >
+
+                                    {% csrf_token %}
+
+                                    <button
+                                        type="submit"
+                                        class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-[#C75B39]/10 hover:bg-[#C75B39]/20 text-[#C75B39] transition-all"
+                                        title="Delete user"
+                                    >
+                                        <i class="fas fa-trash-alt text-xs"></i>
+                                    </button>
+
+                                </form>
+
+                            </div>
+
+                            {% else %}
+
+                            <!-- Non-admin only sees View -->
+
+                            <div class="flex justify-center">
+
+                                <a
+                                    href="{% url 'user_profile' data.user.pk %}"
+                                    class="inline-flex items-center gap-1 text-xs font-bold bg-[#C9952C]/20 hover:bg-[#C9952C]/30 text-[#4E342E] px-3 py-1.5 rounded-xl transition-colors"
+                                >
+                                    View
+                                    <i class="fas fa-arrow-right text-[10px]"></i>
+                                </a>
+
+                            </div>
+
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+
+                    {% empty %}
+
+                    <tr>
+
+                        <td
+                            colspan="{% if request.user.is_superuser %}8{% else %}8{% endif %}"
+                            class="px-6 py-12 text-center text-[#4E342E]/60"
+                        >
+
+                            <i class="fas fa-users text-3xl text-[#4E342E]/30 mb-2"></i>
+
+                            <p class="font-bold">
+                                No partners match your filter
+                            </p>
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <!-- ========================================================= -->
+    <!-- QUICK TIP -->
+    <!-- ========================================================= -->
+
+    <div class="bg-[#C9952C]/10 border border-[#C9952C]/30 rounded-2xl p-4 flex items-start gap-3">
+
+        <i class="fas fa-lightbulb text-[#C9952C] mt-0.5 text-base"></i>
+
+        <div>
+
+            <p class="text-sm font-bold text-[#4E342E]">
+                💡 Balance Legend
+            </p>
+
+            <p class="text-xs text-[#4E342E]/80">
+
+                <span class="text-[#C75B39] font-bold">
+                    Red
+                </span>
+                = Money owed TO us (clients) or BY us (vendors).
+
+                <span class="text-[#6B8E23] font-bold">
+                    Green
+                </span>
+                = Money/goods owed BY them (vendors owing goods, clients we overpaid).
+
+                <strong>kg</strong>
+                is calculated using each partner's latest registered rate.
+
+            </p>
+
+        </div>
+
     </div>
 
 </div>
+
+
+<!-- ============================================================= -->
+<!-- CONFIRMATION MODAL -->
+<!-- ============================================================= -->
+
+<div
+    id="adminConfirmModal"
+    class="hidden fixed inset-0 z-[9999] bg-[#4E342E]/60 backdrop-blur-sm items-center justify-center px-4"
+>
+
+    <div
+        class="bg-white w-full max-w-md rounded-3xl shadow-2xl border border-[#4E342E]/10 overflow-hidden transform transition-all"
+    >
+
+        <!-- Modal Header -->
+
+        <div
+            id="confirmModalHeader"
+            class="px-6 py-5 border-b border-[#4E342E]/10"
+        >
+
+            <div class="flex items-center gap-3">
+
+                <div
+                    id="confirmModalIcon"
+                    class="w-12 h-12 rounded-2xl flex items-center justify-center"
+                >
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+
+                <div>
+
+                    <h3
+                        id="confirmModalTitle"
+                        class="text-lg font-black text-[#4E342E]"
+                    >
+                        Confirm Action
+                    </h3>
+
+                    <p
+                        id="confirmModalSubtitle"
+                        class="text-xs text-[#8D6E63]"
+                    >
+                        Administrator confirmation required
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Modal Body -->
+
+        <div class="px-6 py-6">
+
+            <p
+                id="confirmModalMessage"
+                class="text-sm text-[#4E342E]/80 leading-relaxed"
+            ></p>
+
+        </div>
+
+
+        <!-- Modal Footer -->
+
+        <div class="px-6 py-4 bg-[#4E342E]/5 flex justify-end gap-2">
+
+            <button
+                type="button"
+                onclick="closeConfirmModal()"
+                class="px-4 py-2.5 rounded-xl text-xs font-bold text-[#4E342E]/70 hover:bg-white border border-[#4E342E]/10 transition-all"
+            >
+                Cancel
+            </button>
+
+            <button
+                type="button"
+                id="confirmModalButton"
+                onclick="executePendingAction()"
+                class="px-5 py-2.5 rounded-xl text-xs font-bold text-white transition-all"
+            >
+                Confirm
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
 {% endblock %}
 
+
 {% block extra_js %}
+
 <script>
-function setViewMode(mode) {
-    const gridView = document.getElementById('gridView');
-    const listView = document.getElementById('listView');
-    const gridBtn = document.getElementById('gridToggleBtn');
-    const listBtn = document.getElementById('listToggleBtn');
 
-    if (mode === 'list') {
-        gridView.classList.add('hidden');
-        listView.classList.remove('hidden');
-        listBtn.className = "px-3 py-1.5 rounded-lg text-xs font-bold bg-[#4E342E] text-[#FAF6F0] shadow-sm transition-all";
-        gridBtn.className = "px-3 py-1.5 rounded-lg text-xs font-bold text-[#4E342E]/70 hover:text-[#4E342E] transition-all";
-    } else {
-        listView.classList.add('hidden');
-        gridView.classList.remove('hidden');
-        gridBtn.className = "px-3 py-1.5 rounded-lg text-xs font-bold bg-[#4E342E] text-[#FAF6F0] shadow-sm transition-all";
-        listBtn.className = "px-3 py-1.5 rounded-lg text-xs font-bold text-[#4E342E]/70 hover:text-[#4E342E] transition-all";
+    /* ========================================================= */
+    /* VIEW MODE */
+    /* ========================================================= */
+
+    function setViewMode(mode) {
+
+        const gridView = document.getElementById('gridView');
+        const listView = document.getElementById('listView');
+
+        const gridBtn = document.getElementById('gridToggleBtn');
+        const listBtn = document.getElementById('listToggleBtn');
+
+
+        if (mode === 'list') {
+
+            gridView.classList.add('hidden');
+            listView.classList.remove('hidden');
+
+            listBtn.className =
+                "px-3 py-1.5 rounded-lg text-xs font-bold bg-[#4E342E] text-[#FAF6F0] shadow-sm transition-all flex items-center gap-1";
+
+            gridBtn.className =
+                "px-3 py-1.5 rounded-lg text-xs font-bold text-[#4E342E]/70 hover:text-[#4E342E] transition-all flex items-center gap-1";
+
+        } else {
+
+            listView.classList.add('hidden');
+            gridView.classList.remove('hidden');
+
+            gridBtn.className =
+                "px-3 py-1.5 rounded-lg text-xs font-bold bg-[#4E342E] text-[#FAF6F0] shadow-sm transition-all flex items-center gap-1";
+
+            listBtn.className =
+                "px-3 py-1.5 rounded-lg text-xs font-bold text-[#4E342E]/70 hover:text-[#4E342E] transition-all flex items-center gap-1";
+
+        }
+
+
+        localStorage.setItem(
+            'partnerDirectoryView',
+            mode
+        );
     }
-    localStorage.setItem('partnerDirectoryView', mode);
-}
 
-document.addEventListener('DOMContentLoaded', () => {
-    const savedMode = localStorage.getItem('partnerDirectoryView') || 'grid';
-    setViewMode(savedMode);
-});
+
+    /* ========================================================= */
+    /* CONFIRMATION MODAL */
+    /* ========================================================= */
+
+    let pendingForm = null;
+
+
+    function openConfirmModal(
+        title,
+        subtitle,
+        message,
+        buttonText,
+        buttonClass,
+        iconClass
+    ) {
+
+        const modal = document.getElementById(
+            'adminConfirmModal'
+        );
+
+        const titleElement = document.getElementById(
+            'confirmModalTitle'
+        );
+
+        const subtitleElement = document.getElementById(
+            'confirmModalSubtitle'
+        );
+
+        const messageElement = document.getElementById(
+            'confirmModalMessage'
+        );
+
+        const buttonElement = document.getElementById(
+            'confirmModalButton'
+        );
+
+        const iconElement = document.getElementById(
+            'confirmModalIcon'
+        );
+
+
+        titleElement.textContent = title;
+
+        subtitleElement.textContent = subtitle;
+
+        messageElement.textContent = message;
+
+        buttonElement.textContent = buttonText;
+
+        buttonElement.className =
+            "px-5 py-2.5 rounded-xl text-xs font-bold text-white transition-all " +
+            buttonClass;
+
+        iconElement.className =
+            "w-12 h-12 rounded-2xl flex items-center justify-center " +
+            iconClass;
+
+
+        modal.classList.remove('hidden');
+
+        modal.classList.add('flex');
+
+        document.body.classList.add('overflow-hidden');
+    }
+
+
+    function closeConfirmModal() {
+
+        const modal = document.getElementById(
+            'adminConfirmModal'
+        );
+
+        modal.classList.add('hidden');
+
+        modal.classList.remove('flex');
+
+        pendingForm = null;
+
+        document.body.classList.remove('overflow-hidden');
+    }
+
+
+    function executePendingAction() {
+
+        if (pendingForm) {
+
+            pendingForm.submit();
+
+        }
+
+    }
+
+
+    /* ========================================================= */
+    /* SUSPEND CONFIRMATION */
+    /* ========================================================= */
+
+    function confirmSuspend(username) {
+
+        const form = event.currentTarget;
+
+        pendingForm = form;
+
+        openConfirmModal(
+            "Suspend Partner?",
+            "Administrator action",
+            "Are you sure you want to suspend " +
+            username +
+            "? They will immediately lose access to their account and will not be able to log in until reactivated.",
+            "Suspend Account",
+            "bg-[#C9952C] hover:bg-[#A97816]",
+            "bg-[#C9952C]/10 text-[#C9952C]"
+        );
+
+        return false;
+    }
+
+
+    /* ========================================================= */
+    /* ACTIVATE CONFIRMATION */
+    /* ========================================================= */
+
+    function confirmActivate(username) {
+
+        const form = event.currentTarget;
+
+        pendingForm = form;
+
+        openConfirmModal(
+            "Reactivate Partner?",
+            "Administrator action",
+            "Are you sure you want to reactivate " +
+            username +
+            "? Their account will be restored and they will be able to log in again.",
+            "Activate Account",
+            "bg-[#6B8E23] hover:bg-[#527019]",
+            "bg-[#6B8E23]/10 text-[#6B8E23]"
+        );
+
+        return false;
+    }
+
+
+    /* ========================================================= */
+    /* DELETE CONFIRMATION */
+    /* ========================================================= */
+
+    function confirmDelete(username) {
+
+        const form = event.currentTarget;
+
+        pendingForm = form;
+
+        openConfirmModal(
+            "Permanently Delete Partner?",
+            "Dangerous administrator action",
+            "You are about to permanently delete " +
+            username +
+            ". This action may remove their account and related records and cannot be easily undone. Please make sure you are certain before continuing.",
+            "Delete Permanently",
+            "bg-[#C75B39] hover:bg-[#A94428]",
+            "bg-[#C75B39]/10 text-[#C75B39]"
+        );
+
+        return false;
+    }
+
+
+    /* ========================================================= */
+    /* CLOSE MODAL WHEN CLICKING OUTSIDE */
+    /* ========================================================= */
+
+    document.addEventListener(
+        'click',
+        function(event) {
+
+            const modal =
+                document.getElementById(
+                    'adminConfirmModal'
+                );
+
+            if (
+                event.target === modal
+            ) {
+
+                closeConfirmModal();
+
+            }
+
+        }
+    );
+
+
+    /* ========================================================= */
+    /* ESC KEY */
+    /* ========================================================= */
+
+    document.addEventListener(
+        'keydown',
+        function(event) {
+
+            if (
+                event.key === 'Escape'
+            ) {
+
+                closeConfirmModal();
+
+            }
+
+        }
+    );
+
+
+    /* ========================================================= */
+    /* INITIALIZE VIEW */
+    /* ========================================================= */
+
+    document.addEventListener(
+        'DOMContentLoaded',
+        function() {
+
+            const savedMode =
+                localStorage.getItem(
+                    'partnerDirectoryView'
+                ) || 'grid';
+
+            setViewMode(savedMode);
+
+        }
+    );
+
 </script>
+
 {% endblock %}
