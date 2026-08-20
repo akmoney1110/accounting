@@ -589,19 +589,24 @@
     /* BUSINESSES / VENTURES GRID */
     .business-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      /* Fixed 3-column layout for desktop (2 rows of 3 cards for 6 items) */
+      grid-template-columns: repeat(3, 1fr);
       gap: 2rem;
     }
     .business-card {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
       background-color: var(--white);
       border-radius: 8px;
       overflow: hidden;
       box-shadow: 0 4px 15px rgba(0,0,0,0.05);
       border-bottom: 4px solid var(--cashew-gold);
-      transition: transform 0.3s ease;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
     .business-card:hover {
       transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.1);
     }
     .business-card img {
       width: 100%;
@@ -610,10 +615,30 @@
     }
     .business-card-body {
       padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
     }
     .business-card-body h3 {
       color: var(--earth-brown);
       margin-bottom: 0.5rem;
+    }
+
+    /* RESPONSIVE LAYOUT BREAKPOINTS */
+    @media (max-width: 992px) {
+      .business-grid {
+        /* Drops to 2 columns on tablets (3 rows of 2 cards) */
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .business-grid {
+        /* Drops to 1 column on mobile phones */
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
+      }
     }
     /* GALLERY GRID */
     .gallery-grid {
@@ -938,6 +963,32 @@
    <img src="https://images.unsplash.com/photo-1549931319-a545dcf3bc73?auto=format&fit=crop&w=600&q=80"
      alt="Fresh Bread">     <div class="business-card-body"><h3>Bakery</h3><p>Freshly baked bread, pastries, cakes, and other quality bakery products prepared with care for individuals, families, and events.</p></div>
     </div>
+    <!-- Palm Kernel Card -->
+<div class="business-card">
+  <img src="{% static 'images/kernel.JPEG' %}" alt="Palm Kernel Supply">
+  <div class="business-card-body">
+    <h3>Palm Kernel Supply</h3>
+    <p>We source and supply high-grade palm kernels processed for optimal oil yield, ensuring consistent quality for industrial processing and livestock feed production.</p>
+  </div>
+</div>
+
+<!-- Soya Beans Card -->
+<div class="business-card">
+  <img src="{% static 'images/soyabean.JPG' %}" alt="Soya Beans Trading">
+  <div class="business-card-body">
+    <h3>Soya Beans Trading</h3>
+    <p>We deliver clean, high-protein soya beans directly from reliable farm networks, serving human consumption needs and commercial feed manufacturing.</p>
+  </div>
+</div>
+
+<!-- Sesame Seeds Card -->
+<div class="business-card">
+  <img src="{% static 'images/sesame.JPG' %}" alt="Sesame Seeds Export">
+  <div class="business-card-body">
+    <h3>Sesame Seeds Export</h3>
+    <p>We supply premium-grade, thoroughly cleaned sesame seeds rich in oil content, meeting international market standards for food processing and export.</p>
+  </div>
+</div>
   </div>
 </section>
 
