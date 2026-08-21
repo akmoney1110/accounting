@@ -806,6 +806,180 @@
     .bg-earth-300 { background-color: #d2bc96; }
     .bg-earth-800 { background-color: #483323; }
     .hover\:bg-earth-100:hover { background-color: #f3eee4; }
+
+    /* =========================================================
+   PALM KERNEL SECTION STYLES
+========================================================= */
+.palm-kernel-section {
+  padding: 5rem 1.5rem;
+  background-color: var(--earth-dark, #1b120e);
+  color: var(--sand-light, #f7f3eb);
+}
+
+.pk-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 3.5rem;
+  align-items: center;
+}
+
+/* Visual Column */
+.pk-image-wrapper {
+  position: relative;
+}
+
+.pk-image-card {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(212, 163, 89, 0.25);
+}
+
+.pk-main-img {
+  width: 100%;
+  height: 480px;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.5s ease;
+}
+
+.pk-image-card:hover .pk-main-img {
+  transform: scale(1.03);
+}
+
+.pk-badge {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  background: var(--cashew-gold, #d4a359);
+  color: var(--earth-dark, #1b120e);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+  text-transform: uppercase;
+}
+
+/* Content Column */
+.pk-kicker {
+  display: inline-block;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: var(--cashew-gold, #d4a359);
+  margin-bottom: 0.75rem;
+  text-transform: uppercase;
+}
+
+.pk-content h2 {
+  font-size: 2.25rem;
+  color: var(--sand-base, #f0e6d2);
+  line-height: 1.25;
+  margin-bottom: 1.25rem;
+}
+
+.pk-lead {
+  font-size: 1.05rem;
+  color: rgba(247, 243, 235, 0.82);
+  line-height: 1.65;
+  margin-bottom: 2rem;
+}
+
+/* Features Sub-Grid */
+.pk-features-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.pk-feature-item {
+  display: flex;
+  gap: 0.85rem;
+  align-items: flex-start;
+}
+
+.pk-feature-icon {
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  background: rgba(212, 163, 89, 0.12);
+  color: var(--cashew-gold, #d4a359);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(212, 163, 89, 0.25);
+}
+
+.pk-feature-item h4 {
+  font-size: 0.98rem;
+  color: var(--sand-base, #f0e6d2);
+  margin-bottom: 0.25rem;
+  font-weight: 600;
+}
+
+.pk-feature-item p {
+  font-size: 0.85rem;
+  color: rgba(247, 243, 235, 0.65);
+  line-height: 1.45;
+  margin: 0;
+}
+
+/* Buttons */
+.pk-actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.btn-secondary-outline {
+  display: inline-block;
+  padding: 0.8rem 1.8rem;
+  border: 1px solid rgba(212, 163, 89, 0.45);
+  color: var(--sand-base, #f0e6d2);
+  border-radius: 4px;
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 0.92rem;
+  transition: all 0.3s ease;
+}
+
+.btn-secondary-outline:hover {
+  background: rgba(212, 163, 89, 0.12);
+  border-color: var(--cashew-gold, #d4a359);
+  color: var(--cashew-gold, #d4a359);
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 900px) {
+  .pk-container {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+
+  .pk-main-img {
+    height: 320px;
+  }
+
+  .pk-features-grid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .pk-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .pk-actions a {
+    text-align: center;
+  }
+}
   </style>
 </head>
 <body>
@@ -974,7 +1148,7 @@
 
 <!-- Soya Beans Card -->
 <div class="business-card">
-  <img src="{% static 'images/soyabean.JPG' %}" alt="Soya Beans Trading">
+  <img src="{% static 'images/sesame.JPG' %}" alt="Soya Beans Trading">
   <div class="business-card-body">
     <h3>Soya Beans Trading</h3>
     <p>We deliver clean, high-protein soya beans directly from reliable farm networks, serving human consumption needs and commercial feed manufacturing.</p>
@@ -983,7 +1157,7 @@
 
 <!-- Sesame Seeds Card -->
 <div class="business-card">
-  <img src="{% static 'images/sesame.JPG' %}" alt="Sesame Seeds Export">
+  <img src="{% static 'images/sesame2.jpg' %}" alt="Sesame Seeds Export">
   <div class="business-card-body">
     <h3>Sesame Seeds Export</h3>
     <p>We supply premium-grade, thoroughly cleaned sesame seeds rich in oil content, meeting international market standards for food processing and export.</p>
@@ -1152,7 +1326,245 @@
     <div class="relative mt-28 overflow-hidden rounded-[2.5rem] bg-[#58733a] px-8 py-16 text-center shadow-[0_30px_90px_rgba(70,95,45,0.18)] sm:px-12 lg:px-16"><div class="absolute -left-28 -top-28 h-72 w-72 rounded-full border border-white/10"></div><div class="absolute -bottom-36 -right-24 h-96 w-96 rounded-full border border-white/10"></div><div class="relative"><p class="text-xs font-bold uppercase tracking-[0.25em] text-[#d9e6bd]">Your Next Shopping Trip Starts Here</p><h3 class="mx-auto mt-5 max-w-4xl font-serif text-3xl font-semibold leading-tight text-white sm:text-4xl lg:text-6xl">Come for what you need.<br><span class="text-[#e4c77f]">Stay for what you discover.</span></h3><p class="mx-auto mt-6 max-w-2xl text-sm leading-8 text-white/65 sm:text-base">Whether you're stocking your kitchen, refreshing your home, shopping for the family or picking up something freshly baked, make Dikubs your destination for everyday shopping.</p><div class="mt-9 flex flex-col justify-center gap-3 sm:flex-row"><a href="#contact" class="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-7 py-4 text-sm font-bold text-[#58733a] shadow-xl transition duration-300 hover:-translate-y-1 hover:bg-[#fffdf6]">Visit Dikubs Supermarket <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M5 12h14M13 6l6 6-6 6"/></svg></a><a href="#contact" class="inline-flex items-center justify-center rounded-xl border border-white/20 bg-white/5 px-7 py-4 text-sm font-bold text-white backdrop-blur transition duration-300 hover:bg-white/10">Contact Us</a></div></div></div>
   </div>
 </section>
+<!-- =========================================================
+   PALM KERNEL SECTION
+========================================================= -->
+<section id="palm-kernel" class="palm-kernel-section">
+  <div class="pk-container">
+    
+    <!-- Left Column: Visual Showcase -->
+    <div class="pk-image-wrapper">
+      <div class="pk-image-card">
+        <img src="{% static 'images/kernel.JPEG' %}" alt="High quality palm kernel nuts and agro supply" class="pk-main-img">
+        <span class="pk-badge">PREMIUM AGRO SUPPLY</span>
+      </div>
+    </div>
 
+    <!-- Right Column: Content & Technical Specs -->
+    <div class="pk-content">
+      <span class="pk-kicker">AGRO-COMMODITIES & PROCESSING</span>
+      <h2>High-Yield Palm Kernels Sourced for Commercial Scale</h2>
+      <p class="pk-lead">
+        We specialize in the aggregation, sorting, and bulk distribution of top-tier palm kernels. 
+        Sourced directly from trusted regional plantations, our supply supports industrial crushing plants, 
+        vegetable oil refiners, and livestock feed manufacturers.
+      </p>
+
+      <!-- Key Specifications / Highlights Grid -->
+      <div class="pk-features-grid">
+        <div class="pk-feature-item">
+          <div class="pk-feature-icon">
+            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          </div>
+          <div>
+            <h4>Optimal Oil Content</h4>
+            <p>Thoroughly dried and graded to yield maximum extraction efficiency for crude palm kernel oil (PKO).</p>
+          </div>
+        </div>
+
+        <div class="pk-feature-item">
+          <div class="pk-feature-icon">
+            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <div>
+            <h4>Minimal Impurities</h4>
+            <p>Strict quality control processes ensure clean kernels free from excessive shell fragments and dust.</p>
+          </div>
+        </div>
+
+        <div class="pk-feature-item">
+          <div class="pk-feature-icon">
+            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+          </div>
+          <div>
+            <h4>Bulk Industrial Packaging</h4>
+            <p>Flexible supply options available in bagged lots or bulk truckloads to fit your factory logistics.</p>
+          </div>
+        </div>
+
+        <div class="pk-feature-item">
+          <div class="pk-feature-icon">
+            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+          </div>
+          <div>
+            <h4>Consistent Supply Chain</h4>
+            <p>Year-round inventory management guarantees uninterrupted delivery schedules for commercial buyers.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Call to Action Buttons -->
+      <div class="pk-actions">
+        <a href="#contact" class="btn-primary">Request Bulk Quote</a>
+        <a href="tel:+2340000000000" class="btn-secondary-outline">Speak with Supply Manager</a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+
+
+
+<!-- =========================================================
+   SOYA BEANS SECTION
+========================================================= -->
+<section id="soya-beans" class="commodity-section">
+  <div class="commodity-container">
+    
+    <!-- Visual Showcase -->
+    <div class="commodity-image-wrapper">
+      <div class="commodity-image-card">
+        <img src="{% static 'images/soyabean.JPG' %}" alt="High protein soya beans supply" class="commodity-main-img">
+        <span class="commodity-badge">AGRO COMMODITIES</span>
+      </div>
+    </div>
+
+    <!-- Content & Technical Specs -->
+    <div class="commodity-content">
+      <span class="commodity-kicker">GRAINS & PROTEIN SUPPLY</span>
+      <h2>Premium Soya Beans Sourced for Industrial & Food Processing</h2>
+      <p class="commodity-lead">
+        We aggregate and supply clean, high-grade soya beans directly from verified farming networks. 
+        Engineered to meet strict quality criteria, our soya beans serve human consumption markets, 
+        vegetable oil extraction plants, and commercial animal feed formulation.
+      </p>
+
+      <!-- Key Highlights Grid -->
+      <div class="commodity-features-grid">
+        <div class="commodity-feature-item">
+          <div class="commodity-feature-icon">
+            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          </div>
+          <div>
+            <h4>High Protein & Crude Fat</h4>
+            <p>Naturally rich in nutrients, ensuring high nutritional yield for feed manufacturers and processors.</p>
+          </div>
+        </div>
+
+        <div class="commodity-feature-item">
+          <div class="commodity-feature-icon">
+            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <div>
+            <h4>Machine Cleaned & Sorted</h4>
+            <p>Screened to ensure low foreign matter content, uniform size, and minimal broken beans.</p>
+          </div>
+        </div>
+
+        <div class="commodity-feature-item">
+          <div class="commodity-feature-icon">
+            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+          </div>
+          <div>
+            <h4>Controlled Moisture Levels</h4>
+            <p>Dried to standard moisture percentages ($<12\%$) to preserve quality during long storage and transit.</p>
+          </div>
+        </div>
+
+        <div class="commodity-feature-item">
+          <div class="commodity-feature-icon">
+            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+          </div>
+          <div>
+            <h4>Flexible Packaging</h4>
+            <p>Available in 50kg polypropylene bags or bulk vessel loading tailored to order specifications.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="commodity-actions">
+        <a href="#contact" class="btn-primary">Order Soya Beans</a>
+        <a href="tel:+2340000000000" class="btn-secondary-outline">Speak with Sales</a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+
+
+
+
+<!-- =========================================================
+   SESAME SEEDS SECTION
+========================================================= -->
+<section id="sesame-seeds" class="commodity-section commodity-alt-bg">
+  <div class="commodity-container commodity-reverse">
+    
+    <!-- Visual Showcase -->
+    <div class="commodity-image-wrapper">
+      <div class="commodity-image-card">
+        <img src="{% static 'images/sesame2.jpg' %}" alt="Export quality cleaned sesame seeds" class="commodity-main-img">
+        <span class="commodity-badge">EXPORT GRADE</span>
+      </div>
+    </div>
+
+    <!-- Content & Technical Specs -->
+    <div class="commodity-content">
+      <span class="commodity-kicker">OILSEEDS & EXPORT TRADING</span>
+      <h2>Export-Grade Sesame Seeds Sourced with Precision</h2>
+      <p class="commodity-lead">
+        We specialize in sourcing, cleaning, and exporting premium natural and hulled sesame seeds. 
+        Renowned for their high oil content and purity, our seeds satisfy the requirements of international food processors, 
+        confectionery bakeries, and oil pressers.
+      </p>
+
+      <!-- Key Highlights Grid -->
+      <div class="commodity-features-grid">
+        <div class="commodity-feature-item">
+          <div class="commodity-feature-icon">
+            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          </div>
+          <div>
+            <h4>High Oil Yield ($50\%+$)</h4>
+            <p>Extracted from optimal growing regions to guarantee exceptional oil concentration and aroma.</p>
+          </div>
+        </div>
+
+        <div class="commodity-feature-item">
+          <div class="commodity-feature-icon">
+            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <div>
+            <h4>$99\%+$ Purity Standard</h4>
+            <p>Thoroughly winnowed and machine-cleaned to eliminate dust, stones, and foreign matter.</p>
+          </div>
+        </div>
+
+        <div class="commodity-feature-item">
+          <div class="commodity-feature-icon">
+            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+          </div>
+          <div>
+            <h4>Strict Quality Auditing</h4>
+            <p>Inspected prior to dispatch to ensure compliance with global sanitary and phytosanitary standards.</p>
+          </div>
+        </div>
+
+        <div class="commodity-feature-item">
+          <div class="commodity-feature-icon">
+            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+          </div>
+          <div>
+            <h4>Global Export Logistics</h4>
+            <p>Seamless handling of international documentation, freight containerization, and port clearance.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="commodity-actions">
+        <a href="#contact" class="btn-primary">Request Export Quote</a>
+        <a href="tel:+2340000000000" class="btn-secondary-outline">Contact Trade Desk</a>
+      </div>
+    </div>
+
+  </div>
+</section>
 <!-- ===== ABOUT US ===== -->
 <section id="about" class="relative overflow-hidden bg-[#f8f5ed] py-24 sm:py-28 lg:py-36" style="max-width:100%;">
   <div class="pointer-events-none absolute inset-0 overflow-hidden"><div class="absolute -left-40 top-20 h-96 w-96 rounded-full bg-[#58733a]/10 blur-3xl"></div><div class="absolute -right-40 top-[40%] h-[32rem] w-[32rem] rounded-full bg-[#c7954d]/10 blur-3xl"></div><div class="absolute bottom-0 left-[40%] h-72 w-72 rounded-full bg-[#8c603b]/5 blur-3xl"></div></div>
@@ -1183,7 +1595,7 @@
     <!-- cashew buyer section -->
     <div class="mt-24 overflow-hidden rounded-[2.5rem] bg-[#34442d] text-white"><div class="grid lg:grid-cols-[1fr_1fr]"><div class="p-8 sm:p-12 lg:p-16"><p class="text-xs font-bold uppercase tracking-[0.25em] text-[#d9b35e]">For Cashew Buyers</p><h3 class="mt-4 font-serif text-3xl font-semibold leading-tight sm:text-4xl lg:text-5xl">Looking for quality <span class="text-[#d9b35e]">dry cashew nuts?</span></h3><p class="mt-6 text-sm leading-8 text-white/65 sm:text-base">Dikubs participates in the sourcing and supply of dry raw cashew nuts for buyers looking for agricultural commodities from Nigeria.</p><p class="mt-4 text-sm leading-8 text-white/65 sm:text-base">We understand that serious commodity buyers need more than a product listing. They need clear communication, reliable documentation, appropriate handling and a supplier who understands the importance of fulfilling agreed commercial requirements.</p><div class="mt-8 grid gap-3 sm:grid-cols-2"><div class="rounded-2xl border border-white/10 bg-white/5 p-5"><p class="font-semibold">Dry Cashew Nuts</p><p class="mt-2 text-xs leading-5 text-white/45">Sourced and supplied for commodity buyers.</p></div><div class="rounded-2xl border border-white/10 bg-white/5 p-5"><p class="font-semibold">Bulk Supply</p><p class="mt-2 text-xs leading-5 text-white/45">Suitable for commercial purchasing requirements.</p></div><div class="rounded-2xl border border-white/10 bg-white/5 p-5"><p class="font-semibold">Export Outlook</p><p class="mt-2 text-xs leading-5 text-white/45">Built with international trade opportunities in mind.</p></div><div class="rounded-2xl border border-white/10 bg-white/5 p-5"><p class="font-semibold">Direct Communication</p><p class="mt-2 text-xs leading-5 text-white/45">Clear communication from enquiry to fulfilment.</p></div></div><a href="#contact" class="mt-9 inline-flex items-center gap-3 rounded-xl bg-white px-7 py-4 text-sm font-bold text-[#34442d] transition hover:-translate-y-1 hover:shadow-xl">Discuss a Cashew Order <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M5 12h14M13 6l6 6-6 6"/></svg></a></div><div class="relative min-h-[420px] overflow-hidden lg:min-h-full"><img src="{% static 'images/cashew3.JPG'%}" alt="Dikubs dry cashew nuts" class="absolute inset-0 h-full w-full object-cover" /><div class="absolute inset-0 bg-gradient-to-r from-[#34442d] via-[#34442d]/30 to-transparent lg:bg-gradient-to-r"></div><div class="absolute bottom-8 left-8 right-8 rounded-2xl border border-white/10 bg-black/20 p-5 backdrop-blur-md"><p class="text-xs font-bold uppercase tracking-[0.18em] text-[#d9b35e]">Agricultural Commodities</p><p class="mt-2 text-sm leading-6 text-white/80">From sourcing to supply, we aim to make agricultural commodity trading more dependable.</p></div></div></div></div>
     <!-- supermarket section -->
-    <div class="mt-8 grid gap-8 lg:grid-cols-[0.9fr_1.1fr]"><div class="relative min-h-[500px] overflow-hidden rounded-[2.5rem]"><img src="{% static 'images/marketfront.JPG'%}" alt="Dikubs supermarket" class="absolute inset-0 h-full w-full object-cover" /><div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent"></div><div class="absolute bottom-8 left-8 right-8 text-white"><p class="text-xs font-bold uppercase tracking-[0.2em] text-[#e4c77f]">Dikubs Supermarket</p><h3 class="mt-3 font-serif text-3xl font-semibold sm:text-4xl">Everyday shopping, made easier.</h3><p class="mt-4 max-w-lg text-sm leading-7 text-white/70">A broad selection of everyday products for households, individuals and shoppers looking for convenience.</p></div></div><div class="rounded-[2.5rem] border border-[#30251e]/10 bg-white p-8 sm:p-12"><p class="text-xs font-bold uppercase tracking-[0.24em] text-[#58733a]">For Everyday Customers</p><h3 class="mt-4 font-serif text-3xl font-semibold leading-tight text-[#30251e] sm:text-4xl">One convenient destination for everyday essentials.</h3><p class="mt-6 text-sm leading-8 text-[#71665d]">Shopping should not feel unnecessarily complicated. Our supermarket is designed to give customers access to a wide range of everyday products in one convenient place.</p><div class="mt-8 space-y-4"><div class="flex gap-4"><span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#eef4e7] text-sm font-bold text-[#58733a]">✓</span><div><h4 class="font-semibold text-[#30251e]">Provisions & Groceries</h4><p class="mt-1 text-sm leading-6 text-[#766b61]">Everyday food products and household provisions.</p></div></div><div class="flex gap-4"><span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#eef4e7] text-sm font-bold text-[#58733a]">✓</span><div><h4 class="font-semibold text-[#30251e]">Toiletries & Personal Care</h4><p class="mt-1 text-sm leading-6 text-[#766b61]">Personal-care products and everyday toiletries.</p></div></div><div class="flex gap-4"><span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#eef4e7] text-sm font-bold text-[#58733a]">✓</span><div><h4 class="font-semibold text-[#30251e]">Household Essentials</h4><p class="mt-1 text-sm leading-6 text-[#766b61]">Cleaning products, home supplies and useful essentials.</p></div></div><div class="flex gap-4"><span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#eef4e7] text-sm font-bold text-[#58733a]">✓</span><div><h4 class="font-semibold text-[#30251e]">A Better Shopping Experience</h4><p class="mt-1 text-sm leading-6 text-[#766b61]">A convenient environment designed around everyday customer needs.</p></div></div></div></div></div>
+    <div class="mt-8 grid gap-8 lg:grid-cols-[0.9fr_1.1fr]"><div class="relative min-h-[500px] overflow-hidden rounded-[2.5rem]"><img src="{% static 'images/marketfront.jpg'%}" alt="Dikubs supermarket" class="absolute inset-0 h-full w-full object-cover" /><div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent"></div><div class="absolute bottom-8 left-8 right-8 text-white"><p class="text-xs font-bold uppercase tracking-[0.2em] text-[#e4c77f]">Dikubs Supermarket</p><h3 class="mt-3 font-serif text-3xl font-semibold sm:text-4xl">Everyday shopping, made easier.</h3><p class="mt-4 max-w-lg text-sm leading-7 text-white/70">A broad selection of everyday products for households, individuals and shoppers looking for convenience.</p></div></div><div class="rounded-[2.5rem] border border-[#30251e]/10 bg-white p-8 sm:p-12"><p class="text-xs font-bold uppercase tracking-[0.24em] text-[#58733a]">For Everyday Customers</p><h3 class="mt-4 font-serif text-3xl font-semibold leading-tight text-[#30251e] sm:text-4xl">One convenient destination for everyday essentials.</h3><p class="mt-6 text-sm leading-8 text-[#71665d]">Shopping should not feel unnecessarily complicated. Our supermarket is designed to give customers access to a wide range of everyday products in one convenient place.</p><div class="mt-8 space-y-4"><div class="flex gap-4"><span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#eef4e7] text-sm font-bold text-[#58733a]">✓</span><div><h4 class="font-semibold text-[#30251e]">Provisions & Groceries</h4><p class="mt-1 text-sm leading-6 text-[#766b61]">Everyday food products and household provisions.</p></div></div><div class="flex gap-4"><span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#eef4e7] text-sm font-bold text-[#58733a]">✓</span><div><h4 class="font-semibold text-[#30251e]">Toiletries & Personal Care</h4><p class="mt-1 text-sm leading-6 text-[#766b61]">Personal-care products and everyday toiletries.</p></div></div><div class="flex gap-4"><span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#eef4e7] text-sm font-bold text-[#58733a]">✓</span><div><h4 class="font-semibold text-[#30251e]">Household Essentials</h4><p class="mt-1 text-sm leading-6 text-[#766b61]">Cleaning products, home supplies and useful essentials.</p></div></div><div class="flex gap-4"><span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#eef4e7] text-sm font-bold text-[#58733a]">✓</span><div><h4 class="font-semibold text-[#30251e]">A Better Shopping Experience</h4><p class="mt-1 text-sm leading-6 text-[#766b61]">A convenient environment designed around everyday customer needs.</p></div></div></div></div></div>
     <!-- bakery section -->
     <div class="mt-8 overflow-hidden rounded-[2.5rem] border border-[#30251e]/10 bg-[#fffaf4]"><div class="grid lg:grid-cols-[1.1fr_0.9fr]"><div class="p-8 sm:p-12 lg:p-16"><p class="text-xs font-bold uppercase tracking-[0.24em] text-[#996238]">Fresh From Our Bakery</p><h3 class="mt-4 font-serif text-3xl font-semibold leading-tight text-[#30251e] sm:text-4xl">Freshly baked products made for everyday moments.</h3><p class="mt-6 text-sm leading-8 text-[#71665d]">Our bakery adds another layer of convenience to the Dikubs experience by offering freshly prepared baked products for individuals, families, celebrations and everyday enjoyment.</p><div class="mt-8 grid gap-3 sm:grid-cols-2"><div class="rounded-2xl bg-white p-5 shadow-sm"><h4 class="font-semibold text-[#30251e]">Fresh Bread</h4><p class="mt-2 text-sm leading-6 text-[#766b61]">Freshly baked bread for households and everyday meals.</p></div><div class="rounded-2xl bg-white p-5 shadow-sm"><h4 class="font-semibold text-[#30251e]">Pastries</h4><p class="mt-2 text-sm leading-6 text-[#766b61]">A selection of baked treats for different occasions.</p></div><div class="rounded-2xl bg-white p-5 shadow-sm"><h4 class="font-semibold text-[#30251e]">Celebration Cakes</h4><p class="mt-2 text-sm leading-6 text-[#766b61]">Products suitable for celebrations and special moments.</p></div><div class="rounded-2xl bg-white p-5 shadow-sm"><h4 class="font-semibold text-[#30251e]">Everyday Convenience</h4><p class="mt-2 text-sm leading-6 text-[#766b61]">Fresh bakery products conveniently available alongside supermarket shopping.</p></div></div></div><div class="relative min-h-[400px]"><img src="https://images.unsplash.com/photo-1549931319-a545dcf3bc73?auto=format&fit=crop&w=600&q=80" alt="Dikubs bakery" class="absolute inset-0 h-full w-full object-cover" /><div class="absolute inset-0 bg-gradient-to-t from-[#30251e]/70 to-transparent"></div><div class="absolute bottom-8 left-8 right-8 text-white"><p class="text-xs font-bold uppercase tracking-[0.2em] text-[#e4c77f]">Made Fresh</p><p class="mt-2 font-serif text-2xl font-semibold">Something good is always worth coming back for.</p></div></div></div></div>
     <!-- service promise -->
@@ -1214,7 +1626,25 @@
     <div class="mb-14"><p class="uppercase tracking-[0.3em] text-earth-500 text-xs font-semibold">Moments & Milestones</p><h2 class="font-display text-5xl lg:text-6xl mt-4">The people, <span class="italic text-earth-500">the moments.</span></h2></div>
     <div class="grid md:grid-cols-3 gap-7">
       <article><div class="overflow-hidden rounded-2xl"><img src="{% static 'images/mandy.JPG'%}" alt="Company event" class="w-full h-72 object-cover hover:scale-105 transition duration-500" /></div><div class="mt-5"><p class="text-xs uppercase tracking-widest text-earth-500">Company Event</p><h3 class="font-display text-2xl mt-2">Building Together</h3><p class="mt-3 text-earth-600 leading-7">Celebrating the people behind our continued growth.</p></div></article>
+      
+      
+      
+      <article>
+  <div class="overflow-hidden rounded-2xl">
+    <img src="{% static 'images/ceoo.jpg' %}" alt="Executive Leadership" class="w-full h-72 object-cover object-top hover:scale-105 transition duration-500" />
+  </div>
+  <div class="mt-5">
+    <p class="text-xs uppercase tracking-widest text-earth-500">Leadership & Strategy</p>
+    <h3 class="font-display text-2xl mt-2">Steering Sustainable Growth</h3>
+    <p class="mt-3 text-earth-600 leading-7">Directing operational expansion across our agriculture, retail, and energy operations.</p>
+  </div>
+</article>
+      
+      
       <article><div class="overflow-hidden rounded-2xl"><img src="{% static 'images/ceo2.JPG'%}" alt="Business meeting" class="w-full h-72 object-center hover:scale-105 transition duration-500" /></div><div class="mt-5"><p class="text-xs uppercase tracking-widest text-earth-500">Leadership</p><h3 class="font-display text-2xl mt-2">Ideas Into Action</h3><p class="mt-3 text-earth-600 leading-7">Turning opportunities into sustainable ventures.</p></div></article>
+      
+      
+      
       <article><div class="overflow-hidden rounded-2xl"><video
     class="w-full h-72 object-cover"
     autoplay
@@ -1225,6 +1655,18 @@
     <source src="{% static 'images/manvid.MP4' %}" type="video/mp4">
     Your browser does not support the video element.
 </video></div><div class="mt-5"><p class="text-xs uppercase tracking-widest text-earth-500">Community</p><h3 class="font-display text-2xl mt-2">Growing Beyond Business</h3><p class="mt-3 text-earth-600 leading-7">Creating positive impact beyond our operations.</p></div></article>
+<article>
+  <div class="overflow-hidden rounded-2xl">
+    <img src="{% static 'images/ceoevent.jpg' %}" alt="Management and Corporate Culture" class="w-full h-72 object-cover object-center hover:scale-105 transition duration-500" />
+  </div>
+  <div class="mt-5">
+    <p class="text-xs uppercase tracking-widest text-earth-500">Operations & Culture</p>
+    <h3 class="font-display text-2xl mt-2">Empowering Our People</h3>
+    <p class="mt-3 text-earth-600 leading-7">Fostering a culture of leadership, dedication, and excellence across every venture.</p>
+  </div>
+</article>
+
+
     </div>
   </div>
 </section>
