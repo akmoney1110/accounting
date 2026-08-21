@@ -980,6 +980,199 @@
     text-align: center;
   }
 }
+/* =========================================================
+   REUSABLE AGRO COMMODITY SECTION STYLES
+========================================================= */
+.commodity-section {
+  padding: 5rem 1.5rem;
+  background-color: var(--earth-dark, #1b120e);
+  color: var(--sand-light, #f7f3eb);
+}
+
+/* Alternating background color for visual distinction */
+.commodity-alt-bg {
+  background-color: #140d0a;
+  border-top: 1px solid rgba(212, 163, 89, 0.15);
+  border-bottom: 1px solid rgba(212, 163, 89, 0.15);
+}
+
+.commodity-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 3.5rem;
+  align-items: center;
+}
+
+/* Reverse layout for alternating sections */
+.commodity-reverse {
+  grid-template-columns: 1.2fr 1fr;
+}
+.commodity-reverse .commodity-image-wrapper {
+  order: 2;
+}
+
+/* Visual Column */
+.commodity-image-wrapper {
+  position: relative;
+}
+
+.commodity-image-card {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(212, 163, 89, 0.25);
+}
+
+.commodity-main-img {
+  width: 100%;
+  height: 480px;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.5s ease;
+}
+
+.commodity-image-card:hover .commodity-main-img {
+  transform: scale(1.03);
+}
+
+.commodity-badge {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  background: var(--cashew-gold, #d4a359);
+  color: var(--earth-dark, #1b120e);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+  text-transform: uppercase;
+}
+
+/* Content Column */
+.commodity-kicker {
+  display: inline-block;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: var(--cashew-gold, #d4a359);
+  margin-bottom: 0.75rem;
+  text-transform: uppercase;
+}
+
+.commodity-content h2 {
+  font-size: 2.25rem;
+  color: var(--sand-base, #f0e6d2);
+  line-height: 1.25;
+  margin-bottom: 1.25rem;
+}
+
+.commodity-lead {
+  font-size: 1.05rem;
+  color: rgba(247, 243, 235, 0.82);
+  line-height: 1.65;
+  margin-bottom: 2rem;
+}
+
+/* Features Sub-Grid */
+.commodity-features-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.commodity-feature-item {
+  display: flex;
+  gap: 0.85rem;
+  align-items: flex-start;
+}
+
+.commodity-feature-icon {
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  background: rgba(212, 163, 89, 0.12);
+  color: var(--cashew-gold, #d4a359);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(212, 163, 89, 0.25);
+}
+
+.commodity-feature-item h4 {
+  font-size: 0.98rem;
+  color: var(--sand-base, #f0e6d2);
+  margin-bottom: 0.25rem;
+  font-weight: 600;
+}
+
+.commodity-feature-item p {
+  font-size: 0.85rem;
+  color: rgba(247, 243, 235, 0.65);
+  line-height: 1.45;
+  margin: 0;
+}
+
+/* Buttons */
+.commodity-actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.btn-secondary-outline {
+  display: inline-block;
+  padding: 0.8rem 1.8rem;
+  border: 1px solid rgba(212, 163, 89, 0.45);
+  color: var(--sand-base, #f0e6d2);
+  border-radius: 4px;
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 0.92rem;
+  transition: all 0.3s ease;
+}
+
+.btn-secondary-outline:hover {
+  background: rgba(212, 163, 89, 0.12);
+  border-color: var(--cashew-gold, #d4a359);
+  color: var(--cashew-gold, #d4a359);
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 900px) {
+  .commodity-container,
+  .commodity-reverse {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+
+  .commodity-reverse .commodity-image-wrapper {
+    order: 0;
+  }
+
+  .commodity-main-img {
+    height: 320px;
+  }
+
+  .commodity-features-grid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .commodity-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .commodity-actions a {
+    text-align: center;
+  }
+}
   </style>
 </head>
 <body>
@@ -1577,7 +1770,7 @@
     <div class="mt-24 grid gap-6 lg:grid-cols-2"><div class="relative overflow-hidden rounded-[2rem] bg-[#34442d] p-8 text-white sm:p-12"><div class="absolute -right-20 -top-20 h-52 w-52 rounded-full border border-white/10"></div><div class="relative"><div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/10 text-[#d9b35e]"><svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M4 19V5M4 5l16 5-16 5"/></svg></div><p class="mt-7 text-xs font-bold uppercase tracking-[0.24em] text-[#d9b35e]">Our Mission</p><h3 class="mt-4 font-serif text-3xl font-semibold leading-tight sm:text-4xl">To create value<br>through excellence.</h3><p class="mt-6 max-w-xl text-sm leading-8 text-white/60">To provide quality products and dependable services while building lasting relationships with customers, suppliers, partners and the communities in which we operate.</p></div></div><div class="relative overflow-hidden rounded-[2rem] border border-[#30251e]/10 bg-white p-8 shadow-sm sm:p-12"><div class="absolute -right-20 -top-20 h-52 w-52 rounded-full bg-[#58733a]/5"></div><div class="relative"><div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#eef4e7] text-[#58733a]"><svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="2.5" stroke-width="1.7"/></svg></div><p class="mt-7 text-xs font-bold uppercase tracking-[0.24em] text-[#58733a]">Our Vision</p><h3 class="mt-4 font-serif text-3xl font-semibold leading-tight text-[#30251e] sm:text-4xl">A trusted enterprise<br>built to last.</h3><p class="mt-6 max-w-xl text-sm leading-8 text-[#71665d]">To grow Dikubs into a respected and sustainable enterprise recognized for quality, reliability, innovation and positive impact across the markets we serve.</p></div></div></div>
     <!-- leadership -->
     <div class="mt-28 overflow-hidden rounded-[2.5rem] bg-[#30251e] text-white"><div class="grid lg:grid-cols-[0.8fr_1.2fr]"><div class="relative min-h-[500px] overflow-hidden">
-    <img src="{% static 'images/ceo.JPG'%}" alt="Dikubs Leadership" class="absolute inset-0 h-full w-full object-cover" /><div class="absolute inset-0 bg-gradient-to-t from-[#30251e] via-transparent to-transparent"></div><div class="absolute bottom-8 left-8"><p class="text-xs font-bold uppercase tracking-[0.2em] text-[#d9b35e]">Leadership</p><h3 class="mt-2 font-serif text-3xl font-semibold">The people behind Dikubs.</h3></div></div><div class="p-8 sm:p-12 lg:p-16"><p class="text-xs font-bold uppercase tracking-[0.25em] text-[#d9b35e]">Leadership & Direction</p><h3 class="mt-4 font-serif text-3xl font-semibold leading-tight sm:text-4xl lg:text-5xl">Building with <span class="text-[#d9b35e]">long-term thinking.</span></h3><p class="mt-7 max-w-2xl text-sm leading-8 text-white/60 sm:text-base">Dikubs is guided by a commitment to building a business that customers, suppliers, employees and partners can confidently grow with.</p><p class="mt-4 max-w-2xl text-sm leading-8 text-white/60 sm:text-base">Our leadership approach focuses on responsible growth, strong relationships, operational discipline and identifying opportunities where Dikubs can create meaningful value.</p><div class="mt-10 border-l-2 border-[#d9b35e] pl-6"><p class="font-serif text-xl leading-8 text-white/90">"The goal is not simply to build a bigger business. It is to build a better one."</p><p class="mt-3 text-xs font-semibold uppercase tracking-[0.18em] text-[#d9b35e]">Dikubs Leadership</p></div><div class="mt-10 grid gap-4 sm:grid-cols-3"><div class="rounded-2xl border border-white/10 bg-white/5 p-5"><p class="text-xs uppercase tracking-wider text-white/40">Focus</p><p class="mt-2 font-semibold">Quality</p></div><div class="rounded-2xl border border-white/10 bg-white/5 p-5"><p class="text-xs uppercase tracking-wider text-white/40">Approach</p><p class="mt-2 font-semibold">Integrity</p></div><div class="rounded-2xl border border-white/10 bg-white/5 p-5"><p class="text-xs uppercase tracking-wider text-white/40">Direction</p><p class="mt-2 font-semibold">Growth</p></div></div></div></div></div>
+    <img src="{% static 'images/ceoo.jpg'%}" alt="Dikubs Leadership" class="absolute inset-0 h-full w-full object-cover" /><div class="absolute inset-0 bg-gradient-to-t from-[#30251e] via-transparent to-transparent"></div><div class="absolute bottom-8 left-8"><p class="text-xs font-bold uppercase tracking-[0.2em] text-[#d9b35e]">Leadership</p><h3 class="mt-2 font-serif text-3xl font-semibold">The people behind Dikubs.</h3></div></div><div class="p-8 sm:p-12 lg:p-16"><p class="text-xs font-bold uppercase tracking-[0.25em] text-[#d9b35e]">Leadership & Direction</p><h3 class="mt-4 font-serif text-3xl font-semibold leading-tight sm:text-4xl lg:text-5xl">Building with <span class="text-[#d9b35e]">long-term thinking.</span></h3><p class="mt-7 max-w-2xl text-sm leading-8 text-white/60 sm:text-base">Dikubs is guided by a commitment to building a business that customers, suppliers, employees and partners can confidently grow with.</p><p class="mt-4 max-w-2xl text-sm leading-8 text-white/60 sm:text-base">Our leadership approach focuses on responsible growth, strong relationships, operational discipline and identifying opportunities where Dikubs can create meaningful value.</p><div class="mt-10 border-l-2 border-[#d9b35e] pl-6"><p class="font-serif text-xl leading-8 text-white/90">"The goal is not simply to build a bigger business. It is to build a better one."</p><p class="mt-3 text-xs font-semibold uppercase tracking-[0.18em] text-[#d9b35e]">Dikubs Leadership</p></div><div class="mt-10 grid gap-4 sm:grid-cols-3"><div class="rounded-2xl border border-white/10 bg-white/5 p-5"><p class="text-xs uppercase tracking-wider text-white/40">Focus</p><p class="mt-2 font-semibold">Quality</p></div><div class="rounded-2xl border border-white/10 bg-white/5 p-5"><p class="text-xs uppercase tracking-wider text-white/40">Approach</p><p class="mt-2 font-semibold">Integrity</p></div><div class="rounded-2xl border border-white/10 bg-white/5 p-5"><p class="text-xs uppercase tracking-wider text-white/40">Direction</p><p class="mt-2 font-semibold">Growth</p></div></div></div></div></div>
     <!-- timeline -->
     <div class="mt-28"><div class="mx-auto max-w-3xl text-center"><p class="text-xs font-bold uppercase tracking-[0.25em] text-[#58733a]">Our Journey</p><h3 class="mt-3 font-serif text-3xl font-semibold text-[#30251e] sm:text-4xl lg:text-5xl">Growing one opportunity<br><span class="text-[#8b633c]">at a time.</span></h3><p class="mt-5 text-base leading-8 text-[#71665d]">Dikubs continues to evolve as new opportunities emerge and our understanding of the markets we serve grows.</p></div><div class="relative mx-auto mt-16 max-w-4xl"><div class="absolute bottom-0 left-5 top-0 w-px bg-[#30251e]/10 md:left-1/2"></div><div class="relative mb-12 grid gap-8 md:grid-cols-2 md:gap-16"><div class="md:text-right"><span class="inline-flex rounded-full bg-[#eef4e7] px-4 py-2 text-xs font-bold text-[#58733a]">FOUNDATION</span><h4 class="mt-4 font-serif text-2xl font-semibold text-[#30251e]">Establishing the Dikubs vision</h4><p class="mt-3 text-sm leading-7 text-[#71665d]">Building a foundation around enterprise, customer value, responsible growth and long-term opportunity.</p></div><div class="relative hidden md:block"></div><span class="absolute left-5 top-0 flex h-3 w-3 -translate-x-1/2 rounded-full bg-[#58733a] md:left-1/2"></span></div><div class="relative mb-12 grid gap-8 md:grid-cols-2 md:gap-16"><div class="relative hidden md:block"></div><div><span class="inline-flex rounded-full bg-[#f8eee6] px-4 py-2 text-xs font-bold text-[#996238]">EXPANSION</span><h4 class="mt-4 font-serif text-2xl font-semibold text-[#30251e]">Growing into multiple sectors</h4><p class="mt-3 text-sm leading-7 text-[#71665d]">Expanding business activities into agricultural commodity trading, supermarket retail and bakery operations.</p></div><span class="absolute left-5 top-0 flex h-3 w-3 -translate-x-1/2 rounded-full bg-[#996238] md:left-1/2"></span></div><div class="relative grid gap-8 md:grid-cols-2 md:gap-16"><div class="md:text-right"><span class="inline-flex rounded-full bg-[#f8f2df] px-4 py-2 text-xs font-bold text-[#a6752f]">THE FUTURE</span><h4 class="mt-4 font-serif text-2xl font-semibold text-[#30251e]">Building for a wider market</h4><p class="mt-3 text-sm leading-7 text-[#71665d]">Continuing to strengthen operations, develop relationships and pursue opportunities across Nigeria and international markets.</p></div><div class="relative hidden md:block"></div><span class="absolute left-5 top-0 flex h-3 w-3 -translate-x-1/2 rounded-full bg-[#a6752f] md:left-1/2"></span></div></div></div>
     <!-- about CTA -->
@@ -1631,7 +1824,7 @@
       
       <article>
   <div class="overflow-hidden rounded-2xl">
-    <img src="{% static 'images/ceoo.jpg' %}" alt="Executive Leadership" class="w-full h-72 object-cover object-top hover:scale-105 transition duration-500" />
+    <img src="{% static 'images/ceo.JPG' %}" alt="Executive Leadership" class="w-full h-72 object-cover object-top hover:scale-105 transition duration-500" />
   </div>
   <div class="mt-5">
     <p class="text-xs uppercase tracking-widest text-earth-500">Leadership & Strategy</p>
