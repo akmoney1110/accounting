@@ -179,7 +179,7 @@ class BatcForm(BaseStyledForm):
             )
         return cleaned_data
 class BatchForm(BaseStyledForm):
-    """Unified BUY/SELL Batch Form with partial payment support."""
+    """Unified BUY/SELL Batch Form with partial/over payment support."""
 
     amount_paid_now = forms.DecimalField(
         max_digits=12,
@@ -198,13 +198,13 @@ class BatchForm(BaseStyledForm):
     class Meta:
         model = Batch
         fields = [
-            'transaction_type', 
-            'user', 
-            'product', 
-            'weight', 
+            'transaction_type',
+            'user',
+            'product',
+            'weight',
             'dry_weight',
-            'applied_rate', 
-            'amount_paid_now', 
+            'applied_rate',
+            'amount_paid_now',
             'transaction_date'
         ]
         widgets = {
@@ -215,7 +215,7 @@ class BatchForm(BaseStyledForm):
             'user': forms.Select(attrs={'id': 'id_user'}),
             'product': forms.Select(attrs={'id': 'id_product'}),
             'weight': forms.NumberInput(attrs={
-                'placeholder': 'Enter weight in kg', 
+                'placeholder': 'Enter weight in kg',
                 'id': 'id_weight',
                 'step': '0.01'
             }),
@@ -225,7 +225,7 @@ class BatchForm(BaseStyledForm):
                 'step': '0.01'
             }),
             'applied_rate': forms.NumberInput(attrs={
-                'placeholder': 'Auto-filled from user profile rate', 
+                'placeholder': 'Auto-filled from user profile rate',
                 'id': 'id_applied_rate',
                 'step': '0.01'
             }),
@@ -236,15 +236,15 @@ class BatchForm(BaseStyledForm):
         super().__init__(*args, **kwargs)
         self.fields['applied_rate'].required = False
         self.fields['dry_weight'].required = False
-        
+
         # Populate active products only
         self.fields['product'].queryset = Product.objects.filter(is_active=True)
-        
+
         # ONLY show business partners (Vendors & Clients), never internal staff
         tx_type = self.data.get('transaction_type') if self.data else None
         if not tx_type and self.instance.pk:
             tx_type = self.instance.transaction_type
-        
+
         user_qs = User.objects.filter(
             is_active=True,
             role__in=[User.Roles.VENDOR, User.Roles.CLIENT]
@@ -254,10 +254,11 @@ class BatchForm(BaseStyledForm):
         elif tx_type == 'SELL':
             user_qs = user_qs.filter(role=User.Roles.CLIENT)
         self.fields['user'].queryset = user_qs
-        
+
         # Set default transaction date to today if creating new batch
         if not self.instance.pk and 'transaction_date' in self.fields:
             self.fields['transaction_date'].initial = timezone.now().date()
+
     def clean_weight(self):
         weight = self.cleaned_data.get('weight')
         if weight is not None and weight <= Decimal('0.00'):
@@ -292,67 +293,65 @@ class BatchForm(BaseStyledForm):
         tx_type = cleaned_data.get('transaction_type')
         product = cleaned_data.get('product')
 
-        # ── 1. Dry weight cannot exceed wet weight ──
+        # 1. Dry weight cannot exceed wet weight
         if dry_weight is not None and dry_weight > weight:
             self.add_error('dry_weight', "Dry weight cannot exceed received weight.")
 
-        # ── 2. Determine the effective rate for total calculation ──
-        # If rate not entered, try to fetch from UserProductRate
+        # 2. Determine effective rate
         rate_for_calc = applied_rate
         if rate_for_calc is None or rate_for_calc == Decimal('0.00'):
             if user and product:
                 rate_obj = UserProductRate.objects.filter(user=user, product=product).first()
                 if rate_obj:
                     rate_for_calc = rate_obj.rate
-        
+
         rate_for_calc = rate_for_calc or Decimal('0.00')
         total_amount = weight * rate_for_calc
 
-        # ── 3. Upfront payment cannot exceed batch value ──
-        if amount_paid_now > total_amount and total_amount > Decimal('0.00'):
-            self.add_error(
-                'amount_paid_now',
-                f"Initial payment (₦{amount_paid_now:,.2f}) cannot exceed total batch value (₦{total_amount:.2f})."
-            )
+        # 3. Over-payment is ALLOWED — excess becomes unallocated credit
+        #    (the allocation engine handles it automatically)
 
-        # ═══════════════════════════════════════════════════════
-        # 4. PRODUCTION-READY CREDIT LIMIT CHECK
-        # ═══════════════════════════════════════════════════════
+        # 4. CREDIT LIMIT CHECK (max debt, not max purchase)
         if (
-            tx_type == 'SELL' 
-            and user 
-            and user.role == User.Roles.CLIENT 
+            tx_type == 'SELL'
+            and user
+            and user.role == User.Roles.CLIENT
             and total_amount > Decimal('0.00')
         ):
             credit_limit = user.credit_limit or Decimal('0.00')
-            
-            if credit_limit > Decimal('0.00'):
-                # How much does this client currently owe us?
-                ledger = getattr(user, 'ledger', None)
-                current_balance = ledger.balance if ledger else Decimal('0.00')
-                
-                # If they overpaid (negative balance), treat as zero owed
-                if current_balance < Decimal('0.00'):
-                    current_balance = Decimal('0.00')
-                
-                # What would they owe if we added this batch with NO payment?
-                projected_without_payment = current_balance + total_amount
-                
-                if projected_without_payment > credit_limit:
-                    # They need to pay enough to bring it back under the limit
-                    minimum_required_upfront = projected_without_payment - credit_limit
-                    
-                    if amount_paid_now < minimum_required_upfront:
-                        shortfall = minimum_required_upfront - amount_paid_now
-                        self.add_error(
-                            'amount_paid_now',
-                            f"Credit limit exceeded. Client currently owes ₦{current_balance:,.2f}. "
-                            f"This batch (₦{total_amount:,.2f}) would raise their debt to ₦{projected_without_payment:,.2f}, "
-                            f"above their ₦{credit_limit:,.2f} limit. "
-                            f"To proceed, the client must pay at least ₦{minimum_required_upfront:,.2f} upfront. "
-                            f"You entered ₦{amount_paid_now:,.2f} (still short by ₦{shortfall:,.2f})."
-                        )
-                    # else: they paid enough — ALLOW the batch
+            ledger = getattr(user, 'ledger', None)
+            current_balance = ledger.balance if ledger else Decimal('0.00')
+            # current_balance > 0  → client OWES us money
+            # current_balance < 0  → client has PREPAID credit with us
+            # current_balance == 0 → even
+
+            projected_balance = current_balance + total_amount - amount_paid_now
+
+            if projected_balance > credit_limit:
+                # How much they must pay so that:
+                # current_balance + total_amount - total_paid <= credit_limit
+                total_required = (current_balance + total_amount) - credit_limit
+                if total_required < Decimal('0.00'):
+                    total_required = Decimal('0.00')
+
+                additional_needed = total_required - amount_paid_now
+                if additional_needed < Decimal('0.00'):
+                    additional_needed = Decimal('0.00')
+
+                balance_desc = (
+                    f"owes ₦{current_balance:,.2f}" if current_balance > Decimal('0.00')
+                    else f"has ₦{abs(current_balance):,.2f} credit" if current_balance < Decimal('0.00')
+                    else "owes nothing"
+                )
+
+                self.add_error(
+                    'amount_paid_now',
+                    f"Credit limit exceeded. Client {balance_desc}. "
+                    f"This batch (₦{total_amount:,.2f}) would result in a projected balance of ₦{projected_balance:,.2f}, "
+                    f"above their ₦{credit_limit:,.2f} limit. "
+                    f"To proceed, the client must pay at least ₦{total_required:,.2f} in total "
+                    f"(₦{additional_needed:,.2f} more than the ₦{amount_paid_now:,.2f} entered)."
+                )
 
         return cleaned_data
 

@@ -1482,12 +1482,8 @@ class RecordPaymentView(LoginRequiredMixin, AdminRequiredMixin, View):
             messages.error(request, "Payment amount must be greater than zero.")
             return redirect('batch_detail', pk=batch_pk)
 
-        if amount > batch.balance_due:
-            messages.error(
-                request,
-                f"Amount exceeds balance due. Balance: N{batch.balance_due:,.2f}"
-            )
-            return redirect('batch_detail', pk=batch_pk)
+        # Overpayment is allowed — excess becomes unallocated client credit
+        # via the auto-allocation engine.
 
         trans_type = (
             Transaction.TransactionType.DISBURSEMENT
@@ -1506,14 +1502,15 @@ class RecordPaymentView(LoginRequiredMixin, AdminRequiredMixin, View):
                 notes=f"Payment on Batch #{batch.batch_code} via detail page",
                 created_by=request.user,
             )
-            # Signal auto-allocates to linked batch first, then cascades to older batches
+            # Signal auto-allocates to linked batch first, then cascades.
+            # Any remainder stays as unallocated credit on the transaction.
 
         messages.success(
             request,
-            f"N{amount:,.2f} payment recorded and auto-allocated to {batch.batch_code}."
+            f"N{amount:,.2f} payment recorded. "
+            f"N{batch.balance_due:,.2f} was due on this batch — any excess has been saved as client credit."
         )
         return redirect('batch_detail', pk=batch_pk)
-
 
 # ============================================================
 # 14. UPDATE DRY WEIGHT
