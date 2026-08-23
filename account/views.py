@@ -26,7 +26,7 @@ from .forms import (
     ProductForm,
     UserCreateForm,
     AssignProductFormSet,
-    UserProfileForm,
+    UserProfileForm,AdminPasswordChangeForm,
 )
 from .models import (
     Batch,
@@ -2636,3 +2636,86 @@ class StaffUnsuspendView(LoginRequiredMixin, View):
         )
 
         return redirect('staff_list')        
+    
+
+
+
+
+
+
+
+
+from django.shortcuts import get_object_or_404, redirect, render
+from django.contrib import messages
+from django.views import View
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import PermissionDenied
+
+
+class AdminChangePasswordView(LoginRequiredMixin, View):
+    template_name = "account/admin_change_password.html"
+
+    def dispatch(self, request, *args, **kwargs):
+        self.target_user = get_object_or_404(User, pk=kwargs['pk'])
+
+        # ---------------------------------------------------------
+        # PERMISSION GATE
+        # ---------------------------------------------------------
+        if request.user.role == User.Roles.ADMIN:
+            pass  # Admin can reset anyone's password
+        elif request.user.role == User.Roles.MANAGER:
+            if self.target_user.role not in {
+                User.Roles.VENDOR,
+                User.Roles.CLIENT,
+            }:
+                raise PermissionDenied(
+                    "Managers can only change passwords for Vendors and Clients."
+                )
+        else:
+            raise PermissionDenied(
+                "You do not have permission to change passwords."
+            )
+
+        return super().dispatch(request, *args, **kwargs)
+
+    def get(self, request, pk):
+        form = AdminPasswordChangeForm()
+        return render(request, self.template_name, {
+            'form': form,
+            'target_user': self.target_user,
+        })
+
+    def post(self, request, pk):
+        form = AdminPasswordChangeForm(request.POST)
+
+        if form.is_valid():
+            new_password = form.cleaned_data['new_password']
+            self.target_user.set_password(new_password)
+            self.target_user.save()
+
+            messages.success(
+                request,
+                f"Password for '{self.target_user.username}' has been updated successfully."
+            )
+
+            # Redirect back to the relevant list/profile
+            if self.target_user.role in {
+                User.Roles.VENDOR,
+                User.Roles.CLIENT,
+            }:
+                return redirect('user_profile', pk=self.target_user.pk)
+            else:
+                return redirect('staff_list')
+
+        return render(request, self.template_name, {
+            'form': form,
+            'target_user': self.target_user,
+        })
+    
+
+
+
+from django.shortcuts import render
+
+def custom_page_not_found_view(request, exception):
+    return render(request, '404.html', status=404)    

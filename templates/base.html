@@ -267,9 +267,12 @@
 
                 <div class="flex items-center gap-3">
                     {% if request.user.role == 'ADMIN' %}
-                        <a href="/admin/" target="_blank" class="hidden md:inline-flex items-center gap-2 px-3 py-1.5 bg-[#F5EFE6] hover:bg-[#E8DDD0] text-[#5D4037] rounded-full text-xs font-semibold border border-[#E8DDD0] transition-colors">
-                            <i class="fas fa-cog text-[10px]"></i> Admin Page
-                        </a>
+                        <a href="{% url 'admin_change_password' user.pk %}" class="text-blue-600 hover:text-blue-800 inline-flex items-center" title="Reset Password" aria-label="Reset Password">
+   Change Password <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+    </svg>
+</a>
+                       
                     {% endif %}
 
                     <span class="hidden md:inline-flex items-center gap-2 px-3 py-1.5 bg-[#F0F5E0] text-[#556B2F] rounded-full text-xs font-semibold border border-[#E8F0D0]">
@@ -333,294 +336,446 @@
             </main>
         </div>
     </div>
+<button id="calcToggleBtn" type="button" onclick="toggleCalculator()"
+style="position: fixed; bottom: 24px; right: 24px; z-index: 9999;"
+class="p-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full shadow-2xl transition-transform transform hover:scale-110 focus:outline-none flex items-center justify-center cursor-pointer border-2 border-white">
+<svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" 
+d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+</svg>
+</button>
 
-    <!-- Floating Calculator Trigger Button -->
-    <!-- Floating Calculator Trigger Button -->
-    <button id="calcToggleBtn" type="button" onclick="toggleCalculator()"
-            style="position: fixed; bottom: 24px; right: 24px; z-index: 9999;"
-            class="p-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full shadow-2xl transition-transform transform hover:scale-110 focus:outline-none flex items-center justify-center cursor-pointer border-2 border-white">
-        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" 
-                  d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
-        </svg>
-    </button>
+<div id="calcModal" 
+style="position: fixed; bottom: 90px; right: 24px; z-index: 9999; display: none; width: 360px;"
+class="bg-slate-900 rounded-2xl shadow-2xl border border-slate-700 overflow-hidden font-sans text-slate-100 select-none">
 
-    <!-- Draggable Calculator Widget -->
-    <div id="calcModal" 
-         style="position: fixed; bottom: 90px; right: 24px; z-index: 9999; display: none; width: 360px;"
-         class="bg-slate-900 rounded-2xl shadow-2xl border border-slate-700 overflow-hidden font-sans text-slate-100 select-none">
-      
-        <!-- Header -->
-        <div id="calcHeader" class="bg-slate-800 px-4 py-3 flex justify-between items-center cursor-move border-b border-slate-700 active:bg-slate-700/80">
-            <div class="flex items-center gap-1.5">
-                <svg class="w-4 h-4 text-slate-400 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M7 2a2 2 0 10.001 4.001A2 2 0 007 2zm0 6a2 2 0 10.001 4.001A2 2 0 007 8zm0 6a2 2 0 10.001 4.001A2 2 0 007 14zm6-12a2 2 0 10.001 4.001A2 2 0 0013 2zm0 6a2 2 0 10.001 4.001A2 2 0 0013 8zm0 6a2 2 0 10.001 4.001A2 2 0 0013 14z"/>
-                </svg>
-                <!-- Header Tabs -->
-                <div class="flex gap-2 text-[11px] font-bold uppercase tracking-wider">
-                    <button id="tabCalcBtn" onclick="switchCalcTab('calc')" class="text-indigo-400 border-b-2 border-indigo-400 pb-0.5">Basic</button>
-                    <button id="tabKgBtn" onclick="switchCalcTab('kg')" class="text-slate-400 hover:text-white pb-0.5">Kg/Bag</button>
-                    <button id="tabRateBtn" onclick="switchCalcTab('rate')" class="text-slate-400 hover:text-white pb-0.5">Dry Rate</button>
-                </div>
-            </div>
-            <button onclick="toggleCalculator()" class="text-slate-400 hover:text-white text-xl font-bold leading-none p-1 hover:bg-slate-700 rounded">&times;</button>
-        </div>
+<div id="calcHeader" class="bg-slate-800 px-4 py-3 flex justify-between items-center cursor-move border-b border-slate-700 active:bg-slate-700/80">
+<div class="flex items-center gap-1.5 overflow-x-auto">
+<svg class="w-4 h-4 text-slate-400 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+<path d="M7 2a2 2 0 10.001 4.001A2 2 0 007 2zm0 6a2 2 0 10.001 4.001A2 2 0 007 8zm0 6a2 2 0 10.001 4.001A2 2 0 007 14zm6-12a2 2 0 10.001 4.001A2 2 0 0013 2zm0 6a2 2 0 10.001 4.001A2 2 0 0013 8zm0 6a2 2 0 10.001 4.001A2 2 0 0013 14z"/>
+</svg>
+<div class="flex gap-2 text-[11px] font-bold uppercase tracking-wider shrink-0">
+<button id="tabCalcBtn" onclick="switchCalcTab('calc')" class="text-indigo-400 border-b-2 border-indigo-400 pb-0.5">Basic</button>
 
-        <!-- Calculator Tab -->
-        <div id="tabCalc" class="p-4 space-y-3">
-            <input id="calcDisplay" type="text" readonly placeholder="0" 
-                   class="w-full text-right text-3xl font-mono bg-black text-emerald-400 px-4 py-3 rounded-lg border border-slate-700 focus:outline-none tracking-wider font-bold shadow-inner" />
-            
-            <div class="grid grid-cols-4 gap-2 font-mono text-base font-bold">
-                <button onclick="clearCalc()" class="col-span-2 bg-rose-600 hover:bg-rose-500 text-white p-3 rounded-lg active:scale-95 transition shadow">C</button>
-                <button onclick="appendCalc('/')" class="bg-indigo-600 hover:bg-indigo-500 text-white p-3 rounded-lg active:scale-95 transition shadow">÷</button>
-                <button onclick="appendCalc('*')" class="bg-indigo-600 hover:bg-indigo-500 text-white p-3 rounded-lg active:scale-95 transition shadow">×</button>
-                
-                <button onclick="appendCalc('7')" class="bg-slate-800 hover:bg-slate-700 text-white p-3 rounded-lg border border-slate-700 active:scale-95 transition shadow">7</button>
-                <button onclick="appendCalc('8')" class="bg-slate-800 hover:bg-slate-700 text-white p-3 rounded-lg border border-slate-700 active:scale-95 transition shadow">8</button>
-                <button onclick="appendCalc('9')" class="bg-slate-800 hover:bg-slate-700 text-white p-3 rounded-lg border border-slate-700 active:scale-95 transition shadow">9</button>
-                <button onclick="appendCalc('-')" class="bg-indigo-600 hover:bg-indigo-500 text-white p-3 rounded-lg active:scale-95 transition shadow">-</button>
-                
-                <button onclick="appendCalc('4')" class="bg-slate-800 hover:bg-slate-700 text-white p-3 rounded-lg border border-slate-700 active:scale-95 transition shadow">4</button>
-                <button onclick="appendCalc('5')" class="bg-slate-800 hover:bg-slate-700 text-white p-3 rounded-lg border border-slate-700 active:scale-95 transition shadow">5</button>
-                <button onclick="appendCalc('6')" class="bg-slate-800 hover:bg-slate-700 text-white p-3 rounded-lg border border-slate-700 active:scale-95 transition shadow">6</button>
-                <button onclick="appendCalc('+')" class="bg-indigo-600 hover:bg-indigo-500 text-white p-3 rounded-lg active:scale-95 transition shadow">+</button>
-                
-                <button onclick="appendCalc('1')" class="bg-slate-800 hover:bg-slate-700 text-white p-3 rounded-lg border border-slate-700 active:scale-95 transition shadow">1</button>
-                <button onclick="appendCalc('2')" class="bg-slate-800 hover:bg-slate-700 text-white p-3 rounded-lg border border-slate-700 active:scale-95 transition shadow">2</button>
-                <button onclick="appendCalc('3')" class="bg-slate-800 hover:bg-slate-700 text-white p-3 rounded-lg border border-slate-700 active:scale-95 transition shadow">3</button>
-                <button onclick="calculateResult()" class="row-span-2 bg-emerald-600 hover:bg-emerald-500 text-white p-3 rounded-lg active:scale-95 transition shadow flex items-center justify-center font-extrabold text-xl">=</button>
-                
-                <button onclick="appendCalc('0')" class="col-span-2 bg-slate-800 hover:bg-slate-700 text-white p-3 rounded-lg border border-slate-700 active:scale-95 transition shadow">0</button>
-                <button onclick="appendCalc('.')" class="bg-slate-800 hover:bg-slate-700 text-white p-3 rounded-lg border border-slate-700 active:scale-95 transition shadow">.</button>
-            </div>
-        </div>
+<button id="tabRateBtn" onclick="switchCalcTab('rate')" class="text-slate-400 hover:text-white pb-0.5">Dry Rate</button>
+<button id="tabKgBtn" onclick="switchCalcTab('kg')" class="text-slate-400 hover:text-white pb-0.5">Kg/Bag</button>
+<button id="tabGainsBtn" onclick="switchCalcTab('gains')" class="text-slate-400 hover:text-white pb-0.5">Gains</button>
+</div>
+</div>
+<button onclick="toggleCalculator()" class="text-slate-400 hover:text-white text-xl font-bold leading-none p-1 hover:bg-slate-700 rounded ml-1">&times;</button>
+</div>
 
-        <!-- Converter Tab -->
-        <div id="tabKg" class="p-4 space-y-4" style="display: none;">
-            <div>
-                <label class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Weight in Kg</label>
-                <input id="inputKg" type="number" oninput="convertKg()" placeholder="Enter total Kg..." 
-                       class="w-full text-lg font-mono bg-black text-emerald-400 px-3 py-2 rounded-lg border border-slate-700 focus:outline-none mt-1 font-bold" />
-            </div>
+<div id="tabCalc" class="p-4 space-y-3">
+<input id="calcDisplay" type="text" readonly placeholder="0" 
+class="w-full text-right text-3xl font-mono bg-black text-emerald-400 px-4 py-3 rounded-lg border border-slate-700 focus:outline-none tracking-wider font-bold shadow-inner" />
 
-            <div class="grid grid-cols-2 gap-3">
-                <div>
-                    <label class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Bag Size (Kg)</label>
-                    <input id="bagWeight" type="number" value="50" oninput="convertKg()" 
-                           class="w-full text-base font-mono bg-slate-800 text-white px-3 py-2 rounded-lg border border-slate-700 focus:outline-none mt-1 font-bold" />
-                </div>
-                <div>
-                    <label class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Bags</label>
-                    <input id="outputBags" type="text" readonly placeholder="0" 
-                           class="w-full text-base font-mono bg-slate-800 text-indigo-400 px-3 py-2 rounded-lg border border-slate-700 mt-1 font-bold" />
-                </div>
-            </div>
+<div class="grid grid-cols-4 gap-2 font-mono text-base font-bold">
+<button onclick="clearCalc()" class="col-span-2 bg-rose-600 hover:bg-rose-500 text-white p-3 rounded-lg active:scale-95 transition shadow">C</button>
+<button onclick="appendCalc('/')" class="bg-indigo-600 hover:bg-indigo-500 text-white p-3 rounded-lg active:scale-95 transition shadow">÷</button>
+<button onclick="appendCalc('*')" class="bg-indigo-600 hover:bg-indigo-500 text-white p-3 rounded-lg active:scale-95 transition shadow">×</button>
 
-            <div class="pt-3 border-t border-slate-800 space-y-2 text-xs font-mono">
-                <div class="flex justify-between items-center bg-slate-800 p-2.5 rounded-lg border border-slate-700">
-                    <span class="text-slate-400">Metric Tons (MT):</span>
-                    <span id="outputTons" class="font-bold text-white text-sm">0.00 MT</span>
-                </div>
-                <div class="flex justify-between items-center bg-slate-800 p-2.5 rounded-lg border border-slate-700">
-                    <span class="text-slate-400">Pounds (Lbs):</span>
-                    <span id="outputLbs" class="font-bold text-white text-sm">0.00 lbs</span>
-                </div>
-            </div>
-        </div>
+<button onclick="appendCalc('7')" class="bg-slate-800 hover:bg-slate-700 text-white p-3 rounded-lg border border-slate-700 active:scale-95 transition shadow">7</button>
+<button onclick="appendCalc('8')" class="bg-slate-800 hover:bg-slate-700 text-white p-3 rounded-lg border border-slate-700 active:scale-95 transition shadow">8</button>
+<button onclick="appendCalc('9')" class="bg-slate-800 hover:bg-slate-700 text-white p-3 rounded-lg border border-slate-700 active:scale-95 transition shadow">9</button>
+<button onclick="appendCalc('-')" class="bg-indigo-600 hover:bg-indigo-500 text-white p-3 rounded-lg active:scale-95 transition shadow">-</button>
 
-        <!-- Dry Rate Adjuster Tab (NEW) -->
-        <div id="tabRate" class="p-4 space-y-3" style="display: none;">
-            <div class="grid grid-cols-2 gap-2">
-                <div>
-                    <label class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Wet Wt (kg)</label>
-                    <input id="wetWeight" type="number" oninput="calculateDryRate()" placeholder="e.g. 1000" 
-                           class="w-full text-sm font-mono bg-slate-800 text-white px-2.5 py-1.5 rounded-lg border border-slate-700 focus:outline-none mt-1 font-bold" />
-                </div>
-                <div>
-                    <label class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Dry Wt (kg)</label>
-                    <input id="dryWeight" type="number" oninput="calculateDryRate()" placeholder="e.g. 900" 
-                           class="w-full text-sm font-mono bg-slate-800 text-white px-2.5 py-1.5 rounded-lg border border-slate-700 focus:outline-none mt-1 font-bold" />
-                </div>
-            </div>
+<button onclick="appendCalc('4')" class="bg-slate-800 hover:bg-slate-700 text-white p-3 rounded-lg border border-slate-700 active:scale-95 transition shadow">4</button>
+<button onclick="appendCalc('5')" class="bg-slate-800 hover:bg-slate-700 text-white p-3 rounded-lg border border-slate-700 active:scale-95 transition shadow">5</button>
+<button onclick="appendCalc('6')" class="bg-slate-800 hover:bg-slate-700 text-white p-3 rounded-lg border border-slate-700 active:scale-95 transition shadow">6</button>
+<button onclick="appendCalc('+')" class="bg-indigo-600 hover:bg-indigo-500 text-white p-3 rounded-lg active:scale-95 transition shadow">+</button>
 
-            <div class="grid grid-cols-2 gap-2">
-                <div>
-                    <label class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Wet Rate (/kg)</label>
-                    <input id="wetRate" type="number" oninput="calculateDryRate()" placeholder="e.g. 50" 
-                           class="w-full text-sm font-mono bg-slate-800 text-white px-2.5 py-1.5 rounded-lg border border-slate-700 focus:outline-none mt-1 font-bold" />
-                </div>
-                <div>
-                    <label class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Expenses</label>
-                    <input id="expenses" type="number" oninput="calculateDryRate()" placeholder="e.g. 2000" 
-                           class="w-full text-sm font-mono bg-slate-800 text-white px-2.5 py-1.5 rounded-lg border border-slate-700 focus:outline-none mt-1 font-bold" />
-                </div>
-            </div>
+<button onclick="appendCalc('1')" class="bg-slate-800 hover:bg-slate-700 text-white p-3 rounded-lg border border-slate-700 active:scale-95 transition shadow">1</button>
+<button onclick="appendCalc('2')" class="bg-slate-800 hover:bg-slate-700 text-white p-3 rounded-lg border border-slate-700 active:scale-95 transition shadow">2</button>
+<button onclick="appendCalc('3')" class="bg-slate-800 hover:bg-slate-700 text-white p-3 rounded-lg border border-slate-700 active:scale-95 transition shadow">3</button>
+<button onclick="calculateResult()" class="row-span-2 bg-emerald-600 hover:bg-emerald-500 text-white p-3 rounded-lg active:scale-95 transition shadow flex items-center justify-center font-extrabold text-xl">=</button>
 
-            <!-- Calculated Output Card -->
-            <div class="pt-2 border-t border-slate-800 space-y-1.5 text-xs font-mono">
-                <div class="bg-black/60 p-2.5 rounded-lg border border-slate-700/80">
-                    <span class="text-slate-400 text-[10px] uppercase font-bold tracking-wider block">New Adjusted Dry Rate</span>
-                    <div id="newDryRate" class="text-2xl font-bold text-emerald-400 font-mono mt-0.5">0.00 /kg</div>
-                </div>
-                <div class="flex justify-between items-center bg-slate-800 p-2 rounded-lg border border-slate-700">
-                    <span class="text-slate-400">Moisture Loss:</span>
-                    <span id="weightLoss" class="font-bold text-amber-400 text-xs">0.00%</span>
-                </div>
-            </div>
-        </div>
-    </div>
+<button onclick="appendCalc('0')" class="col-span-2 bg-slate-800 hover:bg-slate-700 text-white p-3 rounded-lg border border-slate-700 active:scale-95 transition shadow">0</button>
+<button onclick="appendCalc('.')" class="bg-slate-800 hover:bg-slate-700 text-white p-3 rounded-lg border border-slate-700 active:scale-95 transition shadow">.</button>
+</div>
+</div>
 
-    <!-- Script Implementations -->
-    <script>
-        // Sidebar Mobile Toggle
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('mobile-overlay');
-            sidebar.classList.toggle('-translate-x-full');
-            overlay.classList.toggle('hidden');
-        }
+<div id="tabKg" class="p-4 space-y-3" style="display: none;">
+<div>
+<label class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Gross Weight in Kg</label>
+<input id="inputKg" type="number" oninput="convertKg()" placeholder="Enter gross Kg..." 
+class="w-full text-lg font-mono bg-black text-emerald-400 px-3 py-2 rounded-lg border border-slate-700 focus:outline-none mt-1 font-bold" />
+</div>
 
-        window.addEventListener('resize', () => {
-            if (window.innerWidth >= 1024) {
-                document.getElementById('mobile-overlay').classList.add('hidden');
-                document.getElementById('sidebar').classList.remove('-translate-x-full');
-            }
-        });
+<div class="grid grid-cols-2 gap-3">
+<div>
+<label class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Bag Size (Kg)</label>
+<input id="bagWeight" type="number" value="50" oninput="convertKg()" 
+class="w-full text-base font-mono bg-slate-800 text-white px-3 py-2 rounded-lg border border-slate-700 focus:outline-none mt-1 font-bold" />
+</div>
+<div>
+<label class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Bags</label>
+<input id="outputBags" type="text" readonly placeholder="0" 
+class="w-full text-base font-mono bg-slate-800 text-indigo-400 px-3 py-2 rounded-lg border border-slate-700 mt-1 font-bold" />
+</div>
+</div>
 
-        // User Dropdown Toggle
-        function toggleUserDropdown() {
-            const menu = document.getElementById('userDropdownMenu');
-            menu.classList.toggle('hidden');
-        }
+<div class="space-y-2">
+<div class="flex items-center gap-2 bg-slate-800/60 p-2 rounded-lg border border-slate-700/60 cursor-pointer">
+<input id="deductKgCheck" type="checkbox" onchange="convertKg()" class="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 accent-indigo-600 cursor-pointer" />
+<label for="deductKgCheck" class="text-xs font-medium text-slate-300 cursor-pointer select-none">
+Deduct 1kg Tare per Bag
+</label>
+</div>
 
-        document.addEventListener('click', function(e) {
-            const container = document.getElementById('userDropdownContainer');
-            if (container && !container.contains(e.target)) {
-                const menu = document.getElementById('userDropdownMenu');
-                if (menu) menu.classList.add('hidden');
-            }
-        });
+<div class="flex items-center gap-2 bg-slate-800/60 p-2 rounded-lg border border-slate-700/60 cursor-pointer">
+<input id="calcRateCheck" type="checkbox" onchange="toggleRateInput()" class="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 accent-indigo-600 cursor-pointer" />
+<label for="calcRateCheck" class="text-xs font-medium text-slate-300 cursor-pointer select-none">
+Calculate Cost & Rate
+</label>
+</div>
+</div>
 
-        // Calculator Modal Logic
-        function toggleCalculator() {
-            const modal = document.getElementById('calcModal');
-            modal.style.display = (modal.style.display === 'none' || modal.style.display === '') ? 'block' : 'none';
-        }
+<div id="rateInputContainer" style="display: none;" class="pt-1">
+<label class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Original Rate (/Kg)</label>
+<input id="baseRate" type="number" oninput="convertKg()" placeholder="Enter rate..." 
+class="w-full text-base font-mono bg-slate-800 text-white px-3 py-2 rounded-lg border border-slate-700 focus:outline-none mt-1 font-bold" />
+</div>
 
-        function switchCalcTab(tab) {
-            const calcTab = document.getElementById('tabCalc');
-            const kgTab = document.getElementById('tabKg');
-            const rateTab = document.getElementById('tabRate');
-            
-            const calcBtn = document.getElementById('tabCalcBtn');
-            const kgBtn = document.getElementById('tabKgBtn');
-            const rateBtn = document.getElementById('tabRateBtn');
+<div class="pt-2 border-t border-slate-800 space-y-2 text-xs font-mono">
+<div class="flex justify-between items-center bg-black/60 p-2.5 rounded-lg border border-slate-700/80">
+<span class="text-slate-400 text-[10px] uppercase font-bold tracking-wider">Net Weight:</span>
+<span id="outputNetKg" class="text-lg font-bold text-emerald-400 font-mono">0.00 Kg</span>
+</div>
 
-            // Hide all tabs
-            calcTab.style.display = 'none';
-            kgTab.style.display = 'none';
-            rateTab.style.display = 'none';
+<div id="rateResultsContainer" style="display: none;" class="space-y-2">
+<div class="flex justify-between items-center bg-slate-800 p-2.5 rounded-lg border border-slate-700">
+<span class="text-slate-400">Total Value/Cost:</span>
+<span id="outputTotalValue" class="font-bold text-emerald-400 text-sm">0.00</span>
+</div>
+<div class="flex justify-between items-center bg-slate-800 p-2.5 rounded-lg border border-slate-700">
+<span class="text-slate-400">Effective Rate (/Net Kg):</span>
+<span id="outputEffectiveRate" class="font-bold text-amber-400 text-sm">0.00</span>
+</div>
+</div>
 
-            // Reset tab styles
-            calcBtn.className = "text-slate-400 hover:text-white pb-0.5";
-            kgBtn.className = "text-slate-400 hover:text-white pb-0.5";
-            rateBtn.className = "text-slate-400 hover:text-white pb-0.5";
+<div class="flex justify-between items-center bg-slate-800 p-2.5 rounded-lg border border-slate-700">
+<span class="text-slate-400">Metric Tons (MT):</span>
+<span id="outputTons" class="font-bold text-white text-sm">0.00 MT</span>
+</div>
+<div class="flex justify-between items-center bg-slate-800 p-2.5 rounded-lg border border-slate-700">
+<span class="text-slate-400">Pounds (Lbs):</span>
+<span id="outputLbs" class="font-bold text-white text-sm">0.00 lbs</span>
+</div>
+</div>
+</div>
 
-            // Activate chosen tab
-            if (tab === 'calc') {
-                calcTab.style.display = 'block';
-                calcBtn.className = "text-indigo-400 border-b-2 border-indigo-400 pb-0.5";
-            } else if (tab === 'kg') {
-                kgTab.style.display = 'block';
-                kgBtn.className = "text-indigo-400 border-b-2 border-indigo-400 pb-0.5";
-            } else if (tab === 'rate') {
-                rateTab.style.display = 'block';
-                rateBtn.className = "text-indigo-400 border-b-2 border-indigo-400 pb-0.5";
-            }
-        }
+<div id="tabRate" class="p-4 space-y-3" style="display: none;">
+<div class="grid grid-cols-2 gap-2">
+<div>
+<label class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Wet Wt (kg)</label>
+<input id="wetWeight" type="number" oninput="calculateDryRate()" placeholder="e.g. 1000" 
+class="w-full text-sm font-mono bg-slate-800 text-white px-2.5 py-1.5 rounded-lg border border-slate-700 focus:outline-none mt-1 font-bold" />
+</div>
+<div>
+<label class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Dry Wt (kg)</label>
+<input id="dryWeight" type="number" oninput="calculateDryRate()" placeholder="e.g. 900" 
+class="w-full text-sm font-mono bg-slate-800 text-white px-2.5 py-1.5 rounded-lg border border-slate-700 focus:outline-none mt-1 font-bold" />
+</div>
+</div>
 
-        const display = document.getElementById('calcDisplay');
-        function appendCalc(val) { display.value += val; }
-        function clearCalc() { display.value = ''; }
-        function calculateResult() {
-            try {
-                if (display.value) {
-                    display.value = Function('"use strict";return (' + display.value + ')')();
-                }
-            } catch (e) {
-                display.value = 'Error';
-            }
-        }
+<div class="grid grid-cols-2 gap-2">
+<div>
+<label class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Wet Rate (/kg)</label>
+<input id="wetRate" type="number" oninput="calculateDryRate()" placeholder="e.g. 50" 
+class="w-full text-sm font-mono bg-slate-800 text-white px-2.5 py-1.5 rounded-lg border border-slate-700 focus:outline-none mt-1 font-bold" />
+</div>
+<div>
+<label class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Expenses</label>
+<input id="expenses" type="number" oninput="calculateDryRate()" placeholder="e.g. 2000" 
+class="w-full text-sm font-mono bg-slate-800 text-white px-2.5 py-1.5 rounded-lg border border-slate-700 focus:outline-none mt-1 font-bold" />
+</div>
+</div>
 
-        function convertKg() {
-            const kg = parseFloat(document.getElementById('inputKg').value) || 0;
-            const bagSize = parseFloat(document.getElementById('bagWeight').value) || 50;
+<div class="pt-2 border-t border-slate-800 space-y-1.5 text-xs font-mono">
+<div class="bg-black/60 p-2.5 rounded-lg border border-slate-700/80">
+<span class="text-slate-400 text-[10px] uppercase font-bold tracking-wider block">New Adjusted Dry Rate</span>
+<div id="newDryRate" class="text-2xl font-bold text-emerald-400 font-mono mt-0.5">0.00 /kg</div>
+</div>
+<div class="flex justify-between items-center bg-slate-800 p-2 rounded-lg border border-slate-700">
+<span class="text-slate-400">Moisture Loss:</span>
+<span id="weightLoss" class="font-bold text-amber-400 text-xs">0.00%</span>
+</div>
+</div>
+</div>
 
-            document.getElementById('outputBags').value = (kg / bagSize).toFixed(2);
-            document.getElementById('outputTons').innerText = (kg / 1000).toFixed(3) + ' MT';
-            document.getElementById('outputLbs').innerText = (kg * 2.20462).toFixed(2) + ' lbs';
-        }
+<div id="tabGains" class="p-4 space-y-3" style="display: none;">
+<div class="grid grid-cols-2 gap-2">
+<div>
+<label class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Weight</label>
+<input id="gainWeight" type="number" oninput="calculateGains()" placeholder="e.g. 500" 
+class="w-full text-sm font-mono bg-slate-800 text-white px-2.5 py-1.5 rounded-lg border border-slate-700 focus:outline-none mt-1 font-bold" />
+</div>
+<div>
+<label class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Expenses</label>
+<input id="gainExpenses" type="number" oninput="calculateGains()" placeholder="e.g. 1500" 
+class="w-full text-sm font-mono bg-slate-800 text-white px-2.5 py-1.5 rounded-lg border border-slate-700 focus:outline-none mt-1 font-bold" />
+</div>
+</div>
 
-        // New Dry Rate Calculation
-        function calculateDryRate() {
-            const wetKg = parseFloat(document.getElementById('wetWeight').value) || 0;
-            const dryKg = parseFloat(document.getElementById('dryWeight').value) || 0;
-            const wetRate = parseFloat(document.getElementById('wetRate').value) || 0;
-            const exp = parseFloat(document.getElementById('expenses').value) || 0;
+<div class="grid grid-cols-2 gap-2">
+<div>
+<label class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Cost Rate</label>
+<input id="gainCostRate" type="number" oninput="calculateGains()" placeholder="e.g. 100" 
+class="w-full text-sm font-mono bg-slate-800 text-white px-2.5 py-1.5 rounded-lg border border-slate-700 focus:outline-none mt-1 font-bold" />
+</div>
+<div>
+<label class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Selling Rate</label>
+<input id="gainSellRate" type="number" oninput="calculateGains()" placeholder="e.g. 130" 
+class="w-full text-sm font-mono bg-slate-800 text-white px-2.5 py-1.5 rounded-lg border border-slate-700 focus:outline-none mt-1 font-bold" />
+</div>
+</div>
 
-            if (dryKg > 0) {
-                const totalCost = (wetKg * wetRate) + exp;
-                const newRate = totalCost / dryKg;
-                document.getElementById('newDryRate').innerText = newRate.toFixed(2) + ' /kg';
-            } else {
-                document.getElementById('newDryRate').innerText = '0.00 /kg';
-            }
+<div class="pt-2 border-t border-slate-800 space-y-1.5 text-xs font-mono">
+<div class="bg-black/60 p-2.5 rounded-lg border border-slate-700/80">
+<span class="text-slate-400 text-[10px] uppercase font-bold tracking-wider block">Net Gain / Profit</span>
+<div id="gainTotal" class="text-2xl font-bold text-emerald-400 font-mono mt-0.5">0.00</div>
+</div>
+<div class="flex justify-between items-center bg-slate-800 p-2 rounded-lg border border-slate-700">
+<span class="text-slate-400">Profit Margin:</span>
+<span id="gainMargin" class="font-bold text-emerald-400 text-xs">0.00%</span>
+</div>
+<div class="flex justify-between items-center bg-slate-800 p-2 rounded-lg border border-slate-700">
+<span class="text-slate-400">Total Outlay (Cost+Exp):</span>
+<span id="gainInvestment" class="font-bold text-white text-xs">0.00</span>
+</div>
+</div>
+</div>
 
-            if (wetKg > 0 && dryKg > 0) {
-                const lossPercent = ((wetKg - dryKg) / wetKg) * 100;
-                document.getElementById('weightLoss').innerText = lossPercent.toFixed(2) + '%';
-            } else {
-                document.getElementById('weightLoss').innerText = '0.00%';
-            }
-        }
+</div>
 
-        // Drag Handler
-        (function makeModalDraggable() {
-            const modal = document.getElementById("calcModal");
-            const header = document.getElementById("calcHeader");
-            let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+<script>
+// Sidebar Mobile Toggle
+function toggleSidebar() {
+const sidebar = document.getElementById('sidebar');
+const overlay = document.getElementById('mobile-overlay');
+if (sidebar) sidebar.classList.toggle('-translate-x-full');
+if (overlay) overlay.classList.toggle('hidden');
+}
 
-            header.onmousedown = dragMouseDown;
+window.addEventListener('resize', () => {
+if (window.innerWidth >= 1024) {
+const overlay = document.getElementById('mobile-overlay');
+const sidebar = document.getElementById('sidebar');
+if (overlay) overlay.classList.add('hidden');
+if (sidebar) sidebar.classList.remove('-translate-x-full');
+}
+});
 
-            function dragMouseDown(e) {
-                e = e || window.event;
-                e.preventDefault();
-                pos3 = e.clientX;
-                pos4 = e.clientY;
-                document.onmouseup = closeDragElement;
-                document.onmousemove = elementDrag;
-            }
+// User Dropdown Toggle
+function toggleUserDropdown() {
+const menu = document.getElementById('userDropdownMenu');
+if (menu) menu.classList.toggle('hidden');
+}
 
-            function elementDrag(e) {
-                e = e || window.event;
-                e.preventDefault();
-                pos1 = pos3 - e.clientX;
-                pos2 = pos4 - e.clientY;
-                pos3 = e.clientX;
-                pos4 = e.clientY;
-                modal.style.top = (modal.offsetTop - pos2) + "px";
-                modal.style.left = (modal.offsetLeft - pos1) + "px";
-                modal.style.bottom = "auto";
-                modal.style.right = "auto";
-            }
+document.addEventListener('click', function(e) {
+const container = document.getElementById('userDropdownContainer');
+if (container && !container.contains(e.target)) {
+const menu = document.getElementById('userDropdownMenu');
+if (menu) menu.classList.add('hidden');
+}
+});
 
-            function closeDragElement() {
-                document.onmouseup = null;
-                document.onmousemove = null;
-            }
-        })();
-    </script>
-    {% block extra_js %}{% endblock %}
+// Calculator Modal Logic
+function toggleCalculator() {
+const modal = document.getElementById('calcModal');
+modal.style.display = (modal.style.display === 'none' || modal.style.display === '') ? 'block' : 'none';
+}
+
+function switchCalcTab(tab) {
+const calcTab = document.getElementById('tabCalc');
+const kgTab = document.getElementById('tabKg');
+const rateTab = document.getElementById('tabRate');
+const gainsTab = document.getElementById('tabGains');
+
+const calcBtn = document.getElementById('tabCalcBtn');
+const kgBtn = document.getElementById('tabKgBtn');
+const rateBtn = document.getElementById('tabRateBtn');
+const gainsBtn = document.getElementById('tabGainsBtn');
+
+// Hide all tabs
+calcTab.style.display = 'none';
+kgTab.style.display = 'none';
+rateTab.style.display = 'none';
+gainsTab.style.display = 'none';
+
+// Reset tab styles
+calcBtn.className = "text-slate-400 hover:text-white pb-0.5";
+kgBtn.className = "text-slate-400 hover:text-white pb-0.5";
+rateBtn.className = "text-slate-400 hover:text-white pb-0.5";
+gainsBtn.className = "text-slate-400 hover:text-white pb-0.5";
+
+// Activate chosen tab
+if (tab === 'calc') {
+calcTab.style.display = 'block';
+calcBtn.className = "text-indigo-400 border-b-2 border-indigo-400 pb-0.5";
+} else if (tab === 'kg') {
+kgTab.style.display = 'block';
+kgBtn.className = "text-indigo-400 border-b-2 border-indigo-400 pb-0.5";
+} else if (tab === 'rate') {
+rateTab.style.display = 'block';
+rateBtn.className = "text-indigo-400 border-b-2 border-indigo-400 pb-0.5";
+} else if (tab === 'gains') {
+gainsTab.style.display = 'block';
+gainsBtn.className = "text-indigo-400 border-b-2 border-indigo-400 pb-0.5";
+}
+}
+
+const display = document.getElementById('calcDisplay');
+function appendCalc(val) { display.value += val; }
+function clearCalc() { display.value = ''; }
+function calculateResult() {
+try {
+if (display.value) {
+display.value = Function('"use strict";return (' + display.value + ')')();
+}
+} catch (e) {
+display.value = 'Error';
+}
+}
+
+// Dynamic display toggle for rate fields
+function toggleRateInput() {
+const isCalcRate = document.getElementById('calcRateCheck').checked;
+const rateContainer = document.getElementById('rateInputContainer');
+const rateResults = document.getElementById('rateResultsContainer');
+
+rateContainer.style.display = isCalcRate ? 'block' : 'none';
+rateResults.style.display = isCalcRate ? 'block' : 'none';
+
+convertKg();
+}
+
+// Enhanced Kg Conversion Logic
+function convertKg() {
+const grossKg = parseFloat(document.getElementById('inputKg').value) || 0;
+const bagSize = parseFloat(document.getElementById('bagWeight').value) || 50;
+const isDeduct = document.getElementById('deductKgCheck').checked;
+const isCalcRate = document.getElementById('calcRateCheck').checked;
+const baseRate = parseFloat(document.getElementById('baseRate').value) || 0;
+
+let totalBags = 0;
+let netKg = grossKg;
+
+if (bagSize > 0 && grossKg > 0) {
+    totalBags = grossKg / bagSize;
+    if (isDeduct) {
+        netKg = grossKg - totalBags;
+    }
+}
+
+document.getElementById('outputBags').value = totalBags.toFixed(2);
+document.getElementById('outputNetKg').innerText = netKg.toFixed(2) + ' Kg';
+document.getElementById('outputTons').innerText = (netKg / 1000).toFixed(3) + ' MT';
+document.getElementById('outputLbs').innerText = (netKg * 2.20462).toFixed(2) + ' lbs';
+
+if (isCalcRate) {
+    const totalCost = grossKg * baseRate;
+    const effectiveRate = netKg > 0 ? (totalCost / netKg) : 0;
+
+    document.getElementById('outputTotalValue').innerText = totalCost.toFixed(2);
+    document.getElementById('outputEffectiveRate').innerText = effectiveRate.toFixed(2) + ' /Kg';
+}
+}
+
+// Dry Rate Calculation
+function calculateDryRate() {
+const wetKg = parseFloat(document.getElementById('wetWeight').value) || 0;
+const dryKg = parseFloat(document.getElementById('dryWeight').value) || 0;
+const wetRate = parseFloat(document.getElementById('wetRate').value) || 0;
+const exp = parseFloat(document.getElementById('expenses').value) || 0;
+
+if (dryKg > 0) {
+const totalCost = (wetKg * wetRate) + exp;
+const newRate = totalCost / dryKg;
+document.getElementById('newDryRate').innerText = newRate.toFixed(2) + ' /kg';
+} else {
+document.getElementById('newDryRate').innerText = '0.00 /kg';
+}
+
+if (wetKg > 0 && dryKg > 0) {
+const lossPercent = ((wetKg - dryKg) / wetKg) * 100;
+document.getElementById('weightLoss').innerText = lossPercent.toFixed(2) + '%';
+} else {
+document.getElementById('weightLoss').innerText = '0.00%';
+}
+}
+
+// Gains Calculation with Expenses Deduction
+function calculateGains() {
+const weight = parseFloat(document.getElementById('gainWeight').value) || 0;
+const costRate = parseFloat(document.getElementById('gainCostRate').value) || 0;
+const sellRate = parseFloat(document.getElementById('gainSellRate').value) || 0;
+const expenses = parseFloat(document.getElementById('gainExpenses').value) || 0;
+
+const goodsCost = weight * costRate;
+const totalOutlay = goodsCost + expenses;
+const totalRevenue = weight * sellRate;
+const netGain = totalRevenue - totalOutlay;
+
+const gainDisplay = document.getElementById('gainTotal');
+const marginDisplay = document.getElementById('gainMargin');
+
+document.getElementById('gainInvestment').innerText = totalOutlay.toFixed(2);
+
+if (totalOutlay > 0) {
+const margin = (netGain / totalOutlay) * 100;
+marginDisplay.innerText = margin.toFixed(2) + '%';
+} else {
+marginDisplay.innerText = '0.00%';
+}
+
+if (netGain >= 0) {
+gainDisplay.innerText = '+' + netGain.toFixed(2);
+gainDisplay.className = "text-2xl font-bold text-emerald-400 font-mono mt-0.5";
+marginDisplay.className = "font-bold text-emerald-400 text-xs";
+} else {
+gainDisplay.innerText = netGain.toFixed(2);
+gainDisplay.className = "text-2xl font-bold text-rose-500 font-mono mt-0.5";
+marginDisplay.className = "font-bold text-rose-500 text-xs";
+}
+}
+
+// Drag Handler
+(function makeModalDraggable() {
+const modal = document.getElementById("calcModal");
+const header = document.getElementById("calcHeader");
+let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+
+header.onmousedown = dragMouseDown;
+
+function dragMouseDown(e) {
+e = e || window.event;
+e.preventDefault();
+pos3 = e.clientX;
+pos4 = e.clientY;
+document.onmouseup = closeDragElement;
+document.onmousemove = elementDrag;
+}
+
+function elementDrag(e) {
+e = e || window.event;
+e.preventDefault();
+pos1 = pos3 - e.clientX;
+pos2 = pos4 - e.clientY;
+pos3 = e.clientX;
+pos4 = e.clientY;
+modal.style.top = (modal.offsetTop - pos2) + "px";
+modal.style.left = (modal.offsetLeft - pos1) + "px";
+modal.style.bottom = "auto";
+modal.style.right = "auto";
+}
+
+function closeDragElement() {
+document.onmouseup = null;
+document.onmousemove = null;
+}
+})();
+</script>
+{% block extra_js %}{% endblock %}
 </body>
 </html>

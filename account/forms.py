@@ -916,3 +916,38 @@ BatchExpenseFormSet = modelformset_factory(
     can_delete=True,
     fields=['category', 'title', 'amount', 'expense_date', 'receipt_reference']
 )    
+
+
+
+
+
+
+
+class AdminPasswordChangeForm(forms.Form):
+    new_password = forms.CharField(
+        widget=forms.PasswordInput(attrs={
+            'placeholder': 'Enter new password',
+            'class': TWIND_INPUT,
+        }),
+        help_text="Set a strong password for the user."
+    )
+    confirm_password = forms.CharField(
+        widget=forms.PasswordInput(attrs={
+            'placeholder': 'Confirm new password',
+            'class': TWIND_INPUT,
+        }),
+        help_text="Type the same password again to confirm."
+    )
+
+    def clean(self):
+        cleaned = super().clean()
+        password = cleaned.get('new_password')
+        confirm = cleaned.get('confirm_password')
+
+        if password and confirm and password != confirm:
+            self.add_error(
+                'confirm_password',
+                "Passwords do not match. Please type the same password twice."
+            )
+
+        return cleaned

@@ -36,7 +36,7 @@ from .views import (
     ProductCreateView,
     ProductUpdateView,
     ManagerDashboardView,StaffDeleteView,UserDeleteView,
-    StaffDashboardView,StaffListView,StaffToggleStatusView,
+    StaffDashboardView,StaffListView,StaffToggleStatusView,AdminChangePasswordView,
     ExpenseListView,PaymentDetailView,
     ExpenseUpdateView,UserCreateView,ExpenseCreateView,PaymentListView,UserSuspendView,StaffSuspendView,StaffUnsuspendView,
 )
@@ -44,6 +44,10 @@ from .views import (
 urlpatterns = [
     # Authentication
     path('accounts/login/', LoginView.as_view(), name='login'),
+    path('users/<int:pk>/change-password/', 
+     AdminChangePasswordView.as_view(), 
+     name='admin_change_password'),
+
     path(
         'staff/<int:pk>/toggle-status/',
         StaffToggleStatusView.as_view(),
