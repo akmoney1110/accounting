@@ -87,53 +87,56 @@
                         {% endif %}
                         <p class="text-xs text-[#8D6E63] mt-2">📦 Put everything on the scale</p>
                     </div>
+                    {% if request.user.role != 'MANAGER' %}
                     <div>
-    <label class="block text-sm font-semibold text-[#4E342E] mb-2 flex items-center gap-2">
-        💰 Price per kg (₦)
+                        <label class="block text-sm font-semibold text-[#4E342E] mb-2 flex items-center gap-2">
+                            💰 Price per kg (₦)
 
-        {% if request.user.is_superuser or request.user.role == 'ADMIN' %}
-            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#E8F0D9] text-[#6B8E23] text-[10px] font-bold uppercase tracking-wide">
-                <i class="fas fa-user-shield"></i>
-                Editable
-            </span>
-        {% else %}
-            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#EFE8DE] text-[#8D6E63] text-[10px] font-bold uppercase tracking-wide">
-                <i class="fas fa-lock"></i>
-                Admin only
-            </span>
-        {% endif %}
-    </label>
+                            {% if request.user.is_superuser or request.user.role == 'ADMIN' %}
+                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#E8F0D9] text-[#6B8E23] text-[10px] font-bold uppercase tracking-wide">
+                                    <i class="fas fa-user-shield"></i>
+                                    Editable
+                                </span>
+                            {% else %}
+                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#EFE8DE] text-[#8D6E63] text-[10px] font-bold uppercase tracking-wide">
+                                    <i class="fas fa-lock"></i>
+                                    Admin only
+                                </span>
+                            {% endif %}
+                        </label>
 
-    <div class="relative">
+                        <div class="relative">
 
-        {{ form.applied_rate }}
+                            {{ form.applied_rate }}
 
-        {% if not request.user.is_superuser and request.user.role != 'ADMIN' %}
-            <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
-                <i class="fas fa-lock text-[#8D6E63]"></i>
-            </div>
-        {% endif %}
+                            {% if not request.user.is_superuser and request.user.role != 'ADMIN' %}
+                                <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
+                                    <i class="fas fa-lock text-[#8D6E63]"></i>
+                                </div>
+                            {% endif %}
 
-    </div>
+                        </div>
 
-    {% if form.applied_rate.errors %}
-        <p class="text-xs text-[#C75B39] mt-1">
-            {{ form.applied_rate.errors.0 }}
-        </p>
-    {% endif %}
+                        {% if form.applied_rate.errors %}
+                            <p class="text-xs text-[#C75B39] mt-1">
+                                {{ form.applied_rate.errors.0 }}
+                            </p>
+                        {% endif %}
 
-    {% if request.user.is_superuser or request.user.role == 'ADMIN' %}
-        <p class="text-xs text-[#8D6E63] mt-2">
-            🛡️ Administrator — you can edit the price per kg.
-        </p>
-    {% else %}
-        <p class="text-xs text-[#8D6E63] mt-2">
-            🔒 This price is automatically filled and locked.
-        </p>
-    {% endif %}
-</div>
+                        {% if request.user.is_superuser or request.user.role == 'ADMIN' %}
+                            <p class="text-xs text-[#8D6E63] mt-2">
+                                🛡️ Administrator — you can edit the price per kg.
+                            </p>
+                        {% else %}
+                            <p class="text-xs text-[#8D6E63] mt-2">
+                                🔒 This price is automatically filled and locked.
+                            </p>
+                        {% endif %}
+                    </div>
+                    {% endif %}
                 </div>
 
+                {% if request.user.role != 'MANAGER' %}
                 <!-- Dry Weight - optional -->
                 <div class="mt-5 pt-4 border-t border-[#EFE8DE]">
                     <details class="text-sm">
@@ -159,8 +162,10 @@
                     </div>
                     <p class="text-xs text-[#8D6E63] mt-2 text-center sm:text-left">Weight × Price per kg = What it's all worth</p>
                 </div>
+                {% endif %}
             </div>
 
+            {% if request.user.role != 'MANAGER' %}
             <!-- ===== STEP 4: PAYMENT ===== -->
             <div class="bg-white rounded-xl border border-[#D4C5A9] p-6 mb-6 shadow-sm">
                 <div class="flex items-center gap-3 mb-5">
@@ -185,7 +190,12 @@
                     {% endif %}
                 </div>
             </div>
+            {% else %}
+                {{ form.amount_paid_now.as_hidden }}
+                {{ form.transaction_date.as_hidden }}
+            {% endif %}
 
+            {% if request.user.role != 'MANAGER' %}
             <!-- ===== STEP 5: EXPENSES ===== -->
             <div class="bg-white rounded-xl border border-[#D4C5A9] p-6 mb-6 shadow-sm">
                 <div class="flex items-center gap-3 mb-5">
@@ -282,6 +292,7 @@
                 </div>
                 {% endif %}
             </div>
+            {% endif %}
 
             <!-- ===== SAVE BUTTONS ===== -->
             <div class="flex flex-col sm:flex-row items-center gap-4 pt-4 border-t border-[#D4C5A9]">
@@ -320,86 +331,101 @@
     }
 
     function updateTotal() {
-        const w = parseFloat(weightInput.value) || 0;
-        const r = parseFloat(rateInput.value) || 0;
-        totalDisplay.textContent = formatMoney((w * r).toFixed(2));
+        const w = parseFloat(weightInput ? weightInput.value : 0) || 0;
+        const r = parseFloat(rateInput ? rateInput.value : 0) || 0;
+        if (totalDisplay) {
+            totalDisplay.textContent = formatMoney((w * r).toFixed(2));
+        }
     }
 
     function clearOptions(select, placeholder) {
         select.innerHTML = '<option value="">' + placeholder + '</option>';
     }
 
-    txType.addEventListener('change', function() {
-        const type = this.value;
-        clearOptions(userSelect, 'Loading...');
-        clearOptions(productSelect, 'Select product');
-        rateInput.value = '';
-        updateTotal();
-
-        if (type === 'BUY') {
-            userLabel.textContent = 'Who are you buying from?';
-        } else if (type === 'SELL') {
-            userLabel.textContent = 'Who are you selling to?';
-        } else {
-            userLabel.textContent = 'Who with?';
-        }
-
-        fetch(`/ajax/users-by-type/?transaction_type=${type}`)
-            .then(r => r.json())
-            .then(data => {
-                clearOptions(userSelect, '---------');
-                data.users.forEach(u => {
-                    const opt = document.createElement('option');
-                    opt.value = u.id;
-                    opt.textContent = u.label;
-                    userSelect.appendChild(opt);
-                });
-            });
-    });
-
-    userSelect.addEventListener('change', function() {
-        const userId = this.value;
-        clearOptions(productSelect, 'Loading...');
-        rateInput.value = '';
-        updateTotal();
-
-        if (!userId) {
-            clearOptions(productSelect, '---------');
-            return;
-        }
-
-        fetch(`/ajax/products-by-user/?user_id=${userId}`)
-            .then(r => r.json())
-            .then(data => {
-                clearOptions(productSelect, '---------');
-                data.products.forEach(p => {
-                    const opt = document.createElement('option');
-                    opt.value = p.id;
-                    opt.textContent = `${p.name} (${p.unit})`;
-                    productSelect.appendChild(opt);
-                });
-            });
-    });
-
-    productSelect.addEventListener('change', function() {
-        const userId = userSelect.value;
-        const productId = this.value;
-        if (!userId || !productId) {
-            rateInput.value = '';
-            updateTotal();
-            return;
-        }
-
-        fetch(`/ajax/user-product-rate/?user_id=${userId}&product_id=${productId}`)
-            .then(r => r.json())
-            .then(data => {
-                rateInput.value = data.rate;
+    if (txType) {
+        txType.addEventListener('change', function() {
+            const type = this.value;
+            clearOptions(userSelect, 'Loading...');
+            if (productSelect) clearOptions(productSelect, 'Select product');
+            if (rateInput) {
+                rateInput.value = '';
                 updateTotal();
-            });
-    });
+            }
 
-    weightInput.addEventListener('input', updateTotal);
-    rateInput.addEventListener('input', updateTotal);
+            if (userLabel) {
+                if (type === 'BUY') {
+                    userLabel.textContent = 'Who are you buying from?';
+                } else if (type === 'SELL') {
+                    userLabel.textContent = 'Who are you selling to?';
+                } else {
+                    userLabel.textContent = 'Who with?';
+                }
+            }
+
+            fetch(`/ajax/users-by-type/?transaction_type=${type}`)
+                .then(r => r.json())
+                .then(data => {
+                    clearOptions(userSelect, '---------');
+                    data.users.forEach(u => {
+                        const opt = document.createElement('option');
+                        opt.value = u.id;
+                        opt.textContent = u.label;
+                        userSelect.appendChild(opt);
+                    });
+                });
+        });
+    }
+
+    if (userSelect) {
+        userSelect.addEventListener('change', function() {
+            const userId = this.value;
+            if (productSelect) clearOptions(productSelect, 'Loading...');
+            if (rateInput) {
+                rateInput.value = '';
+                updateTotal();
+            }
+
+            if (!userId) {
+                if (productSelect) clearOptions(productSelect, '---------');
+                return;
+            }
+
+            fetch(`/ajax/products-by-user/?user_id=${userId}`)
+                .then(r => r.json())
+                .then(data => {
+                    if (!productSelect) return;
+                    clearOptions(productSelect, '---------');
+                    data.products.forEach(p => {
+                        const opt = document.createElement('option');
+                        opt.value = p.id;
+                        opt.textContent = `${p.name} (${p.unit})`;
+                        productSelect.appendChild(opt);
+                    });
+                });
+        });
+    }
+
+    if (productSelect && rateInput) {
+        productSelect.addEventListener('change', function() {
+            const userId = userSelect ? userSelect.value : null;
+            const productId = this.value;
+            if (!userId || !productId) {
+                rateInput.value = '';
+                updateTotal();
+                return;
+            }
+
+            fetch(`/ajax/user-product-rate/?user_id=${userId}&product_id=${productId}`)
+                .then(r => r.json())
+                .then(data => {
+                    rateInput.value = data.rate;
+                    updateTotal();
+                });
+        });
+    }
+
+    if (weightInput) weightInput.addEventListener('input', updateTotal);
+    if (rateInput) rateInput.addEventListener('input', updateTotal);
 
     updateTotal();
 })();
@@ -407,11 +433,13 @@
 // ===== NEW: EXPENSE FORMSET DYNAMIC ROWS =====
 function addExpenseRow() {
     const totalForms = document.querySelector('input[name="expenses-TOTAL_FORMS"]');
+    if (!totalForms) return;
     const currentCount = parseInt(totalForms.value, 10);
     const container = document.getElementById('expense-rows');
-    const template = document.getElementById('empty-expense-template').innerHTML;
+    const template = document.getElementById('empty-expense-template');
+    if (!container || !template) return;
     
-    let html = template
+    let html = template.innerHTML
         .replace(/__CATEGORY__/g, generateExpenseField('category', currentCount, 'select'))
         .replace(/__TITLE__/g, generateExpenseField('title', currentCount, 'text'))
         .replace(/__AMOUNT__/g, generateExpenseField('amount', currentCount, 'number'))
@@ -456,6 +484,7 @@ function generateExpenseField(fieldName, index, inputType) {
 
 function removeExpenseRow(btn) {
     const row = btn.closest('.expense-row');
+    if (!row) return;
     const deleteCb = row.querySelector('input[type="checkbox"][name*="DELETE"]');
     
     if (deleteCb) {

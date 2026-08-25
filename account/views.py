@@ -1463,7 +1463,7 @@ class RemoveAllocationView(LoginRequiredMixin, AdminRequiredMixin, View):
         return redirect('batch_detail', pk=batch_pk)
 
 
-class RecordPaymentView(LoginRequiredMixin, AdminRequiredMixin, View):
+class RecordPaymentView(LoginRequiredMixin, ManagerRequiredMixin, View):
     def post(self, request, batch_pk):
         batch = get_object_or_404(Batch, pk=batch_pk)
         amount_str = request.POST.get('payment_amount', '').strip()
