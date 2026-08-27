@@ -1266,19 +1266,35 @@ class RecordTransactionView(LoginRequiredMixin, ManagerRequiredMixin, View):
             msg
         )
 
-        return redirect(
-            "admin_dashboard"
-        )
+        if request.user.role == User.Roles.MANAGER:
+            return redirect("payment_list")
+        
+        return redirect("admin_dashboard")
 
 
 # ============================================================
 # 12. PAYMENT LIST & DETAIL
 # ============================================================
+from decimal import Decimal
+from django.db.models import Q, Sum
+from django.shortcuts import render
+from django.views import View
+from django.contrib.auth.mixins import LoginRequiredMixin
+
+
 class PaymentListView(LoginRequiredMixin, ManagerRequiredMixin, View):
     template_name = "account/payment_list.html"
 
     def get(self, request):
         transactions = Transaction.objects.select_related('user', 'batch').all()
+
+        # ==========================================================
+        # MANAGERS: LOCK VIEW TO VENDOR PAYMENTS ONLY
+        # ==========================================================
+        if request.user.role == User.Roles.MANAGER:
+            transactions = transactions.filter(
+                transaction_type=Transaction.TransactionType.DISBURSEMENT
+            )
 
         tx_type = request.GET.get('transaction_type', '')
         user_id = request.GET.get('user_id', '')
@@ -1294,8 +1310,10 @@ class PaymentListView(LoginRequiredMixin, ManagerRequiredMixin, View):
             except User.DoesNotExist:
                 pass
 
-        if tx_type:
+        # Managers cannot override the transaction type filter via GET
+        if tx_type and request.user.role != User.Roles.MANAGER:
             transactions = transactions.filter(transaction_type=tx_type)
+            
         if user_id:
             transactions = transactions.filter(user_id=user_id)
         if date_from:
@@ -1313,9 +1331,15 @@ class PaymentListView(LoginRequiredMixin, ManagerRequiredMixin, View):
 
         transactions = transactions.order_by('-transaction_date', '-created_at')
 
-        total_receipts = transactions.filter(
-            transaction_type=Transaction.TransactionType.RECEIPT
-        ).aggregate(t=Sum('amount'))['t'] or Decimal('0.00')
+        # ==========================================================
+        # SUMMARY CALCULATIONS — FIXED
+        # ==========================================================
+        if request.user.role == User.Roles.MANAGER:
+            total_receipts = Decimal('0.00')
+        else:
+            total_receipts = transactions.filter(
+                transaction_type=Transaction.TransactionType.RECEIPT
+            ).aggregate(t=Sum('amount'))['t'] or Decimal('0.00')
 
         total_disbursements = transactions.filter(
             transaction_type=Transaction.TransactionType.DISBURSEMENT
@@ -1332,6 +1356,13 @@ class PaymentListView(LoginRequiredMixin, ManagerRequiredMixin, View):
                 'is_fully_allocated': unallocated <= Decimal('0.00'),
             })
 
+        # For managers, force the filter dropdown to DISBURSEMENT
+        selected_txn_type = (
+            Transaction.TransactionType.DISBURSEMENT
+            if request.user.role == User.Roles.MANAGER
+            else tx_type
+        )
+
         context = {
             'txn_data': txn_data,
             'total_receipts': total_receipts,
@@ -1339,16 +1370,16 @@ class PaymentListView(LoginRequiredMixin, ManagerRequiredMixin, View):
             'net_flow': total_receipts - total_disbursements,
             'txn_type_choices': Transaction.TransactionType.choices,
             'users': User.objects.exclude(role=User.Roles.ADMIN).order_by('username'),
-            'selected_txn_type': tx_type,
+            'selected_txn_type': selected_txn_type,
             'selected_user': user_id,
             'selected_created_by': created_by,
             'created_by_user': created_by_user,
             'date_from': date_from,
             'date_to': date_to,
             'search_query': search,
+            'is_manager': request.user.role == User.Roles.MANAGER,
         }
-        return render(request, self.template_name, context)
-
+        return render(request, self.template_name, context)   
 
 class PaymentDetailView(LoginRequiredMixin, AdminRequiredMixin, View):
     template_name = "account/payment_detail.html"

@@ -165,7 +165,6 @@
                 {% endif %}
             </div>
 
-            {% if request.user.role != 'MANAGER' %}
             <!-- ===== STEP 4: PAYMENT ===== -->
             <div class="bg-white rounded-xl border border-[#D4C5A9] p-6 mb-6 shadow-sm">
                 <div class="flex items-center gap-3 mb-5">
@@ -190,12 +189,7 @@
                     {% endif %}
                 </div>
             </div>
-            {% else %}
-                {{ form.amount_paid_now.as_hidden }}
-                {{ form.transaction_date.as_hidden }}
-            {% endif %}
 
-            {% if request.user.role != 'MANAGER' %}
             <!-- ===== STEP 5: EXPENSES ===== -->
             <div class="bg-white rounded-xl border border-[#D4C5A9] p-6 mb-6 shadow-sm">
                 <div class="flex items-center gap-3 mb-5">
@@ -292,7 +286,6 @@
                 </div>
                 {% endif %}
             </div>
-            {% endif %}
 
             <!-- ===== SAVE BUTTONS ===== -->
             <div class="flex flex-col sm:flex-row items-center gap-4 pt-4 border-t border-[#D4C5A9]">

@@ -366,8 +366,8 @@ class="bg-slate-900 rounded-2xl shadow-2xl border border-slate-700 overflow-hidd
 </div>
 
 <div id="tabCalc" class="p-4 space-y-3">
-<input id="calcDisplay" type="text" readonly placeholder="0" 
-class="w-full text-right text-3xl font-mono bg-black text-emerald-400 px-4 py-3 rounded-lg border border-slate-700 focus:outline-none tracking-wider font-bold shadow-inner" />
+<input id="calcDisplay" type="text" readonly placeholder="0" onclick="copyResult(this)" title="Click to copy"
+class="w-full text-right text-3xl font-mono bg-black text-emerald-400 px-4 py-3 rounded-lg border border-slate-700 focus:outline-none tracking-wider font-bold shadow-inner cursor-pointer hover:border-emerald-500/50 transition-colors" />
 
 <div class="grid grid-cols-4 gap-2 font-mono text-base font-bold">
 <button onclick="clearCalc()" class="col-span-2 bg-rose-600 hover:bg-rose-500 text-white p-3 rounded-lg active:scale-95 transition shadow">C</button>
@@ -409,8 +409,8 @@ class="w-full text-base font-mono bg-slate-800 text-white px-3 py-2 rounded-lg b
 </div>
 <div>
 <label class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Bags</label>
-<input id="outputBags" type="text" readonly placeholder="0" 
-class="w-full text-base font-mono bg-slate-800 text-indigo-400 px-3 py-2 rounded-lg border border-slate-700 mt-1 font-bold" />
+<input id="outputBags" type="text" readonly placeholder="0" onclick="copyResult(this)" title="Click to copy"
+class="w-full text-base font-mono bg-slate-800 text-indigo-400 px-3 py-2 rounded-lg border border-slate-700 mt-1 font-bold cursor-pointer hover:border-indigo-400/50 transition-colors" />
 </div>
 </div>
 
@@ -439,27 +439,27 @@ class="w-full text-base font-mono bg-slate-800 text-white px-3 py-2 rounded-lg b
 <div class="pt-2 border-t border-slate-800 space-y-2 text-xs font-mono">
 <div class="flex justify-between items-center bg-black/60 p-2.5 rounded-lg border border-slate-700/80">
 <span class="text-slate-400 text-[10px] uppercase font-bold tracking-wider">Net Weight:</span>
-<span id="outputNetKg" class="text-lg font-bold text-emerald-400 font-mono">0.00 Kg</span>
+<span id="outputNetKg" onclick="copyResult(this)" title="Click to copy" class="text-lg font-bold text-emerald-400 font-mono cursor-pointer hover:text-emerald-300 transition-colors">0.00 Kg</span>
 </div>
 
 <div id="rateResultsContainer" style="display: none;" class="space-y-2">
 <div class="flex justify-between items-center bg-slate-800 p-2.5 rounded-lg border border-slate-700">
 <span class="text-slate-400">Total Value/Cost:</span>
-<span id="outputTotalValue" class="font-bold text-emerald-400 text-sm">0.00</span>
+<span id="outputTotalValue" onclick="copyResult(this)" title="Click to copy" class="font-bold text-emerald-400 text-sm cursor-pointer hover:text-emerald-300 transition-colors">0.00</span>
 </div>
 <div class="flex justify-between items-center bg-slate-800 p-2.5 rounded-lg border border-slate-700">
 <span class="text-slate-400">Effective Rate (/Net Kg):</span>
-<span id="outputEffectiveRate" class="font-bold text-amber-400 text-sm">0.00</span>
+<span id="outputEffectiveRate" onclick="copyResult(this)" title="Click to copy" class="font-bold text-amber-400 text-sm cursor-pointer hover:text-amber-300 transition-colors">0.00</span>
 </div>
 </div>
 
 <div class="flex justify-between items-center bg-slate-800 p-2.5 rounded-lg border border-slate-700">
 <span class="text-slate-400">Metric Tons (MT):</span>
-<span id="outputTons" class="font-bold text-white text-sm">0.00 MT</span>
+<span id="outputTons" onclick="copyResult(this)" title="Click to copy" class="font-bold text-white text-sm cursor-pointer hover:text-slate-200 transition-colors">0.00 MT</span>
 </div>
 <div class="flex justify-between items-center bg-slate-800 p-2.5 rounded-lg border border-slate-700">
 <span class="text-slate-400">Pounds (Lbs):</span>
-<span id="outputLbs" class="font-bold text-white text-sm">0.00 lbs</span>
+<span id="outputLbs" onclick="copyResult(this)" title="Click to copy" class="font-bold text-white text-sm cursor-pointer hover:text-slate-200 transition-colors">0.00 lbs</span>
 </div>
 </div>
 </div>
@@ -494,11 +494,11 @@ class="w-full text-sm font-mono bg-slate-800 text-white px-2.5 py-1.5 rounded-lg
 <div class="pt-2 border-t border-slate-800 space-y-1.5 text-xs font-mono">
 <div class="bg-black/60 p-2.5 rounded-lg border border-slate-700/80">
 <span class="text-slate-400 text-[10px] uppercase font-bold tracking-wider block">New Adjusted Dry Rate</span>
-<div id="newDryRate" class="text-2xl font-bold text-emerald-400 font-mono mt-0.5">0.00 /kg</div>
+<div id="newDryRate" onclick="copyResult(this)" title="Click to copy" class="text-2xl font-bold text-emerald-400 font-mono mt-0.5 cursor-pointer hover:text-emerald-300 transition-colors">0.00 /kg</div>
 </div>
 <div class="flex justify-between items-center bg-slate-800 p-2 rounded-lg border border-slate-700">
 <span class="text-slate-400">Moisture Loss:</span>
-<span id="weightLoss" class="font-bold text-amber-400 text-xs">0.00%</span>
+<span id="weightLoss" onclick="copyResult(this)" title="Click to copy" class="font-bold text-amber-400 text-xs cursor-pointer hover:text-amber-300 transition-colors">0.00%</span>
 </div>
 </div>
 </div>
@@ -533,15 +533,15 @@ class="w-full text-sm font-mono bg-slate-800 text-white px-2.5 py-1.5 rounded-lg
 <div class="pt-2 border-t border-slate-800 space-y-1.5 text-xs font-mono">
 <div class="bg-black/60 p-2.5 rounded-lg border border-slate-700/80">
 <span class="text-slate-400 text-[10px] uppercase font-bold tracking-wider block">Net Gain / Profit</span>
-<div id="gainTotal" class="text-2xl font-bold text-emerald-400 font-mono mt-0.5">0.00</div>
+<div id="gainTotal" onclick="copyResult(this)" title="Click to copy" class="text-2xl font-bold text-emerald-400 font-mono mt-0.5 cursor-pointer hover:text-emerald-300 transition-colors">0.00</div>
 </div>
 <div class="flex justify-between items-center bg-slate-800 p-2 rounded-lg border border-slate-700">
 <span class="text-slate-400">Profit Margin:</span>
-<span id="gainMargin" class="font-bold text-emerald-400 text-xs">0.00%</span>
+<span id="gainMargin" onclick="copyResult(this)" title="Click to copy" class="font-bold text-emerald-400 text-xs cursor-pointer hover:text-emerald-300 transition-colors">0.00%</span>
 </div>
 <div class="flex justify-between items-center bg-slate-800 p-2 rounded-lg border border-slate-700">
 <span class="text-slate-400">Total Outlay (Cost+Exp):</span>
-<span id="gainInvestment" class="font-bold text-white text-xs">0.00</span>
+<span id="gainInvestment" onclick="copyResult(this)" title="Click to copy" class="font-bold text-white text-xs cursor-pointer hover:text-slate-200 transition-colors">0.00</span>
 </div>
 </div>
 </div>
@@ -638,6 +638,25 @@ display.value = 'Error';
 }
 }
 
+// ===== COPY TO CLIPBOARD =====
+function copyResult(el) {
+    const text = el.innerText || el.value || '';
+    if (!text || text === '0.00' || text === '0.00 Kg' || text === '0.00 MT' || text === '0.00 lbs' || text === '0.00 /kg' || text === '0.00%') return;
+    
+    navigator.clipboard.writeText(text).then(() => {
+        const originalColor = el.style.color;
+        const isInput = el.tagName === 'INPUT';
+        
+        if (isInput) {
+            el.style.borderColor = '#34d399';
+            setTimeout(() => el.style.borderColor = '', 400);
+        } else {
+            el.style.color = '#34d399';
+            setTimeout(() => el.style.color = originalColor, 400);
+        }
+    });
+}
+
 // Dynamic display toggle for rate fields
 function toggleRateInput() {
 const isCalcRate = document.getElementById('calcRateCheck').checked;
@@ -731,12 +750,12 @@ marginDisplay.innerText = '0.00%';
 
 if (netGain >= 0) {
 gainDisplay.innerText = '+' + netGain.toFixed(2);
-gainDisplay.className = "text-2xl font-bold text-emerald-400 font-mono mt-0.5";
-marginDisplay.className = "font-bold text-emerald-400 text-xs";
+gainDisplay.className = "text-2xl font-bold text-emerald-400 font-mono mt-0.5 cursor-pointer hover:text-emerald-300 transition-colors";
+marginDisplay.className = "font-bold text-emerald-400 text-xs cursor-pointer hover:text-emerald-300 transition-colors";
 } else {
 gainDisplay.innerText = netGain.toFixed(2);
-gainDisplay.className = "text-2xl font-bold text-rose-500 font-mono mt-0.5";
-marginDisplay.className = "font-bold text-rose-500 text-xs";
+gainDisplay.className = "text-2xl font-bold text-rose-500 font-mono mt-0.5 cursor-pointer hover:text-rose-400 transition-colors";
+marginDisplay.className = "font-bold text-rose-500 text-xs cursor-pointer hover:text-rose-400 transition-colors";
 }
 }
 
