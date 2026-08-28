@@ -1381,6 +1381,146 @@ class PaymentListView(LoginRequiredMixin, ManagerRequiredMixin, View):
         }
         return render(request, self.template_name, context)   
 
+
+
+# views.py
+from django.views import View
+from django.shortcuts import get_object_or_404, redirect
+from django.contrib import messages
+from django.urls import reverse
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import HttpResponseForbidden
+from django.db import transaction as db_transaction
+from decimal import Decimal
+
+class TransactionDeleteView(LoginRequiredMixin, ManagerRequiredMixin, View):
+    """
+    View to delete a transaction.
+    Managers can only delete disbursements they created or all disbursements (depending on permissions).
+    Admins can delete any transaction.
+    """
+    
+    def get(self, request, pk):
+        """Handle GET requests - show confirmation page"""
+        transaction = get_object_or_404(Transaction, pk=pk)
+        
+        # Check permissions
+        if not self._can_delete_transaction(request.user, transaction):
+            messages.error(request, "You don't have permission to delete this transaction.")
+            return redirect('payment_list')
+        
+        # Check if transaction has allocations
+        has_allocations = transaction.allocations.exists()
+        
+        context = {
+            'transaction': transaction,
+            'has_allocations': has_allocations,
+            'allocation_count': transaction.allocations.count(),
+            'total_allocated': transaction.allocations.aggregate(t=Sum('amount'))['t'] or Decimal('0.00'),
+        }
+        return render(request, 'account/transaction_confirm_delete.html', context)
+    
+    def post(self, request, pk):
+        """Handle POST requests - perform the deletion"""
+        transaction = get_object_or_404(Transaction, pk=pk)
+        
+        # Check permissions
+        if not self._can_delete_transaction(request.user, transaction):
+            messages.error(request, "You don't have permission to delete this transaction.")
+            return redirect('payment_list')
+        
+        # Store transaction info for the success message
+        transaction_info = f"{transaction.get_transaction_type_display()} - {transaction.amount} ({transaction.user.username})"
+        transaction_id = transaction.pk
+        
+        # Delete the transaction and related allocations using atomic transaction
+        with db_transaction.atomic():
+            # Delete related allocations first (they will cascade delete)
+            allocation_count = transaction.allocations.count()
+            transaction.delete()
+        
+        # Success message
+        messages.success(
+            request, 
+            f"Transaction #{transaction_id} ({transaction_info}) has been deleted successfully. "
+            f"{allocation_count} related allocation(s) were also removed."
+        )
+        
+        return redirect('payment_list')
+    
+    def _can_delete_transaction(self, user, transaction):
+        """
+        Check if user has permission to delete the transaction.
+        
+        Rules:
+        - Admin: Can delete any transaction
+        - Manager: Can only delete disbursement transactions (not receipts)
+        - Other users: Cannot delete any transaction
+        """
+        if user.role == User.Roles.ADMIN:
+            return True
+        
+        if user.role == User.Roles.MANAGER:
+            # Managers can only delete disbursements
+            return transaction.transaction_type == Transaction.TransactionType.DISBURSEMENT
+        
+        # Other roles cannot delete
+        return False
+
+
+
+
+
+
+class TransactionBulkDeleteView(LoginRequiredMixin, ManagerRequiredMixin, View):
+    """
+    View to delete multiple transactions at once.
+    Only accessible to admins.
+    """
+    
+    def post(self, request):
+        """Handle bulk deletion of transactions"""
+        if request.user.role != User.Roles.ADMIN:
+            messages.error(request, "Only administrators can perform bulk deletion.")
+            return redirect('payment_list')
+        
+        transaction_ids = request.POST.getlist('transaction_ids')
+        
+        if not transaction_ids:
+            messages.warning(request, "No transactions selected for deletion.")
+            return redirect('payment_list')
+        
+        # Get transactions that user has permission to delete
+        transactions = Transaction.objects.filter(pk__in=transaction_ids)
+        
+        # Filter out transactions with allocations (optional - or cascade delete)
+        # For safety, we'll only allow deletion of transactions without allocations
+        # Or you can use a more permissive approach
+        
+        with_allocations = transactions.filter(allocations__isnull=False).distinct()
+        
+        # If you want to prevent deletion of transactions with allocations
+        if with_allocations.exists():
+            messages.error(
+                request, 
+                f"Cannot delete {with_allocations.count()} transaction(s) because they have allocations. "
+                "Please delete allocations first."
+            )
+            return redirect('payment_list')
+        
+        count = transactions.count()
+        
+        # Delete the transactions
+        with db_transaction.atomic():
+            transactions.delete()
+        
+        messages.success(request, f"Successfully deleted {count} transaction(s).")
+        return redirect('payment_list')
+
+
+
+
+
 class PaymentDetailView(LoginRequiredMixin, AdminRequiredMixin, View):
     template_name = "account/payment_detail.html"
 

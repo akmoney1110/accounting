@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-2xl mx-auto">
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <div class="flex items-center justify-between mb-6">
+                <h1 class="text-2xl font-bold text-gray-800">Delete Transaction</h1>
+                <a href="{% url 'payment_list' %}" class="text-gray-600 hover:text-gray-800">
+                    <i class="fas fa-times"></i>
+                </a>
+            </div>
+
+            <!-- Warning Message -->
+            <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-6">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-exclamation-triangle text-red-500 text-xl"></i>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm text-red-700">
+                            <strong>Warning:</strong> This action cannot be undone.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Transaction Details -->
+            <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                <dl class="grid grid-cols-2 gap-4">
+                    <div>
+                        <dt class="text-sm font-medium text-gray-500">Transaction ID</dt>
+                        <dd class="text-sm font-semibold text-gray-900">#{{ transaction.pk }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-sm font-medium text-gray-500">Type</dt>
+                        <dd class="text-sm text-gray-900">{{ transaction.get_transaction_type_display }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-sm font-medium text-gray-500">Amount</dt>
+                        <dd class="text-sm font-semibold text-gray-900">N{{ transaction.amount|floatformat:2 }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-sm font-medium text-gray-500">User</dt>
+                        <dd class="text-sm text-gray-900">{{ transaction.user.username }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-sm font-medium text-gray-500">Date</dt>
+                        <dd class="text-sm text-gray-900">{{ transaction.transaction_date }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-sm font-medium text-gray-500">Payment Method</dt>
+                        <dd class="text-sm text-gray-900">{{ transaction.get_payment_method_display }}</dd>
+                    </div>
+                    <div class="col-span-2">
+                        <dt class="text-sm font-medium text-gray-500">Reference Code</dt>
+                        <dd class="text-sm text-gray-900">{{ transaction.reference_code|default:"N/A" }}</dd>
+                    </div>
+                    {% if has_allocations %}
+                    <div class="col-span-2">
+                        <dt class="text-sm font-medium text-red-600">Allocations</dt>
+                        <dd class="text-sm text-red-600">
+                            <i class="fas fa-exclamation-circle"></i>
+                            This transaction has {{ allocation_count }} allocation(s) totaling N{{ total_allocated|floatformat:2 }}
+                            that will also be deleted.
+                        </dd>
+                    </div>
+                    {% endif %}
+                </dl>
+            </div>
+
+            <!-- Confirmation Form -->
+            <form method="post" class="space-y-4">
+                {% csrf_token %}
+                
+                <div class="flex items-center space-x-2 p-3 bg-yellow-50 rounded-lg">
+                    <input type="checkbox" id="confirm_delete" name="confirm_delete" required>
+                    <label for="confirm_delete" class="text-sm text-gray-700">
+                        I understand that this action is permanent and cannot be undone.
+                    </label>
+                </div>
+
+                <div class="flex justify-end space-x-4">
+                    <a href="{% url 'payment_list' %}" class="px-4 py-2 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors">
+                        Cancel
+                    </a>
+                    <button type="submit" class="px-4 py-2 text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" 
+                            id="deleteBtn" disabled>
+                        <i class="fas fa-trash mr-2"></i>
+                        Delete Transaction
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Enable/disable delete button based on checkbox
+    document.getElementById('confirm_delete').addEventListener('change', function() {
+        document.getElementById('deleteBtn').disabled = !this.checked;
+    });
+</script>
+{% endblock %}

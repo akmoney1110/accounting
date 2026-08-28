@@ -6,6 +6,17 @@
 {% block content %}
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 bg-[#FAF6F0] bg-[radial-gradient(#4E342E_0.75px,transparent_0.75px)] [background-size:16px_16px] rounded-3xl text-[#4E342E]">
 
+    <!-- Messages -->
+    {% if messages %}
+    <div class="mb-6">
+        {% for message in messages %}
+            <div class="rounded-xl p-4 {% if message.tags == 'success' %}bg-green-50 border border-green-200 text-green-700{% elif message.tags == 'error' %}bg-red-50 border border-red-200 text-red-700{% elif message.tags == 'warning' %}bg-yellow-50 border border-yellow-200 text-yellow-700{% else %}bg-blue-50 border border-blue-200 text-blue-700{% endif %}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
     <!-- Header -->
     <div class="mb-8">
         <h1 class="text-3xl font-bold text-[#4E342E]">Farm Money Log</h1>
@@ -176,12 +187,45 @@
         </form>
     </div>
 
+    <!-- Bulk Delete Form -->
+    {% if user.role == 'ADMIN' or user.role == 'MANAGER' %}
+    <form method="post" action="{% url 'transaction_bulk_delete' %}" id="bulkDeleteForm" class="mb-4">
+        {% csrf_token %}
+        <div class="bg-[#FAF6F0] rounded-2xl shadow-sm border border-[#4E342E]/15 p-4 flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <input type="checkbox" id="selectAll" class="rounded border-[#4E342E]/30 text-[#C9952C] focus:ring-[#C9952C]">
+                <label for="selectAll" class="text-sm text-[#4E342E]">Select All</label>
+                
+                <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium"
+                        id="bulkDeleteBtn" disabled>
+                    <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                    </svg>
+                    Delete Selected
+                </button>
+                <span class="text-xs text-[#4E342E]/60" id="selectedCount">0 selected</span>
+            </div>
+            
+            {% if user.role == 'ADMIN' %}
+            <div class="text-xs text-[#4E342E]/50">
+                <i class="fas fa-info-circle"></i> Only transactions without allocations can be bulk deleted
+            </div>
+            {% endif %}
+        </div>
+    </form>
+    {% endif %}
+
     <!-- Transactions Table -->
     <div class="bg-[#FAF6F0] rounded-2xl shadow-sm border border-[#4E342E]/15 overflow-hidden">
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-[#4E342E]/10">
                 <thead class="bg-[#4E342E]/10">
                     <tr>
+                        {% if user.role == 'ADMIN' or user.role == 'MANAGER' %}
+                        <th class="px-4 py-3 text-left text-xs font-semibold text-[#4E342E] uppercase tracking-wider">
+                            <input type="checkbox" id="selectAllTable" class="rounded border-[#4E342E]/30 text-[#C9952C] focus:ring-[#C9952C]">
+                        </th>
+                        {% endif %}
                         <th class="px-6 py-3 text-left text-xs font-semibold text-[#4E342E] uppercase tracking-wider">Recorded By</th>
                         <th class="px-6 py-3 text-left text-xs font-semibold text-[#4E342E] uppercase tracking-wider">Date</th>
                         <th class="px-6 py-3 text-left text-xs font-semibold text-[#4E342E] uppercase tracking-wider">Money In/Out</th>
@@ -197,6 +241,14 @@
                 <tbody class="bg-[#FAF6F0] divide-y divide-[#4E342E]/10">
                     {% for item in txn_data %}
                     <tr class="hover:bg-[#4E342E]/5 transition-colors">
+                        {% if user.role == 'ADMIN' or user.role == 'MANAGER' %}
+                        <td class="px-4 py-4">
+                            {% if user.role == 'MANAGER' and item.txn.transaction_type == 'DISBURSEMENT' or user.role == 'ADMIN' %}
+                                <input type="checkbox" name="transaction_ids" value="{{ item.txn.pk }}" 
+                                       class="transaction-checkbox rounded border-[#4E342E]/30 text-[#C9952C] focus:ring-[#C9952C]">
+                            {% endif %}
+                        </td>
+                        {% endif %}
                         <td class="px-5 py-3 text-[#8D6E63] text-xs">
                             {% if item.txn.created_by %}
                                 {{ item.txn.created_by.username }}
@@ -245,19 +297,30 @@
                             {% endif %}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                            {% if is_manager %}
-                                <span class="text-[#8D6E63] text-xs">—</span>
-                            {% else %}
-                                <a href="{% url 'payment_detail' item.txn.pk %}" 
-                                    class="text-[#4E342E] font-bold hover:text-[#C9952C] bg-[#4E342E]/10 hover:bg-[#4E342E]/20 px-3 py-1.5 rounded-xl transition-colors">
-                                    Open Details
-                                </a>
-                            {% endif %}
+                            <div class="flex items-center justify-center gap-2">
+                                {% if not is_manager %}
+                                    <a href="{% url 'payment_detail' item.txn.pk %}" 
+                                        class="text-[#4E342E] font-bold hover:text-[#C9952C] bg-[#4E342E]/10 hover:bg-[#4E342E]/20 px-3 py-1.5 rounded-xl transition-colors">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                {% endif %}
+                                
+                                <!-- Individual Delete Button -->
+                                {% if user.role == 'ADMIN' or user.role == 'MANAGER' %}
+                                    {% if user.role == 'MANAGER' and item.txn.transaction_type == 'DISBURSEMENT' or user.role == 'ADMIN' %}
+                                        <a href="{% url 'transaction_delete' item.txn.pk %}" 
+                                            class="text-red-600 hover:text-red-800 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-xl transition-colors"
+                                            onclick="return confirm('Are you sure you want to delete this transaction? This action cannot be undone.');">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    {% endif %}
+                                {% endif %}
+                            </div>
                         </td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="10" class="px-6 py-12 text-center text-[#4E342E]/70">
+                        <td colspan="11" class="px-6 py-12 text-center text-[#4E342E]/70">
                             <svg class="mx-auto h-12 w-12 text-[#4E342E]/40 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                             </svg>
@@ -271,4 +334,88 @@
         </div>
     </div>
 </div>
+
+<script>
+    // Select all checkbox functionality
+    const selectAllCheckbox = document.getElementById('selectAllTable');
+    const selectAllTopCheckbox = document.getElementById('selectAll');
+    
+    function updateBulkDeleteButton() {
+        const checked = document.querySelectorAll('.transaction-checkbox:checked');
+        const btn = document.getElementById('bulkDeleteBtn');
+        const count = document.getElementById('selectedCount');
+        
+        if (btn) {
+            btn.disabled = checked.length === 0;
+        }
+        if (count) {
+            count.textContent = `${checked.length} selected`;
+        }
+    }
+
+    // Handle select all from table header
+    if (selectAllCheckbox) {
+        selectAllCheckbox.addEventListener('change', function() {
+            const checkboxes = document.querySelectorAll('.transaction-checkbox');
+            checkboxes.forEach(cb => cb.checked = this.checked);
+            updateBulkDeleteButton();
+            
+            // Also sync the top select all checkbox
+            if (selectAllTopCheckbox) {
+                selectAllTopCheckbox.checked = this.checked;
+            }
+        });
+    }
+
+    // Handle select all from top bar
+    if (selectAllTopCheckbox) {
+        selectAllTopCheckbox.addEventListener('change', function() {
+            const checkboxes = document.querySelectorAll('.transaction-checkbox');
+            checkboxes.forEach(cb => cb.checked = this.checked);
+            updateBulkDeleteButton();
+            
+            // Also sync the table header select all checkbox
+            if (selectAllCheckbox) {
+                selectAllCheckbox.checked = this.checked;
+            }
+        });
+    }
+
+    // Individual checkbox change
+    document.querySelectorAll('.transaction-checkbox').forEach(cb => {
+        cb.addEventListener('change', function() {
+            updateBulkDeleteButton();
+            
+            // Update select all checkboxes
+            const checkboxes = document.querySelectorAll('.transaction-checkbox');
+            const checked = document.querySelectorAll('.transaction-checkbox:checked');
+            const allChecked = checkboxes.length === checked.length && checkboxes.length > 0;
+            
+            if (selectAllCheckbox) {
+                selectAllCheckbox.checked = allChecked;
+            }
+            if (selectAllTopCheckbox) {
+                selectAllTopCheckbox.checked = allChecked;
+            }
+        });
+    });
+
+    // Initial update
+    updateBulkDeleteButton();
+
+    // Bulk delete form confirmation
+    document.getElementById('bulkDeleteForm')?.addEventListener('submit', function(e) {
+        const checked = document.querySelectorAll('.transaction-checkbox:checked');
+        if (checked.length === 0) {
+            e.preventDefault();
+            return false;
+        }
+        
+        const confirmMessage = `Are you sure you want to delete ${checked.length} selected transaction(s)? This action cannot be undone.`;
+        if (!confirm(confirmMessage)) {
+            e.preventDefault();
+            return false;
+        }
+    });
+</script>
 {% endblock %}

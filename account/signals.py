@@ -267,3 +267,30 @@ def sync_ledger_on_transaction_delete(sender, instance, **kwargs):
     batch_ids = getattr(instance, '_affected_batch_ids', [])
     for batch in Batch.objects.filter(pk__in=batch_ids):
         batch.update_payment_state()
+
+
+
+
+# signals.py
+from django.db.models.signals import pre_delete, post_delete
+from django.dispatch import receiver
+from .models import Transaction
+import logging
+
+logger = logging.getLogger(__name__)
+
+@receiver(pre_delete, sender=Transaction)
+def transaction_pre_delete(sender, instance, **kwargs):
+    """Log the transaction before deletion"""
+    logger.info(
+        f"Transaction #{instance.pk} is being deleted. "
+        f"Type: {instance.transaction_type}, "
+        f"Amount: {instance.amount}, "
+        f"User: {instance.user.username}"
+    )
+
+@receiver(post_delete, sender=Transaction)
+def transaction_post_delete(sender, instance, **kwargs):
+    """Clean up related data after deletion if needed"""
+    # You can add additional cleanup logic here
+    pass        

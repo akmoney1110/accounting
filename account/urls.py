@@ -7,7 +7,7 @@ from .views import (
     
     # Admin
     AdminDashboardView, 
-    CreateBatchView, 
+    CreateBatchView, TransactionDeleteView,TransactionBulkDeleteView,
     BatchDetailView,
     AddExpenseView, 
     RecordTransactionView,
@@ -64,6 +64,9 @@ urlpatterns = [
         StaffSuspendView.as_view(),
         name='staff_suspend'
     ),
+    path('payments/', PaymentListView.as_view(), name='payment_list'),
+    path('payment/delete/<int:pk>/', TransactionDeleteView.as_view(), name='transaction_delete'),
+    path('payment/bulk-delete/', TransactionBulkDeleteView.as_view(), name='transaction_bulk_delete'),
 
     path(
         'staff/<int:pk>/unsuspend/',
