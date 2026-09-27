@@ -52,6 +52,20 @@ def manager_required(view_func):
         return True
     return user_passes_test(check)(view_func)
 
+def eatery_manager_required(view_func):
+    def check(user):
+        if not user.is_authenticated:
+            return False
+
+        if user.role not in (
+            User.Roles.ADMIN,
+            User.Roles.EATERY_MANAGER,
+        ):
+            raise PermissionDenied
+
+        return True
+
+    return user_passes_test(check)(view_func)
 
 def staff_required(view_func):
     def check(user):
@@ -99,7 +113,17 @@ class ClientRequiredMixin(UserPassesTestMixin):
         user = self.request.user
         return user.is_authenticated and user.role == User.Roles.CLIENT
 
+class EateryManagerRequiredMixin(UserPassesTestMixin):
+    def test_func(self):
+        user = self.request.user
 
+        return (
+            user.is_authenticated
+            and user.role in (
+                User.Roles.ADMIN,
+                User.Roles.EATERY_MANAGER,
+            )
+        )
 # ============================================================
 # 1. AUTHENTICATION
 # ============================================================
@@ -126,17 +150,59 @@ class LoginView(View):
     def redirect_by_role(user):
         if user.role == User.Roles.ADMIN:
             return redirect("admin_dashboard")
+
         if user.role == User.Roles.MANAGER:
             return redirect("manager_dashboard")
+
         if user.role == User.Roles.STAFF:
             return redirect("staff_dashboard")
+
+        if user.role == User.Roles.EATERY_MANAGER:
+            return redirect("eatery:manager_dashboard")
+
         if user.role == User.Roles.VENDOR:
             return redirect("vendor_portal")
+
         if user.role == User.Roles.CLIENT:
             return redirect("client_portal")
-        messages.error(None, "Your account does not have a valid business role.")
-        return redirect("login")
 
+        return redirect("login")
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import redirect
+from django.views import View
+
+from .models import User
+
+
+class DashboardRedirectView(LoginRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
+        user = request.user
+
+        # Superuser → Admin Dashboard
+        if user.is_superuser:
+            return redirect("admin_dashboard")
+
+        # Role-based dashboard
+        if user.role == User.Roles.ADMIN:
+            return redirect("admin_dashboard")
+
+        if user.role == User.Roles.MANAGER:
+            return redirect("manager_dashboard")
+
+        if user.role == User.Roles.STAFF:
+            return redirect("staff_dashboard")
+
+        if user.role == User.Roles.EATERY_MANAGER:
+            return redirect("eatery:manager_dashboard")
+
+        if user.role == User.Roles.VENDOR:
+            return redirect("vendor_portal")
+
+        if user.role == User.Roles.CLIENT:
+            return redirect("client_portal")
+
+        # No valid role
+        return redirect("login")
 
 class LogoutView(View):
     def get(self, request):

@@ -1,0 +1,1550 @@
+{% extends "eatery/manager/base.html" %}
+
+{% block title %}
+{{ order.order_number }} | Dikubs Eatery
+{% endblock %}
+
+{% block header_title %}
+Order Details
+{% endblock %}
+
+
+{% block content %}
+
+<!-- ======================================================
+     BACK
+     ====================================================== -->
+<div class="mb-6">
+
+    <a
+        href="{% url 'eatery:order_list' %}"
+        class="
+            inline-flex
+            items-center
+            gap-2
+            text-sm
+            font-black
+            text-[#8B776E]
+            transition
+            hover:text-[#4E342E]
+        "
+    >
+
+        <span
+            class="
+                flex h-8 w-8
+                items-center
+                justify-center
+                rounded-lg
+                border border-[#E8DDD0]
+                bg-white
+                text-[#4E342E]
+                shadow-sm
+            "
+        >
+            ←
+        </span>
+
+        Back to Orders
+
+    </a>
+
+</div>
+
+
+
+<!-- ======================================================
+     ORDER HEADER
+     ====================================================== -->
+<section
+    class="
+        mb-8
+        overflow-hidden
+        rounded-2xl
+        border border-[#E8DDD0]
+        bg-white
+        shadow-sm
+    "
+>
+
+    <div
+        class="
+            flex
+            flex-col
+            gap-5
+            bg-gradient-to-r
+            from-[#F9F1E0]
+            to-white
+            p-6
+            md:flex-row
+            md:items-center
+            md:justify-between
+        "
+    >
+
+        <div>
+
+            <div
+                class="
+                    mb-3
+                    inline-flex
+                    items-center
+                    gap-2
+                    rounded-full
+                    border border-[#EAD6AA]
+                    bg-white/70
+                    px-3 py-1.5
+                "
+            >
+
+                <span
+                    class="
+                        h-2 w-2
+                        rounded-full
+                        bg-[#C9952C]
+                    "
+                ></span>
+
+                <span
+                    class="
+                        text-[10px]
+                        font-black
+                        uppercase
+                        tracking-[0.18em]
+                        text-[#8B5E3C]
+                    "
+                >
+                    Customer Order
+                </span>
+
+            </div>
+
+
+            <p
+                class="
+                    text-[10px]
+                    font-black
+                    uppercase
+                    tracking-[0.18em]
+                    text-[#A08F86]
+                "
+            >
+                Order Number
+            </p>
+
+
+            <h1
+                class="
+                    mt-1
+                    text-2xl
+                    font-black
+                    tracking-tight
+                    text-[#4E342E]
+                    sm:text-3xl
+                "
+            >
+                {{ order.order_number }}
+            </h1>
+
+
+            <p
+                class="
+                    mt-2
+                    text-sm
+                    text-[#8B776E]
+                "
+            >
+                {{ order.created_at|date:"M d, Y • H:i" }}
+            </p>
+
+        </div>
+
+
+
+        <!-- STATUS -->
+        <div>
+
+            <span
+                class="
+                    inline-flex
+                    items-center
+                    gap-2
+                    rounded-full
+                    border
+                    px-4 py-2
+                    text-xs
+                    font-black
+                    uppercase
+                    tracking-wide
+
+                    {% if order.status == 'pending' %}
+
+                        border-[#EAD6AA]
+                        bg-[#F9F1E0]
+                        text-[#C9952C]
+
+                    {% elif order.status == 'confirmed' %}
+
+                        border-[#DCE7C1]
+                        bg-[#F0F5E0]
+                        text-[#6B8E23]
+
+                    {% elif order.status == 'preparing' %}
+
+                        border-[#E8DDD0]
+                        bg-[#F5EFE6]
+                        text-[#8B5E3C]
+
+                    {% elif order.status == 'ready' %}
+
+                        border-[#DCE7C1]
+                        bg-[#F0F5E0]
+                        text-[#4A7C2A]
+
+                    {% elif order.status == 'out_for_delivery' %}
+
+                        border-[#EAD6AA]
+                        bg-[#F5E6C8]
+                        text-[#8B5E3C]
+
+                    {% elif order.status == 'delivered' %}
+
+                        border-[#DCE7C1]
+                        bg-[#F0F5E0]
+                        text-[#4A7C2A]
+
+                    {% else %}
+
+                        border-[#E5B9AB]
+                        bg-[#FDEDE8]
+                        text-[#C75B39]
+
+                    {% endif %}
+                "
+            >
+
+                <span
+                    class="
+                        h-2 w-2
+                        rounded-full
+                        bg-current
+                    "
+                ></span>
+
+                {{ order.get_status_display }}
+
+            </span>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- ======================================================
+     MAIN GRID
+     ====================================================== -->
+<div
+    class="
+        grid
+        grid-cols-1
+        gap-6
+        xl:grid-cols-3
+    "
+>
+
+
+    <!-- ==================================================
+         LEFT COLUMN
+         ================================================== -->
+    <div
+        class="
+            space-y-6
+            xl:col-span-2
+        "
+    >
+
+
+        <!-- ==============================================
+             ORDER ITEMS
+             ============================================== -->
+        <section
+            class="
+                overflow-hidden
+                rounded-2xl
+                border border-[#E8DDD0]
+                bg-white
+                shadow-sm
+            "
+        >
+
+
+            <!-- HEADER -->
+            <div
+                class="
+                    flex
+                    items-center
+                    justify-between
+                    gap-4
+                    border-b
+                    border-[#E8DDD0]
+                    bg-[#F9F1E0]
+                    px-6 py-5
+                "
+            >
+
+                <div>
+
+                    <p
+                        class="
+                            text-[10px]
+                            font-black
+                            uppercase
+                            tracking-[0.18em]
+                            text-[#C9952C]
+                        "
+                    >
+                        Order
+                    </p>
+
+
+                    <h2
+                        class="
+                            mt-1
+                            text-lg
+                            font-black
+                            text-[#4E342E]
+                        "
+                    >
+                        Order Items
+                    </h2>
+
+                </div>
+
+
+                <div
+                    class="
+                        flex h-10 w-10
+                        items-center
+                        justify-center
+                        rounded-xl
+                        bg-[#F5E6C8]
+                        text-lg
+                    "
+                >
+                    🍽️
+                </div>
+
+            </div>
+
+
+
+            <!-- ITEMS -->
+            <div
+                class="
+                    divide-y
+                    divide-[#EFE5DA]
+                    px-6
+                "
+            >
+
+                {% for item in order.items.all %}
+
+                    <div
+                        class="
+                            flex
+                            items-center
+                            justify-between
+                            gap-4
+                            py-5
+                        "
+                    >
+
+                        <div class="min-w-0">
+
+                            <p
+                                class="
+                                    font-black
+                                    text-[#4E342E]
+                                "
+                            >
+                                {{ item.food_name }}
+                            </p>
+
+
+                            <div
+                                class="
+                                    mt-2
+                                    flex
+                                    flex-wrap
+                                    items-center
+                                    gap-2
+                                "
+                            >
+
+                                <span
+                                    class="
+                                        rounded-full
+                                        bg-[#F9F1E0]
+                                        px-2.5 py-1
+                                        text-[10px]
+                                        font-black
+                                        text-[#8B5E3C]
+                                    "
+                                >
+                                    Qty {{ item.quantity }}
+                                </span>
+
+
+                                <span
+                                    class="
+                                        text-xs
+                                        text-[#A08F86]
+                                    "
+                                >
+                                    ₦{{ item.unit_price|floatformat:2 }}
+                                    each
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+                        <strong
+                            class="
+                                whitespace-nowrap
+                                text-sm
+                                font-black
+                                text-[#5D4037]
+                            "
+                        >
+                            ₦{{ item.subtotal|floatformat:2 }}
+                        </strong>
+
+                    </div>
+
+                {% empty %}
+
+                    <div
+                        class="
+                            py-10
+                            text-center
+                            text-sm
+                            text-[#8B776E]
+                        "
+                    >
+                        No order items found.
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+
+
+            <!-- TOTAL -->
+            <div
+                class="
+                    flex
+                    items-end
+                    justify-between
+                    gap-4
+                    border-t
+                    border-[#E8DDD0]
+                    bg-[#FAF6F0]
+                    px-6 py-5
+                "
+            >
+
+                <div>
+
+                    <span
+                        class="
+                            text-sm
+                            font-bold
+                            text-[#7B6A63]
+                        "
+                    >
+                        Order Total
+                    </span>
+
+
+                    <p
+                        class="
+                            mt-1
+                            text-[10px]
+                            text-[#A08F86]
+                        "
+                    >
+                        Customer order value
+                    </p>
+
+                </div>
+
+
+                <strong
+                    class="
+                        text-2xl
+                        font-black
+                        tracking-tight
+                        text-[#6B8E23]
+                    "
+                >
+                    ₦{{ order.total_amount|floatformat:2 }}
+                </strong>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ==============================================
+             CUSTOMER & DELIVERY
+             ============================================== -->
+        <section
+            class="
+                overflow-hidden
+                rounded-2xl
+                border border-[#E8DDD0]
+                bg-white
+                shadow-sm
+            "
+        >
+
+
+            <!-- HEADER -->
+            <div
+                class="
+                    flex
+                    items-center
+                    justify-between
+                    gap-4
+                    border-b
+                    border-[#E8DDD0]
+                    bg-[#F9F1E0]
+                    px-6 py-5
+                "
+            >
+
+                <div>
+
+                    <p
+                        class="
+                            text-[10px]
+                            font-black
+                            uppercase
+                            tracking-[0.18em]
+                            text-[#C9952C]
+                        "
+                    >
+                        Customer
+                    </p>
+
+
+                    <h2
+                        class="
+                            mt-1
+                            text-lg
+                            font-black
+                            text-[#4E342E]
+                        "
+                    >
+                        Customer & Delivery
+                    </h2>
+
+                </div>
+
+
+                <div
+                    class="
+                        flex h-10 w-10
+                        items-center
+                        justify-center
+                        rounded-xl
+                        bg-[#F5E6C8]
+                        text-lg
+                    "
+                >
+                    🚚
+                </div>
+
+            </div>
+
+
+
+            <div
+                class="
+                    grid
+                    grid-cols-1
+                    gap-0
+                    sm:grid-cols-2
+                "
+            >
+
+
+                <!-- CUSTOMER -->
+                <div
+                    class="
+                        border-b
+                        border-[#EFE5DA]
+                        p-6
+                        sm:border-r
+                    "
+                >
+
+                    <p
+                        class="
+                            text-[10px]
+                            font-black
+                            uppercase
+                            tracking-[0.15em]
+                            text-[#A08F86]
+                        "
+                    >
+                        Customer
+                    </p>
+
+
+                    <p
+                        class="
+                            mt-2
+                            font-black
+                            text-[#4E342E]
+                        "
+                    >
+                        {{ order.customer_name }}
+                    </p>
+
+                </div>
+
+
+
+                <!-- PHONE -->
+                <div
+                    class="
+                        border-b
+                        border-[#EFE5DA]
+                        p-6
+                    "
+                >
+
+                    <p
+                        class="
+                            text-[10px]
+                            font-black
+                            uppercase
+                            tracking-[0.15em]
+                            text-[#A08F86]
+                        "
+                    >
+                        Phone
+                    </p>
+
+
+                    <a
+                        href="tel:{{ order.phone }}"
+
+                        class="
+                            mt-2
+                            inline-flex
+                            items-center
+                            gap-2
+                            font-black
+                            text-[#6B8E23]
+                            transition
+                            hover:text-[#4A7C2A]
+                        "
+                    >
+                        {{ order.phone }}
+
+                        <span class="text-xs">
+                            ↗
+                        </span>
+                    </a>
+
+                </div>
+
+
+
+                <!-- EMAIL -->
+                {% if order.email %}
+
+                    <div
+                        class="
+                            border-b
+                            border-[#EFE5DA]
+                            p-6
+                            sm:col-span-2
+                        "
+                    >
+
+                        <p
+                            class="
+                                text-[10px]
+                                font-black
+                                uppercase
+                                tracking-[0.15em]
+                                text-[#A08F86]
+                            "
+                        >
+                            Email
+                        </p>
+
+
+                        <a
+                            href="mailto:{{ order.email }}"
+
+                            class="
+                                mt-2
+                                inline-block
+                                break-all
+                                text-sm
+                                font-bold
+                                text-[#5D4037]
+                                transition
+                                hover:text-[#C9952C]
+                            "
+                        >
+                            {{ order.email }}
+                        </a>
+
+                    </div>
+
+                {% endif %}
+
+
+
+                <!-- ADDRESS -->
+                <div
+                    class="
+                        p-6
+                        sm:col-span-2
+                    "
+                >
+
+                    <p
+                        class="
+                            text-[10px]
+                            font-black
+                            uppercase
+                            tracking-[0.15em]
+                            text-[#A08F86]
+                        "
+                    >
+                        Delivery Address
+                    </p>
+
+
+                    <p
+                        class="
+                            mt-2
+                            whitespace-pre-line
+                            text-sm
+                            leading-6
+                            text-[#5D4037]
+                        "
+                    >
+                        {{ order.address }}
+                    </p>
+
+                </div>
+
+
+
+                <!-- INSTRUCTIONS -->
+                {% if order.note %}
+
+                    <div
+                        class="
+                            px-6 pb-6
+                            sm:col-span-2
+                        "
+                    >
+
+                        <div
+                            class="
+                                rounded-xl
+                                border border-[#EAD6AA]
+                                bg-[#F9F1E0]
+                                p-4
+                            "
+                        >
+
+                            <div
+                                class="
+                                    flex
+                                    items-start
+                                    gap-3
+                                "
+                            >
+
+                                <div
+                                    class="
+                                        flex h-8 w-8
+                                        shrink-0
+                                        items-center
+                                        justify-center
+                                        rounded-lg
+                                        bg-white
+                                        text-sm
+                                    "
+                                >
+                                    ✎
+                                </div>
+
+
+                                <div>
+
+                                    <p
+                                        class="
+                                            text-[10px]
+                                            font-black
+                                            uppercase
+                                            tracking-[0.15em]
+                                            text-[#C9952C]
+                                        "
+                                    >
+                                        Customer Instructions
+                                    </p>
+
+
+                                    <p
+                                        class="
+                                            mt-2
+                                            text-sm
+                                            leading-6
+                                            text-[#5D4037]
+                                        "
+                                    >
+                                        {{ order.note }}
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+        </section>
+
+    </div>
+
+
+
+    <!-- ==================================================
+         RIGHT COLUMN
+         ================================================== -->
+    <aside class="space-y-6">
+
+
+        <!-- ==============================================
+             STATUS UPDATE
+             ============================================== -->
+        <section
+            class="
+                overflow-hidden
+                rounded-2xl
+                border border-[#E8DDD0]
+                bg-white
+                shadow-sm
+            "
+        >
+
+
+            <div
+                class="
+                    border-b
+                    border-[#E8DDD0]
+                    bg-[#F9F1E0]
+                    px-5 py-4
+                "
+            >
+
+                <div
+                    class="
+                        flex
+                        items-center
+                        gap-3
+                    "
+                >
+
+                    <div
+                        class="
+                            flex h-9 w-9
+                            items-center
+                            justify-center
+                            rounded-lg
+                            bg-[#F5E6C8]
+                        "
+                    >
+                        ◷
+                    </div>
+
+
+                    <div>
+
+                        <p
+                            class="
+                                text-[10px]
+                                font-black
+                                uppercase
+                                tracking-[0.16em]
+                                text-[#C9952C]
+                            "
+                        >
+                            Workflow
+                        </p>
+
+
+                        <h2
+                            class="
+                                mt-0.5
+                                font-black
+                                text-[#4E342E]
+                            "
+                        >
+                            Update Order Status
+                        </h2>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="p-5">
+
+                <p
+                    class="
+                        text-xs
+                        leading-5
+                        text-[#8B776E]
+                    "
+                >
+                    Update the order as it moves
+                    through preparation and delivery.
+                </p>
+
+
+                <form
+                    method="post"
+                    action="{% url 'eatery:order_status_update' order.pk %}"
+                    class="mt-5"
+                >
+
+                    {% csrf_token %}
+
+
+                    <label
+                        for="orderStatus"
+                        class="
+                            mb-2
+                            block
+                            text-[10px]
+                            font-black
+                            uppercase
+                            tracking-[0.15em]
+                            text-[#8B776E]
+                        "
+                    >
+                        Current Status
+                    </label>
+
+
+                    <select
+                        id="orderStatus"
+                        name="status"
+
+                        class="
+                            w-full
+                            rounded-xl
+                            border border-[#E8DDD0]
+                            bg-[#FAF6F0]
+                            px-4 py-3
+                            text-sm
+                            font-bold
+                            text-[#5D4037]
+                            outline-none
+                            transition
+                            focus:border-[#C9952C]
+                            focus:bg-white
+                            focus:ring-4
+                            focus:ring-[#F9F1E0]
+                        "
+                    >
+
+                        {% for value, label in status_choices %}
+
+                            <option
+                                value="{{ value }}"
+
+                                {% if order.status == value %}
+                                    selected
+                                {% endif %}
+                            >
+                                {{ label }}
+                            </option>
+
+                        {% endfor %}
+
+                    </select>
+
+
+
+                    <button
+                        type="submit"
+
+                        class="
+                            mt-3
+                            flex w-full
+                            items-center
+                            justify-center
+                            gap-2
+                            rounded-xl
+                            bg-[#4E342E]
+                            px-5 py-3
+                            text-sm
+                            font-black
+                            text-white
+                            shadow-sm
+                            transition
+                            hover:bg-[#3E2723]
+                        "
+                    >
+                        Update Status
+
+                        <span>→</span>
+                    </button>
+
+                </form>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ==============================================
+             CUSTOMER CONTACT
+             ============================================== -->
+        <section
+            class="
+                overflow-hidden
+                rounded-2xl
+                border border-[#E8DDD0]
+                bg-white
+                shadow-sm
+            "
+        >
+
+            <div
+                class="
+                    border-b
+                    border-[#E8DDD0]
+                    bg-[#F9F1E0]
+                    px-5 py-4
+                "
+            >
+
+                <p
+                    class="
+                        text-[10px]
+                        font-black
+                        uppercase
+                        tracking-[0.16em]
+                        text-[#C9952C]
+                    "
+                >
+                    Communication
+                </p>
+
+
+                <h2
+                    class="
+                        mt-1
+                        font-black
+                        text-[#4E342E]
+                    "
+                >
+                    Customer Contact
+                </h2>
+
+            </div>
+
+
+
+            <div
+                class="
+                    space-y-3
+                    p-5
+                "
+            >
+
+                <!-- CALL -->
+                <a
+                    href="tel:{{ order.phone }}"
+
+                    class="
+                        flex w-full
+                        items-center
+                        justify-between
+                        gap-3
+                        rounded-xl
+                        border border-[#E8DDD0]
+                        bg-white
+                        px-4 py-3
+                        text-sm
+                        font-black
+                        text-[#5D4037]
+                        transition
+                        hover:border-[#C9952C]
+                        hover:bg-[#F9F1E0]
+                    "
+                >
+
+                    <span
+                        class="
+                            flex
+                            items-center
+                            gap-3
+                        "
+                    >
+
+                        <span
+                            class="
+                                flex h-8 w-8
+                                items-center
+                                justify-center
+                                rounded-lg
+                                bg-[#F5EFE6]
+                            "
+                        >
+                            ☎
+                        </span>
+
+                        Call Customer
+
+                    </span>
+
+                    <span>→</span>
+
+                </a>
+
+
+
+                <!-- EMAIL -->
+                {% if order.email %}
+
+                    <a
+                        href="mailto:{{ order.email }}"
+
+                        class="
+                            flex w-full
+                            items-center
+                            justify-between
+                            gap-3
+                            rounded-xl
+                            border border-[#E8DDD0]
+                            bg-white
+                            px-4 py-3
+                            text-sm
+                            font-black
+                            text-[#5D4037]
+                            transition
+                            hover:border-[#C9952C]
+                            hover:bg-[#F9F1E0]
+                        "
+                    >
+
+                        <span
+                            class="
+                                flex
+                                items-center
+                                gap-3
+                            "
+                        >
+
+                            <span
+                                class="
+                                    flex h-8 w-8
+                                    items-center
+                                    justify-center
+                                    rounded-lg
+                                    bg-[#F5EFE6]
+                                "
+                            >
+                                ✉
+                            </span>
+
+                            Email Customer
+
+                        </span>
+
+                        <span>→</span>
+
+                    </a>
+
+                {% endif %}
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ==============================================
+             WHATSAPP
+             ============================================== -->
+        <section
+            class="
+                overflow-hidden
+                rounded-2xl
+                border border-[#DCE7C1]
+                bg-white
+                shadow-sm
+            "
+        >
+
+
+            <!-- WHATSAPP STATUS -->
+            <div
+                class="
+                    border-b
+                    border-[#DCE7C1]
+                    p-5
+
+                    {% if order.whatsapp_opened %}
+                        bg-[#F0F5E0]
+                    {% else %}
+                        bg-[#FAF6F0]
+                    {% endif %}
+                "
+            >
+
+                <div
+                    class="
+                        flex
+                        items-center
+                        justify-between
+                        gap-3
+                    "
+                >
+
+                    <div>
+
+                        <p
+                            class="
+                                text-[10px]
+                                font-black
+                                uppercase
+                                tracking-[0.16em]
+                                text-[#8B776E]
+                            "
+                        >
+                            WhatsApp
+                        </p>
+
+
+                        <h2
+                            class="
+                                mt-1
+                                font-black
+                                text-[#4E342E]
+                            "
+                        >
+                            Customer Messaging
+                        </h2>
+
+                    </div>
+
+
+
+                    {% if order.whatsapp_opened %}
+
+                        <span
+                            class="
+                                inline-flex
+                                items-center
+                                gap-1.5
+                                rounded-full
+                                border border-[#DCE7C1]
+                                bg-white
+                                px-3 py-1.5
+                                text-[10px]
+                                font-black
+                                uppercase
+                                tracking-wide
+                                text-[#4A7C2A]
+                            "
+                        >
+
+                            <span
+                                class="
+                                    h-1.5 w-1.5
+                                    rounded-full
+                                    bg-[#6B8E23]
+                                "
+                            ></span>
+
+                            Opened
+
+                        </span>
+
+                    {% else %}
+
+                        <span
+                            class="
+                                inline-flex
+                                items-center
+                                gap-1.5
+                                rounded-full
+                                border border-[#E8DDD0]
+                                bg-white
+                                px-3 py-1.5
+                                text-[10px]
+                                font-black
+                                uppercase
+                                tracking-wide
+                                text-[#8B776E]
+                            "
+                        >
+
+                            <span
+                                class="
+                                    h-1.5 w-1.5
+                                    rounded-full
+                                    bg-[#A89B8C]
+                                "
+                            ></span>
+
+                            Not Opened
+
+                        </span>
+
+                    {% endif %}
+
+                </div>
+
+
+                <p
+                    class="
+                        mt-3
+                        text-xs
+                        leading-5
+                        text-[#8B776E]
+                    "
+                >
+                    Send order updates directly to the
+                    customer's WhatsApp.
+                </p>
+
+            </div>
+
+
+
+            <!-- WHATSAPP ACTIONS -->
+            <div
+                class="
+                    space-y-3
+                    p-5
+                "
+            >
+
+
+                <!-- GENERAL -->
+                <a
+                    href="{% url 'eatery:customer_whatsapp' order.pk %}?type=general"
+                    target="_blank"
+                    rel="noopener noreferrer"
+
+                    class="
+                        flex w-full
+                        items-center
+                        justify-center
+                        gap-2
+                        rounded-xl
+                        bg-[#4A7C2A]
+                        px-4 py-3
+                        text-center
+                        text-sm
+                        font-black
+                        text-white
+                        shadow-sm
+                        transition
+                        hover:bg-[#3E6A23]
+                    "
+                >
+                    <span>💬</span>
+
+                    WhatsApp Customer
+                </a>
+
+
+
+                <!-- =========================================
+                     PENDING
+                     ========================================= -->
+                {% if order.status == "pending" %}
+
+                    <a
+                        href="{% url 'eatery:customer_whatsapp' order.pk %}?type=confirmed"
+                        target="_blank"
+                        rel="noopener noreferrer"
+
+                        class="
+                            block w-full
+                            rounded-xl
+                            border border-[#DCE7C1]
+                            bg-[#F0F5E0]
+                            px-4 py-3
+                            text-center
+                            text-sm
+                            font-black
+                            text-[#6B8E23]
+                            transition
+                            hover:bg-[#E7EFCF]
+                        "
+                    >
+                        ✓ Send Confirmation Message
+                    </a>
+
+
+
+                <!-- =========================================
+                     CONFIRMED
+                     ========================================= -->
+                {% elif order.status == "confirmed" %}
+
+                    <a
+                        href="{% url 'eatery:customer_whatsapp' order.pk %}?type=preparing"
+                        target="_blank"
+                        rel="noopener noreferrer"
+
+                        class="
+                            block w-full
+                            rounded-xl
+                            border border-[#E8DDD0]
+                            bg-[#F5EFE6]
+                            px-4 py-3
+                            text-center
+                            text-sm
+                            font-black
+                            text-[#8B5E3C]
+                            transition
+                            hover:bg-[#EEE4D8]
+                        "
+                    >
+                        ◷ Tell Customer We're Preparing
+                    </a>
+
+
+
+                <!-- =========================================
+                     PREPARING
+                     ========================================= -->
+                {% elif order.status == "preparing" %}
+
+                    <a
+                        href="{% url 'eatery:customer_whatsapp' order.pk %}?type=ready"
+                        target="_blank"
+                        rel="noopener noreferrer"
+
+                        class="
+                            block w-full
+                            rounded-xl
+                            border border-[#DCE7C1]
+                            bg-[#F0F5E0]
+                            px-4 py-3
+                            text-center
+                            text-sm
+                            font-black
+                            text-[#4A7C2A]
+                            transition
+                            hover:bg-[#E7EFCF]
+                        "
+                    >
+                        ✓ Tell Customer Order Is Ready
+                    </a>
+
+
+
+                <!-- =========================================
+                     READY
+                     ========================================= -->
+                {% elif order.status == "ready" %}
+
+                    <a
+                        href="{% url 'eatery:customer_whatsapp' order.pk %}?type=delivery"
+                        target="_blank"
+                        rel="noopener noreferrer"
+
+                        class="
+                            block w-full
+                            rounded-xl
+                            border border-[#EAD6AA]
+                            bg-[#F5E6C8]
+                            px-4 py-3
+                            text-center
+                            text-sm
+                            font-black
+                            text-[#8B5E3C]
+                            transition
+                            hover:bg-[#EFDCB7]
+                        "
+                    >
+                        🚚 Send Delivery Message
+                    </a>
+
+
+
+                <!-- =========================================
+                     OUT FOR DELIVERY
+                     ========================================= -->
+                {% elif order.status == "out_for_delivery" %}
+
+                    <a
+                        href="{% url 'eatery:customer_whatsapp' order.pk %}?type=delivered"
+                        target="_blank"
+                        rel="noopener noreferrer"
+
+                        class="
+                            block w-full
+                            rounded-xl
+                            border border-[#DCE7C1]
+                            bg-[#F0F5E0]
+                            px-4 py-3
+                            text-center
+                            text-sm
+                            font-black
+                            text-[#4A7C2A]
+                            transition
+                            hover:bg-[#E7EFCF]
+                        "
+                    >
+                        ✓ Send Delivered Message
+                    </a>
+
+                {% endif %}
+
+            </div>
+
+        </section>
+
+    </aside>
+
+</div>
+
+
+{% endblock %}

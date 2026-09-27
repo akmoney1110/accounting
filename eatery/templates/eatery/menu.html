@@ -1,0 +1,3001 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="Order fresh and delicious meals from Dikubs Eatery."
+    >
+
+    <title>Dikubs Eatery | Fresh Food, Easy Ordering</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family:
+                Inter,
+                ui-sans-serif,
+                system-ui,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+        }
+
+        .hero-bg {
+            background:
+                radial-gradient(
+                    circle at 80% 30%,
+                    rgba(245, 158, 11, 0.16),
+                    transparent 30%
+                ),
+                radial-gradient(
+                    circle at 10% 90%,
+                    rgba(16, 185, 129, 0.10),
+                    transparent 30%
+                ),
+                #11110f;
+        }
+
+        .food-card {
+            transition:
+                transform 0.25s ease,
+                box-shadow 0.25s ease;
+        }
+
+        .food-card:hover {
+            transform: translateY(-5px);
+            box-shadow:
+                0 20px 45px rgba(0, 0, 0, 0.10);
+        }
+
+        .category-button.active {
+            background: #111827;
+            color: white;
+            border-color: #111827;
+        }
+
+        .cart-drawer {
+            transition: transform 0.3s ease;
+        }
+
+        .cart-drawer.closed {
+            transform: translateX(100%);
+        }
+
+        .cart-overlay {
+            transition: opacity 0.3s ease;
+        }
+
+        .no-scroll {
+            overflow: hidden;
+        }
+
+
+        /* =========================================================
+           DIKUBS EARTH / HARVEST BRAND SYSTEM
+           ========================================================= */
+        :root {
+            --sand-bg: #FAF6F0;
+            --sand-light: #F5EFE6;
+            --sand-border: #E8DDD0;
+            --soil-dark: #4E342E;
+            --soil-deeper: #3E2723;
+            --soil-text: #5D4037;
+            --harvest-gold: #C9952C;
+            --harvest-light: #F9F1E0;
+            --crop-green: #6B8E23;
+            --crop-light: #F0F5E0;
+            --terracotta: #C75B39;
+            --terracotta-light: #FDEDE8;
+            --wheat: #D4A843;
+            --cashew-cream: #F5E6C8;
+            --dry-brown: #8B5E3C;
+            --leaf-green: #4A7C2A;
+        }
+
+        body { background: var(--sand-bg) !important; color: var(--soil-deeper) !important; }
+
+        .hero-bg {
+            background:
+                radial-gradient(circle at 82% 26%, rgba(201,149,44,.20), transparent 30%),
+                radial-gradient(circle at 12% 88%, rgba(107,142,35,.13), transparent 30%),
+                linear-gradient(135deg, var(--soil-deeper) 0%, var(--soil-dark) 58%, #5d4037 100%) !important;
+        }
+
+        #navbar { background: rgba(62,39,35,.96) !important; border-color: rgba(245,230,200,.12) !important; }
+        #navbar .bg-amber-500, .bg-amber-500 { background-color: var(--harvest-gold) !important; }
+        .hover\:bg-amber-400:hover { background-color: var(--wheat) !important; }
+        .text-amber-400, .text-amber-300 { color: #E8BE62 !important; }
+        .text-amber-600, .text-amber-700 { color: var(--dry-brown) !important; }
+        .border-amber-400\/20 { border-color: rgba(212,168,67,.25) !important; }
+        .bg-amber-400\/10 { background-color: rgba(212,168,67,.10) !important; }
+        .border-amber-500\/10 { border-color: rgba(201,149,44,.15) !important; }
+
+        .bg-\[\#faf9f6\], .bg-\[\#f3efe6\] { background-color: var(--sand-bg) !important; }
+        .bg-white { background-color: #fffdf9 !important; }
+        .border-gray-200, .border-gray-100, .divide-gray-100 > :not([hidden]) ~ :not([hidden]) { border-color: var(--sand-border) !important; }
+        .text-gray-900, .text-gray-950 { color: var(--soil-deeper) !important; }
+        .text-gray-600, .text-gray-500 { color: #78645c !important; }
+
+        .food-card {
+            border-color: var(--sand-border) !important;
+            background: #fffdf9 !important;
+            box-shadow: 0 8px 24px rgba(78,52,46,.05);
+        }
+        .food-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(201,149,44,.55) !important;
+            box-shadow: 0 20px 45px rgba(78,52,46,.12);
+        }
+
+        .category-button { color: var(--soil-text) !important; border-color: var(--sand-border) !important; background: #fffdf9 !important; }
+        .category-button:hover { border-color: var(--harvest-gold) !important; color: var(--soil-deeper) !important; }
+        .category-button.active { background: var(--soil-dark) !important; color: #fff !important; border-color: var(--soil-dark) !important; }
+
+        #menuSearch { background: #fffdf9 !important; border-color: var(--sand-border) !important; color: var(--soil-deeper) !important; }
+        #menuSearch:focus { border-color: var(--harvest-gold) !important; box-shadow: 0 0 0 4px rgba(201,149,44,.12) !important; }
+
+        .bg-gray-950, .bg-gray-900 { background-color: var(--soil-deeper) !important; }
+        .hover\:bg-gray-900:hover { background-color: var(--soil-dark) !important; }
+        .border-gray-900 { border-color: var(--soil-dark) !important; }
+        .text-gray-400 { color: #bcaea7 !important; }
+
+        .bg-amber-50, .bg-amber-100 { background-color: var(--harvest-light) !important; }
+        .bg-emerald-100 { background-color: var(--crop-light) !important; }
+        .text-emerald-400 { color: #9fbd57 !important; }
+        .bg-blue-100 { background-color: var(--cashew-cream) !important; }
+
+        #cartDrawer { background: #fffdf9 !important; }
+        #drawerFooter { background: #fffdf9 !important; border-color: var(--sand-border) !important; }
+        #floatingCart, #cartToast { background: var(--soil-deeper) !important; }
+        #floatingTotal { color: #E8BE62 !important; }
+
+        #contact, footer { background: var(--soil-deeper) !important; }
+
+        .bg-green-600 { background-color: var(--leaf-green) !important; }
+        .hover\:bg-green-500:hover { background-color: var(--crop-green) !important; }
+
+        ::selection { background: var(--harvest-gold); color: var(--soil-deeper); }
+
+    </style>
+</head>
+
+
+<body class="bg-[#faf9f6] text-gray-900">
+
+
+<!-- =========================================================
+     NAVIGATION
+     ========================================================= -->
+<header
+    id="navbar"
+    class="
+        fixed left-0 right-0 top-0 z-40
+        border-b border-white/10
+        bg-[#11110f]/95
+        text-white backdrop-blur-xl
+    "
+>
+    <div
+        class="
+            mx-auto flex h-20 max-w-7xl
+            items-center justify-between
+            px-4 sm:px-6 lg:px-8
+        "
+    >
+
+        <!-- LOGO -->
+        <a
+            href="{% url 'eatery:menu' %}"
+            class="flex items-center gap-3"
+        >
+
+            <div
+                class="
+                    flex h-11 w-11
+                    items-center justify-center
+                    rounded-2xl
+                    bg-amber-500
+                    text-xl font-black
+                    text-gray-950
+                "
+            >
+                D
+            </div>
+
+            <div>
+                <p class="text-lg font-black leading-none">
+                    Dikubs
+                </p>
+
+                <p
+                    class="
+                        mt-1 text-[10px]
+                        font-bold uppercase
+                        tracking-[0.24em]
+                        text-amber-400
+                    "
+                >
+                    Eatery
+                </p>
+            </div>
+
+        </a>
+
+
+        <!-- DESKTOP NAV -->
+        <nav
+            class="
+                hidden items-center gap-8
+                lg:flex
+            "
+        >
+
+            <a
+                href="#home"
+                class="
+                    text-sm font-semibold
+                    text-gray-300
+                    transition hover:text-white
+                "
+            >
+                Home
+            </a>
+
+            <a
+                href="#menu"
+                class="
+                    text-sm font-semibold
+                    text-gray-300
+                    transition hover:text-white
+                "
+            >
+                Menu
+            </a>
+
+            <a
+                href="#about"
+                class="
+                    text-sm font-semibold
+                    text-gray-300
+                    transition hover:text-white
+                "
+            >
+                About
+            </a>
+
+            <a
+                href="#contact"
+                class="
+                    text-sm font-semibold
+                    text-gray-300
+                    transition hover:text-white
+                "
+            >
+                Contact
+            </a>
+
+        </nav>
+
+
+        <!-- ACTIONS -->
+        <div class="flex items-center gap-2 sm:gap-3">
+
+            <button
+                type="button"
+                onclick="openCart()"
+                class="
+                    relative flex h-11
+                    items-center gap-2
+                    rounded-xl
+                    border border-white/10
+                    bg-white/5
+                    px-3 sm:px-4
+                    transition
+                    hover:bg-white/10
+                "
+            >
+
+                <span class="text-lg">
+                    🛒
+                </span>
+
+                <span
+                    class="
+                        hidden text-sm
+                        font-bold sm:inline
+                    "
+                >
+                    Cart
+                </span>
+
+                <span
+                    id="headerCartCount"
+                    class="
+                        flex min-w-6
+                        items-center justify-center
+                        rounded-full
+                        bg-amber-500
+                        px-1.5 py-0.5
+                        text-xs font-black
+                        text-gray-950
+                    "
+                >
+                    0
+                </span>
+
+            </button>
+
+
+            <a
+                href="#menu"
+                class="
+                    hidden rounded-xl
+                    bg-amber-500
+                    px-5 py-3
+                    text-sm font-black
+                    text-gray-950
+                    transition
+                    hover:bg-amber-400
+                    sm:inline-flex
+                "
+            >
+                Order Now
+            </a>
+
+        </div>
+
+    </div>
+</header>
+
+
+
+<!-- =========================================================
+     HERO
+     ========================================================= -->
+<section
+    id="home"
+    class="
+        hero-bg relative
+        min-h-[720px]
+        overflow-hidden
+        pt-20 text-white
+    "
+>
+
+    <!-- DECORATION -->
+    <div
+        class="
+            absolute -right-32 top-24
+            h-[500px] w-[500px]
+            rounded-full
+            border border-white/5
+        "
+    ></div>
+
+    <div
+        class="
+            absolute -right-16 top-40
+            h-[360px] w-[360px]
+            rounded-full
+            border border-amber-500/10
+        "
+    ></div>
+
+
+    <div
+        class="
+            relative mx-auto grid
+            min-h-[640px]
+            max-w-7xl
+            items-center gap-12
+            px-4 py-16
+            sm:px-6
+            lg:grid-cols-2
+            lg:px-8
+        "
+    >
+
+        <!-- HERO TEXT -->
+        <div class="max-w-2xl">
+
+            <div
+                class="
+                    inline-flex items-center
+                    gap-2 rounded-full
+                    border border-amber-400/20
+                    bg-amber-400/10
+                    px-4 py-2
+                "
+            >
+
+                <span
+                    class="
+                        h-2 w-2
+                        rounded-full
+                        bg-amber-400
+                    "
+                ></span>
+
+                <span
+                    class="
+                        text-xs font-black
+                        uppercase
+                        tracking-[0.18em]
+                        text-amber-300
+                    "
+                >
+                    Freshly prepared daily
+                </span>
+
+            </div>
+
+
+            <h1
+                class="
+                    mt-7 text-5xl
+                    font-black
+                    leading-[1.05]
+                    tracking-tight
+                    sm:text-6xl
+                    lg:text-7xl
+                "
+            >
+                Good food.
+
+                <span
+                    class="
+                        block text-amber-400
+                    "
+                >
+                    Made for you.
+                </span>
+            </h1>
+
+
+            <p
+                class="
+                    mt-6 max-w-xl
+                    text-base leading-8
+                    text-gray-300
+                    sm:text-lg
+                "
+            >
+                Fresh, satisfying meals prepared with care.
+                Choose what you love, place your order and
+                let Dikubs take care of the rest.
+            </p>
+
+
+            <div
+                class="
+                    mt-9 flex flex-col
+                    gap-3 sm:flex-row
+                "
+            >
+
+                <a
+                    href="#menu"
+                    class="
+                        inline-flex
+                        items-center
+                        justify-center
+                        rounded-xl
+                        bg-amber-500
+                        px-7 py-4
+                        text-sm font-black
+                        text-gray-950
+                        transition
+                        hover:-translate-y-0.5
+                        hover:bg-amber-400
+                    "
+                >
+                    Order Now
+                    <span class="ml-2">→</span>
+                </a>
+
+
+                <a
+                    href="#featured"
+                    class="
+                        inline-flex
+                        items-center
+                        justify-center
+                        rounded-xl
+                        border border-white/15
+                        bg-white/5
+                        px-7 py-4
+                        text-sm font-black
+                        text-white
+                        transition
+                        hover:bg-white/10
+                    "
+                >
+                    Explore Menu
+                </a>
+
+            </div>
+
+
+            <!-- TRUST POINTS -->
+            <div
+                class="
+                    mt-10 flex flex-wrap
+                    gap-x-7 gap-y-3
+                    text-sm text-gray-400
+                "
+            >
+
+                <span class="flex items-center gap-2">
+                    <span class="text-emerald-400">✓</span>
+                    Fresh meals
+                </span>
+
+                <span class="flex items-center gap-2">
+                    <span class="text-emerald-400">✓</span>
+                    Easy ordering
+                </span>
+
+                <span class="flex items-center gap-2">
+                    <span class="text-emerald-400">✓</span>
+                    Fast service
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <!-- HERO VISUAL -->
+        <div
+            class="
+                relative hidden
+                items-center
+                justify-center
+                lg:flex
+            "
+        >
+
+            <div
+                class="
+                    relative flex
+                    h-[520px] w-[520px]
+                    items-center
+                    justify-center
+                "
+            >
+
+                <div
+                    class="
+                        absolute inset-10
+                        rounded-full
+                        border border-white/10
+                    "
+                ></div>
+
+                <div
+                    class="
+                        absolute inset-20
+                        rounded-full
+                        border border-amber-400/20
+                    "
+                ></div>
+
+
+                {% if featured_foods.0 and featured_foods.0.image %}
+
+                    <div
+                        class="
+                            h-[390px] w-[390px]
+                            overflow-hidden
+                            rounded-full
+                            border-[12px]
+                            border-white/5
+                            bg-gray-900
+                            shadow-2xl
+                        "
+                    >
+
+                        <img
+                            src="{{ featured_foods.0.image.url }}"
+                            alt="{{ featured_foods.0.name }}"
+                            class="
+                                h-full w-full
+                                object-cover
+                            "
+                        >
+
+                    </div>
+
+                {% else %}
+
+                    <div
+                        class="
+                            flex h-[390px]
+                            w-[390px]
+                            items-center
+                            justify-center
+                            rounded-full
+                            border-[12px]
+                            border-white/5
+                            bg-amber-500
+                            text-[130px]
+                            shadow-2xl
+                        "
+                    >
+                        🍲
+                    </div>
+
+                {% endif %}
+
+
+                <!-- FLOAT CARD -->
+                <div
+                    class="
+                        absolute bottom-12
+                        left-0
+                        rounded-2xl
+                        border border-white/10
+                        bg-white/10
+                        p-4
+                        backdrop-blur-xl
+                    "
+                >
+
+                    <p
+                        class="
+                            text-xs
+                            font-semibold
+                            text-gray-300
+                        "
+                    >
+                        Ready to order?
+                    </p>
+
+                    <p
+                        class="
+                            mt-1 font-black
+                            text-white
+                        "
+                    >
+                        Pick your favourite →
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================================================
+     QUICK BENEFITS
+     ========================================================= -->
+<section
+    class="
+        border-b border-gray-200
+        bg-white
+    "
+>
+
+    <div
+        class="
+            mx-auto grid
+            max-w-7xl
+            grid-cols-1
+            divide-y
+            divide-gray-100
+            px-4
+            sm:grid-cols-3
+            sm:divide-x
+            sm:divide-y-0
+            sm:px-6
+            lg:px-8
+        "
+    >
+
+        <div class="flex gap-4 py-7 sm:px-6">
+
+            <div
+                class="
+                    flex h-11 w-11
+                    shrink-0
+                    items-center
+                    justify-center
+                    rounded-xl
+                    bg-amber-100
+                    text-xl
+                "
+            >
+                🍲
+            </div>
+
+            <div>
+                <p class="font-black">
+                    Freshly Prepared
+                </p>
+
+                <p class="mt-1 text-sm text-gray-500">
+                    Meals prepared with care.
+                </p>
+            </div>
+
+        </div>
+
+
+        <div class="flex gap-4 py-7 sm:px-6">
+
+            <div
+                class="
+                    flex h-11 w-11
+                    shrink-0
+                    items-center
+                    justify-center
+                    rounded-xl
+                    bg-emerald-100
+                    text-xl
+                "
+            >
+                ⚡
+            </div>
+
+            <div>
+                <p class="font-black">
+                    Quick Ordering
+                </p>
+
+                <p class="mt-1 text-sm text-gray-500">
+                    Order in just a few steps.
+                </p>
+            </div>
+
+        </div>
+
+
+        <div class="flex gap-4 py-7 sm:px-6">
+
+            <div
+                class="
+                    flex h-11 w-11
+                    shrink-0
+                    items-center
+                    justify-center
+                    rounded-xl
+                    bg-blue-100
+                    text-xl
+                "
+            >
+                💬
+            </div>
+
+            <div>
+                <p class="font-black">
+                    Easy Confirmation
+                </p>
+
+                <p class="mt-1 text-sm text-gray-500">
+                    Continue your order on WhatsApp.
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================================================
+     FEATURED FOODS
+     ========================================================= -->
+{% if featured_foods %}
+
+<section
+    id="featured"
+    class="bg-[#faf9f6] py-20"
+>
+
+    <div
+        class="
+            mx-auto max-w-7xl
+            px-4 sm:px-6 lg:px-8
+        "
+    >
+
+        <div
+            class="
+                mb-10 flex flex-col
+                justify-between gap-5
+                sm:flex-row
+                sm:items-end
+            "
+        >
+
+            <div>
+
+                <p
+                    class="
+                        text-xs font-black
+                        uppercase
+                        tracking-[0.22em]
+                        text-amber-600
+                    "
+                >
+                    Customer favourites
+                </p>
+
+                <h2
+                    class="
+                        mt-3 text-3xl
+                        font-black
+                        tracking-tight
+                        sm:text-4xl
+                    "
+                >
+                    Featured meals
+                </h2>
+
+                <p
+                    class="
+                        mt-3 max-w-xl
+                        text-gray-500
+                    "
+                >
+                    Start with some of our highlighted dishes.
+                </p>
+
+            </div>
+
+
+            <a
+                href="#menu"
+                class="
+                    text-sm font-black
+                    text-gray-900
+                "
+            >
+                See full menu →
+            </a>
+
+        </div>
+
+
+        <div
+            class="
+                grid grid-cols-1
+                gap-6 sm:grid-cols-2
+                lg:grid-cols-3
+            "
+        >
+
+            {% for food in featured_foods %}
+
+                <article
+                    class="
+                        food-card
+                        overflow-hidden
+                        rounded-[24px]
+                        border border-gray-200
+                        bg-white
+                    "
+                >
+
+                    <div
+                        class="
+                            relative h-64
+                            overflow-hidden
+                            bg-gray-100
+                        "
+                    >
+
+                        {% if food.image %}
+
+                            <img
+                                src="{{ food.image.url }}"
+                                alt="{{ food.name }}"
+                                class="
+                                    h-full w-full
+                                    object-cover
+                                    transition
+                                    duration-500
+                                    hover:scale-105
+                                "
+                            >
+
+                        {% else %}
+
+                            <div
+                                class="
+                                    flex h-full
+                                    items-center
+                                    justify-center
+                                    bg-amber-50
+                                    text-7xl
+                                "
+                            >
+                                🍽️
+                            </div>
+
+                        {% endif %}
+
+
+                        <div
+                            class="
+                                absolute left-4
+                                top-4
+                                rounded-full
+                                bg-amber-500
+                                px-3 py-1.5
+                                text-xs
+                                font-black
+                                text-gray-950
+                            "
+                        >
+                            Featured
+                        </div>
+
+                    </div>
+
+
+                    <div class="p-6">
+
+                        {% if food.category %}
+
+                            <p
+                                class="
+                                    text-xs font-bold
+                                    uppercase
+                                    tracking-wider
+                                    text-amber-600
+                                "
+                            >
+                                {{ food.category.name }}
+                            </p>
+
+                        {% endif %}
+
+
+                        <div
+                            class="
+                                mt-2 flex
+                                items-start
+                                justify-between
+                                gap-4
+                            "
+                        >
+
+                            <h3
+                                class="
+                                    text-xl
+                                    font-black
+                                "
+                            >
+                                {{ food.name }}
+                            </h3>
+
+                            <p
+                                class="
+                                    whitespace-nowrap
+                                    text-lg
+                                    font-black
+                                    text-gray-900
+                                "
+                            >
+                                ₦{{ food.price|floatformat:2 }}
+                            </p>
+
+                        </div>
+
+
+                        {% if food.description %}
+
+                            <p
+                                class="
+                                    mt-3
+                                    min-h-[48px]
+                                    text-sm
+                                    leading-6
+                                    text-gray-500
+                                "
+                            >
+                                {{ food.description|truncatechars:105 }}
+                            </p>
+
+                        {% endif %}
+
+
+                        <button
+                            type="button"
+                            onclick="addToCart(
+                                '{{ food.pk }}',
+                                '{{ food.name|escapejs }}',
+                                '{{ food.price }}',
+                                {% if food.image %}
+                                    '{{ food.image.url|escapejs }}'
+                                {% else %}
+                                    ''
+                                {% endif %}
+                            )"
+                            class="
+                                mt-6 flex w-full
+                                items-center
+                                justify-between
+                                rounded-xl
+                                bg-gray-950
+                                px-5 py-3.5
+                                text-sm
+                                font-black
+                                text-white
+                                transition
+                                hover:bg-amber-500
+                                hover:text-gray-950
+                            "
+                        >
+
+                            <span>
+                                Add to Order
+                            </span>
+
+                            <span>＋</span>
+
+                        </button>
+
+                    </div>
+
+                </article>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endif %}
+
+
+
+<!-- =========================================================
+     FULL MENU
+     ========================================================= -->
+<section
+    id="menu"
+    class="
+        bg-white py-20
+    "
+>
+
+    <div
+        class="
+            mx-auto max-w-7xl
+            px-4 sm:px-6 lg:px-8
+        "
+    >
+
+        <!-- HEADING -->
+        <div class="text-center">
+
+            <p
+                class="
+                    text-xs font-black
+                    uppercase
+                    tracking-[0.22em]
+                    text-amber-600
+                "
+            >
+                Choose your meal
+            </p>
+
+            <h2
+                class="
+                    mt-3 text-4xl
+                    font-black
+                    tracking-tight
+                    sm:text-5xl
+                "
+            >
+                Our Menu
+            </h2>
+
+            <p
+                class="
+                    mx-auto mt-4
+                    max-w-2xl
+                    text-gray-500
+                "
+            >
+                Browse available meals and add your
+                favourites to your order.
+            </p>
+
+        </div>
+
+
+        <!-- SEARCH -->
+        <div
+            class="
+                mx-auto mt-10
+                max-w-xl
+            "
+        >
+
+            <div class="relative">
+
+                <span
+                    class="
+                        absolute left-4
+                        top-1/2
+                        -translate-y-1/2
+                        text-gray-400
+                    "
+                >
+                    🔎
+                </span>
+
+                <input
+                    id="menuSearch"
+                    type="search"
+                    placeholder="Search meals..."
+                    oninput="filterFoods()"
+                    class="
+                        w-full rounded-2xl
+                        border border-gray-200
+                        bg-[#faf9f6]
+                        py-4 pl-12 pr-4
+                        text-sm
+                        outline-none
+                        transition
+                        focus:border-amber-400
+                        focus:ring-4
+                        focus:ring-amber-100
+                    "
+                >
+
+            </div>
+
+        </div>
+
+
+        <!-- CATEGORY FILTERS -->
+        <div
+            class="
+                mt-8 flex
+                gap-2 overflow-x-auto
+                pb-3
+                lg:justify-center
+            "
+        >
+
+            <button
+                type="button"
+                data-category="all"
+                onclick="setCategory('all', this)"
+                class="
+                    category-button active
+                    whitespace-nowrap
+                    rounded-full
+                    border border-gray-200
+                    px-5 py-2.5
+                    text-sm font-bold
+                    transition
+                "
+            >
+                All
+            </button>
+
+
+            {% for category in categories %}
+
+                <button
+                    type="button"
+                    data-category="{{ category.pk }}"
+                    onclick="
+                        setCategory(
+                            '{{ category.pk }}',
+                            this
+                        )
+                    "
+                    class="
+                        category-button
+                        whitespace-nowrap
+                        rounded-full
+                        border border-gray-200
+                        bg-white
+                        px-5 py-2.5
+                        text-sm font-bold
+                        text-gray-600
+                        transition
+                        hover:border-gray-400
+                    "
+                >
+                    {{ category.name }}
+                </button>
+
+            {% endfor %}
+
+        </div>
+
+
+        <!-- FOOD GRID -->
+        <div
+            id="foodGrid"
+            class="
+                mt-12 grid
+                grid-cols-1
+                gap-6
+                sm:grid-cols-2
+                lg:grid-cols-3
+            "
+        >
+
+            {% for category in categories %}
+
+                {% for food in category.foods.all %}
+
+                    {% if food.is_available %}
+
+                        <article
+                            data-food-card
+                            data-category="{{ category.pk }}"
+                            data-name="{{ food.name|lower }}"
+                            class="
+                                food-card
+                                overflow-hidden
+                                rounded-[24px]
+                                border border-gray-200
+                                bg-white
+                            "
+                        >
+
+                            <div
+                                class="
+                                    h-56
+                                    overflow-hidden
+                                    bg-gray-100
+                                "
+                            >
+
+                                {% if food.image %}
+
+                                    <img
+                                        src="{{ food.image.url }}"
+                                        alt="{{ food.name }}"
+                                        loading="lazy"
+                                        class="
+                                            h-full w-full
+                                            object-cover
+                                            transition
+                                            duration-500
+                                            hover:scale-105
+                                        "
+                                    >
+
+                                {% else %}
+
+                                    <div
+                                        class="
+                                            flex h-full
+                                            items-center
+                                            justify-center
+                                            bg-amber-50
+                                            text-6xl
+                                        "
+                                    >
+                                        🍽️
+                                    </div>
+
+                                {% endif %}
+
+                            </div>
+
+
+                            <div class="p-5">
+
+                                <p
+                                    class="
+                                        text-xs
+                                        font-bold
+                                        uppercase
+                                        tracking-wider
+                                        text-amber-600
+                                    "
+                                >
+                                    {{ category.name }}
+                                </p>
+
+
+                                <div
+                                    class="
+                                        mt-2 flex
+                                        items-start
+                                        justify-between
+                                        gap-3
+                                    "
+                                >
+
+                                    <h3
+                                        class="
+                                            text-lg
+                                            font-black
+                                        "
+                                    >
+                                        {{ food.name }}
+                                    </h3>
+
+                                    <p
+                                        class="
+                                            whitespace-nowrap
+                                            font-black
+                                        "
+                                    >
+                                        ₦{{ food.price|floatformat:2 }}
+                                    </p>
+
+                                </div>
+
+
+                                {% if food.description %}
+
+                                    <p
+                                        class="
+                                            mt-3
+                                            min-h-[44px]
+                                            text-sm
+                                            leading-6
+                                            text-gray-500
+                                        "
+                                    >
+                                        {{ food.description|truncatechars:95 }}
+                                    </p>
+
+                                {% endif %}
+
+
+                                <button
+                                    type="button"
+                                    onclick="addToCart(
+                                        '{{ food.pk }}',
+                                        '{{ food.name|escapejs }}',
+                                        '{{ food.price }}',
+                                        {% if food.image %}
+                                            '{{ food.image.url|escapejs }}'
+                                        {% else %}
+                                            ''
+                                        {% endif %}
+                                    )"
+                                    class="
+                                        mt-5 flex w-full
+                                        items-center
+                                        justify-center
+                                        gap-2
+                                        rounded-xl
+                                        border
+                                        border-gray-900
+                                        px-4 py-3
+                                        text-sm
+                                        font-black
+                                        text-gray-900
+                                        transition
+                                        hover:bg-gray-900
+                                        hover:text-white
+                                    "
+                                >
+                                    <span>＋</span>
+                                    Add to Order
+                                </button>
+
+                            </div>
+
+                        </article>
+
+                    {% endif %}
+
+                {% endfor %}
+
+            {% empty %}
+
+                <div
+                    class="
+                        col-span-full
+                        rounded-3xl
+                        border
+                        border-dashed
+                        border-gray-300
+                        py-20
+                        text-center
+                    "
+                >
+
+                    <div class="text-6xl">
+                        🍽️
+                    </div>
+
+                    <h3
+                        class="
+                            mt-5 text-xl
+                            font-black
+                        "
+                    >
+                        Menu coming soon
+                    </h3>
+
+                    <p
+                        class="
+                            mt-2 text-sm
+                            text-gray-500
+                        "
+                    >
+                        We're preparing something delicious.
+                    </p>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+
+        <!-- NO SEARCH RESULTS -->
+        <div
+            id="noResults"
+            class="
+                mt-12 hidden
+                rounded-3xl
+                border border-dashed
+                border-gray-300
+                py-16
+                text-center
+            "
+        >
+
+            <p class="text-4xl">
+                🔍
+            </p>
+
+            <h3
+                class="
+                    mt-4 text-lg
+                    font-black
+                "
+            >
+                No meals found
+            </h3>
+
+            <p
+                class="
+                    mt-2 text-sm
+                    text-gray-500
+                "
+            >
+                Try another search or category.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================================================
+     ABOUT
+     ========================================================= -->
+<section
+    id="about"
+    class="
+        bg-[#f3efe6]
+        py-20
+    "
+>
+
+    <div
+        class="
+            mx-auto grid
+            max-w-7xl
+            gap-12
+            px-4 sm:px-6
+            lg:grid-cols-2
+            lg:px-8
+        "
+    >
+
+        <div>
+
+            <p
+                class="
+                    text-xs font-black
+                    uppercase
+                    tracking-[0.22em]
+                    text-amber-700
+                "
+            >
+                The Dikubs experience
+            </p>
+
+            <h2
+                class="
+                    mt-4 max-w-xl
+                    text-4xl
+                    font-black
+                    leading-tight
+                    tracking-tight
+                "
+            >
+                Food should be easy to order
+                and enjoyable to eat.
+            </h2>
+
+        </div>
+
+
+        <div
+            class="
+                text-base
+                leading-8
+                text-gray-600
+            "
+        >
+
+            <p>
+                At Dikubs Eatery, our focus is simple:
+                prepare satisfying meals and make ordering
+                them straightforward.
+            </p>
+
+            <p class="mt-4">
+                Browse the menu, build your order and provide
+                your delivery details. Your order is recorded
+                immediately so our team can begin processing it.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================================================
+     ORDER CTA
+     ========================================================= -->
+<section class="bg-amber-500">
+
+    <div
+        class="
+            mx-auto flex
+            max-w-7xl
+            flex-col
+            items-start
+            justify-between
+            gap-8
+            px-4 py-16
+            sm:px-6
+            lg:flex-row
+            lg:items-center
+            lg:px-8
+        "
+    >
+
+        <div>
+
+            <p
+                class="
+                    text-xs font-black
+                    uppercase
+                    tracking-[0.2em]
+                    text-gray-800
+                "
+            >
+                Hungry?
+            </p>
+
+            <h2
+                class="
+                    mt-3 text-3xl
+                    font-black
+                    tracking-tight
+                    text-gray-950
+                    sm:text-4xl
+                "
+            >
+                Your next meal is a few clicks away.
+            </h2>
+
+        </div>
+
+
+        <a
+            href="#menu"
+            class="
+                inline-flex
+                rounded-xl
+                bg-gray-950
+                px-7 py-4
+                text-sm
+                font-black
+                text-white
+                transition
+                hover:-translate-y-0.5
+            "
+        >
+            Order Now →
+        </a>
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================================================
+     CONTACT
+     ========================================================= -->
+<section
+    id="contact"
+    class="
+        bg-gray-950
+        py-20 text-white
+    "
+>
+
+    <div
+        class="
+            mx-auto grid
+            max-w-7xl
+            gap-12
+            px-4 sm:px-6
+            lg:grid-cols-2
+            lg:px-8
+        "
+    >
+
+        <div>
+
+            <div
+                class="
+                    flex h-12 w-12
+                    items-center
+                    justify-center
+                    rounded-2xl
+                    bg-amber-500
+                    text-xl
+                    font-black
+                    text-gray-950
+                "
+            >
+                D
+            </div>
+
+
+            <h2
+                class="
+                    mt-6 text-3xl
+                    font-black
+                "
+            >
+                Dikubs Eatery
+            </h2>
+
+            <p
+                class="
+                    mt-4 max-w-lg
+                    leading-7
+                    text-gray-400
+                "
+            >
+                Fresh meals, convenient ordering and
+                a simple way to stay connected with us.
+            </p>
+
+        </div>
+
+
+        <div
+            class="
+                rounded-3xl
+                border border-white/10
+                bg-white/5
+                p-7
+            "
+        >
+
+            <p
+                class="
+                    text-xs font-black
+                    uppercase
+                    tracking-[0.2em]
+                    text-amber-400
+                "
+            >
+                Need help?
+            </p>
+
+            <h3
+                class="
+                    mt-3 text-2xl
+                    font-black
+                "
+            >
+                Talk to us on WhatsApp
+            </h3>
+
+            <p
+                class="
+                    mt-3 text-sm
+                    leading-6
+                    text-gray-400
+                "
+            >
+                Have a question about your meal or order?
+                Reach the Dikubs team directly.
+            </p>
+
+
+            <a
+                href="https://wa.me/2337062548298"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="
+                    mt-6 inline-flex
+                    items-center gap-2
+                    rounded-xl
+                    bg-green-600
+                    px-6 py-3.5
+                    text-sm
+                    font-black
+                    text-white
+                    transition
+                    hover:bg-green-500
+                "
+            >
+                💬 Chat on WhatsApp
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================================================
+     FOOTER
+     ========================================================= -->
+<footer
+    class="
+        border-t
+        border-white/10
+        bg-gray-950
+        text-gray-400
+    "
+>
+
+    <div
+        class="
+            mx-auto flex
+            max-w-7xl
+            flex-col gap-4
+            px-4 py-8
+            text-sm
+            sm:px-6
+            md:flex-row
+            md:items-center
+            md:justify-between
+            lg:px-8
+        "
+    >
+
+        <p>
+            © {% now "Y" %} Dikubs Eatery.
+            All rights reserved.
+        </p>
+
+
+        <div class="flex gap-5">
+
+            <a
+                href="#home"
+                class="hover:text-white"
+            >
+                Home
+            </a>
+
+            <a
+                href="#menu"
+                class="hover:text-white"
+            >
+                Menu
+            </a>
+
+            <a
+                href="#contact"
+                class="hover:text-white"
+            >
+                Contact
+            </a>
+
+        </div>
+
+    </div>
+
+</footer>
+
+
+
+<!-- =========================================================
+     MOBILE FLOATING CART
+     ========================================================= -->
+<button
+    id="floatingCart"
+    type="button"
+    onclick="openCart()"
+    class="
+        fixed bottom-5
+        left-4 right-4
+        z-30 hidden
+        items-center
+        justify-between
+        rounded-2xl
+        bg-gray-950
+        px-5 py-4
+        text-white
+        shadow-2xl
+        sm:left-auto
+        sm:right-6
+        sm:w-80
+    "
+>
+
+    <div class="text-left">
+
+        <p
+            class="
+                text-xs
+                text-gray-400
+            "
+        >
+            Your Order
+        </p>
+
+        <p class="font-black">
+            <span id="floatingCartCount">0</span>
+            item<span id="floatingPlural">s</span>
+        </p>
+
+    </div>
+
+
+    <div class="text-right">
+
+        <p
+            id="floatingTotal"
+            class="
+                text-sm
+                font-black
+                text-amber-400
+            "
+        >
+            ₦0.00
+        </p>
+
+        <p
+            class="
+                mt-0.5 text-xs
+                text-gray-400
+            "
+        >
+            View order →
+        </p>
+
+    </div>
+
+</button>
+
+
+
+<!-- =========================================================
+     CART OVERLAY
+     ========================================================= -->
+<div
+    id="cartOverlay"
+    onclick="closeCart()"
+    class="
+        cart-overlay
+        pointer-events-none
+        fixed inset-0
+        z-50
+        bg-black/50
+        opacity-0
+        backdrop-blur-sm
+    "
+></div>
+
+
+
+<!-- =========================================================
+     CART DRAWER
+     ========================================================= -->
+<aside
+    id="cartDrawer"
+    class="
+        cart-drawer closed
+        fixed bottom-0
+        right-0 top-0
+        z-[60]
+        flex w-full
+        max-w-md
+        flex-col
+        bg-white
+        shadow-2xl
+    "
+>
+
+    <!-- CART HEADER -->
+    <div
+        class="
+            flex items-center
+            justify-between
+            border-b
+            border-gray-200
+            px-5 py-5
+        "
+    >
+
+        <div>
+
+            <p
+                class="
+                    text-xs
+                    font-bold
+                    uppercase
+                    tracking-wider
+                    text-amber-600
+                "
+            >
+                Dikubs Eatery
+            </p>
+
+            <h2
+                class="
+                    mt-1 text-xl
+                    font-black
+                "
+            >
+                Your Order
+            </h2>
+
+        </div>
+
+
+        <button
+            type="button"
+            onclick="closeCart()"
+            class="
+                flex h-10 w-10
+                items-center
+                justify-center
+                rounded-full
+                bg-gray-100
+                text-xl
+                transition
+                hover:bg-gray-200
+            "
+        >
+            ×
+        </button>
+
+    </div>
+
+
+    <!-- ITEMS -->
+    <div
+        id="drawerCartItems"
+        class="
+            flex-1
+            overflow-y-auto
+            p-5
+        "
+    ></div>
+
+
+    <!-- EMPTY -->
+    <div
+        id="drawerEmpty"
+        class="
+            hidden flex-1
+            items-center
+            justify-center
+            px-8 text-center
+        "
+    >
+
+        <div>
+
+            <div class="text-6xl">
+                🛒
+            </div>
+
+            <h3
+                class="
+                    mt-5 text-xl
+                    font-black
+                "
+            >
+                Your order is empty
+            </h3>
+
+            <p
+                class="
+                    mt-2 text-sm
+                    leading-6
+                    text-gray-500
+                "
+            >
+                Add a delicious meal from the menu
+                to get started.
+            </p>
+
+            <button
+                type="button"
+                onclick="
+                    closeCart();
+                    document
+                        .getElementById('menu')
+                        .scrollIntoView();
+                "
+                class="
+                    mt-6 rounded-xl
+                    bg-gray-950
+                    px-5 py-3
+                    text-sm
+                    font-black
+                    text-white
+                "
+            >
+                Browse Menu
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- CART FOOTER -->
+    <div
+        id="drawerFooter"
+        class="
+            border-t
+            border-gray-200
+            bg-white
+            p-5
+        "
+    >
+
+        <div
+            class="
+                flex items-center
+                justify-between
+            "
+        >
+
+            <div>
+
+                <p
+                    class="
+                        text-xs
+                        text-gray-500
+                    "
+                >
+                    Estimated total
+                </p>
+
+                <p
+                    class="
+                        mt-1 text-xs
+                        text-gray-400
+                    "
+                >
+                    Verified at checkout
+                </p>
+
+            </div>
+
+
+            <strong
+                id="drawerTotal"
+                class="
+                    text-2xl
+                    font-black
+                "
+            >
+                ₦0.00
+            </strong>
+
+        </div>
+
+
+        <a
+            href="{% url 'eatery:cart' %}"
+            class="
+                mt-5 block
+                w-full
+                rounded-xl
+                bg-amber-500
+                px-5 py-4
+                text-center
+                text-sm
+                font-black
+                text-gray-950
+                transition
+                hover:bg-amber-400
+            "
+        >
+            Review Order & Checkout →
+        </a>
+
+    </div>
+
+</aside>
+
+
+
+<!-- =========================================================
+     TOAST
+     ========================================================= -->
+<div
+    id="cartToast"
+    class="
+        pointer-events-none
+        fixed right-5 top-24
+        z-[70]
+        translate-y-[-10px]
+        rounded-xl
+        bg-gray-950
+        px-5 py-4
+        text-sm
+        font-bold
+        text-white
+        opacity-0
+        shadow-2xl
+        transition-all
+        duration-300
+    "
+>
+    Added to your order
+</div>
+
+
+
+<script>
+    // ========================================================
+    // CART
+    // ========================================================
+
+    const CART_KEY = "dikubs_eatery_cart";
+
+    let activeCategory = "all";
+
+
+    function getCart() {
+        try {
+            const stored = JSON.parse(
+                localStorage.getItem(CART_KEY)
+            );
+
+            return Array.isArray(stored)
+                ? stored
+                : [];
+
+        } catch (error) {
+            return [];
+        }
+    }
+
+
+    function saveCart(cart) {
+        localStorage.setItem(
+            CART_KEY,
+            JSON.stringify(cart)
+        );
+
+        updateCartUI();
+    }
+
+
+    function money(value) {
+        return new Intl.NumberFormat(
+            "en-NG",
+            {
+                style: "currency",
+                currency: "NGN"
+            }
+        ).format(
+            Number(value || 0)
+        );
+    }
+
+
+    function escapeHTML(value) {
+        const div = document.createElement(
+            "div"
+        );
+
+        div.textContent = value || "";
+
+        return div.innerHTML;
+    }
+
+
+    function addToCart(
+        id,
+        name,
+        price,
+        image
+    ) {
+        const cart = getCart();
+
+        const foodId = Number(id);
+
+        const existing = cart.find(
+            item => Number(item.id) === foodId
+        );
+
+
+        if (existing) {
+
+            existing.quantity =
+                Number(existing.quantity || 0) + 1;
+
+            if (existing.quantity > 100) {
+                existing.quantity = 100;
+            }
+
+        } else {
+
+            cart.push({
+                id: foodId,
+                name: name,
+
+                /*
+                 * Display only.
+                 * Django verifies the actual price
+                 * during checkout.
+                 */
+                price: Number(price),
+
+                image: image,
+                quantity: 1
+            });
+        }
+
+
+        saveCart(cart);
+
+        showToast(
+            `${name} added to your order`
+        );
+    }
+
+
+    function increaseQuantity(id) {
+        const cart = getCart();
+
+        const item = cart.find(
+            item => Number(item.id) === Number(id)
+        );
+
+        if (!item) {
+            return;
+        }
+
+        item.quantity =
+            Number(item.quantity || 0) + 1;
+
+        if (item.quantity > 100) {
+            item.quantity = 100;
+        }
+
+        saveCart(cart);
+    }
+
+
+    function decreaseQuantity(id) {
+        const cart = getCart();
+
+        const item = cart.find(
+            item => Number(item.id) === Number(id)
+        );
+
+        if (!item) {
+            return;
+        }
+
+        item.quantity =
+            Number(item.quantity || 0) - 1;
+
+
+        if (item.quantity <= 0) {
+            removeFromCart(id);
+            return;
+        }
+
+        saveCart(cart);
+    }
+
+
+    function removeFromCart(id) {
+        const cart = getCart().filter(
+            item => Number(item.id) !== Number(id)
+        );
+
+        saveCart(cart);
+    }
+
+
+    function cartQuantity(cart) {
+        return cart.reduce(
+            (total, item) => {
+                return total +
+                    Number(item.quantity || 0);
+            },
+            0
+        );
+    }
+
+
+    function cartTotal(cart) {
+        return cart.reduce(
+            (total, item) => {
+
+                return total + (
+                    Number(item.price || 0) *
+                    Number(item.quantity || 0)
+                );
+
+            },
+            0
+        );
+    }
+
+
+
+    // ========================================================
+    // RENDER CART
+    // ========================================================
+
+    function updateCartUI() {
+        const cart = getCart();
+
+        const quantity = cartQuantity(cart);
+
+        const total = cartTotal(cart);
+
+
+        document.getElementById(
+            "headerCartCount"
+        ).textContent = quantity;
+
+
+        document.getElementById(
+            "floatingCartCount"
+        ).textContent = quantity;
+
+
+        document.getElementById(
+            "floatingPlural"
+        ).textContent =
+            quantity === 1
+                ? ""
+                : "s";
+
+
+        document.getElementById(
+            "floatingTotal"
+        ).textContent = money(total);
+
+
+        document.getElementById(
+            "drawerTotal"
+        ).textContent = money(total);
+
+
+        const floatingCart =
+            document.getElementById(
+                "floatingCart"
+            );
+
+
+        if (quantity > 0) {
+
+            floatingCart.classList.remove(
+                "hidden"
+            );
+
+            floatingCart.classList.add(
+                "flex"
+            );
+
+        } else {
+
+            floatingCart.classList.add(
+                "hidden"
+            );
+
+            floatingCart.classList.remove(
+                "flex"
+            );
+        }
+
+
+        renderDrawerCart(cart);
+    }
+
+
+    function renderDrawerCart(cart) {
+        const container =
+            document.getElementById(
+                "drawerCartItems"
+            );
+
+        const empty =
+            document.getElementById(
+                "drawerEmpty"
+            );
+
+        const footer =
+            document.getElementById(
+                "drawerFooter"
+            );
+
+
+        container.innerHTML = "";
+
+
+        if (!cart.length) {
+
+            container.classList.add(
+                "hidden"
+            );
+
+            empty.classList.remove(
+                "hidden"
+            );
+
+            empty.classList.add(
+                "flex"
+            );
+
+            footer.classList.add(
+                "hidden"
+            );
+
+            return;
+        }
+
+
+        container.classList.remove(
+            "hidden"
+        );
+
+        empty.classList.add(
+            "hidden"
+        );
+
+        empty.classList.remove(
+            "flex"
+        );
+
+        footer.classList.remove(
+            "hidden"
+        );
+
+
+        cart.forEach(item => {
+
+            const quantity =
+                Number(item.quantity || 1);
+
+            const price =
+                Number(item.price || 0);
+
+
+            const row =
+                document.createElement(
+                    "div"
+                );
+
+
+            row.className = `
+                mb-4 flex gap-4
+                rounded-2xl
+                border border-gray-200
+                p-3
+            `;
+
+
+            let imageHTML;
+
+            if (item.image) {
+
+                imageHTML = `
+                    <img
+                        src="${escapeHTML(item.image)}"
+                        alt=""
+                        class="
+                            h-20 w-20
+                            shrink-0
+                            rounded-xl
+                            object-cover
+                        "
+                    >
+                `;
+
+            } else {
+
+                imageHTML = `
+                    <div
+                        class="
+                            flex h-20 w-20
+                            shrink-0
+                            items-center
+                            justify-center
+                            rounded-xl
+                            bg-amber-50
+                            text-3xl
+                        "
+                    >
+                        🍽️
+                    </div>
+                `;
+            }
+
+
+            row.innerHTML = `
+                ${imageHTML}
+
+                <div class="min-w-0 flex-1">
+
+                    <div
+                        class="
+                            flex items-start
+                            justify-between
+                            gap-2
+                        "
+                    >
+
+                        <div>
+
+                            <p
+                                class="
+                                    truncate
+                                    text-sm
+                                    font-black
+                                "
+                            >
+                                ${escapeHTML(item.name)}
+                            </p>
+
+                            <p
+                                class="
+                                    mt-1
+                                    text-sm
+                                    font-bold
+                                    text-amber-600
+                                "
+                            >
+                                ${money(price)}
+                            </p>
+
+                        </div>
+
+
+                        <button
+                            type="button"
+                            onclick="
+                                removeFromCart(
+                                    ${Number(item.id)}
+                                )
+                            "
+                            class="
+                                text-xs
+                                font-bold
+                                text-red-500
+                            "
+                        >
+                            Remove
+                        </button>
+
+                    </div>
+
+
+                    <div
+                        class="
+                            mt-3 flex
+                            items-center
+                            justify-between
+                        "
+                    >
+
+                        <div
+                            class="
+                                inline-flex
+                                items-center
+                                overflow-hidden
+                                rounded-lg
+                                border
+                                border-gray-200
+                            "
+                        >
+
+                            <button
+                                type="button"
+                                onclick="
+                                    decreaseQuantity(
+                                        ${Number(item.id)}
+                                    )
+                                "
+                                class="
+                                    px-3 py-1.5
+                                    font-black
+                                    hover:bg-gray-100
+                                "
+                            >
+                                −
+                            </button>
+
+
+                            <span
+                                class="
+                                    min-w-8
+                                    text-center
+                                    text-xs
+                                    font-black
+                                "
+                            >
+                                ${quantity}
+                            </span>
+
+
+                            <button
+                                type="button"
+                                onclick="
+                                    increaseQuantity(
+                                        ${Number(item.id)}
+                                    )
+                                "
+                                class="
+                                    px-3 py-1.5
+                                    font-black
+                                    hover:bg-gray-100
+                                "
+                            >
+                                +
+                            </button>
+
+                        </div>
+
+
+                        <strong
+                            class="
+                                text-xs
+                                font-black
+                            "
+                        >
+                            ${money(
+                                price * quantity
+                            )}
+                        </strong>
+
+                    </div>
+
+                </div>
+            `;
+
+
+            container.appendChild(row);
+        });
+    }
+
+
+
+    // ========================================================
+    // CART DRAWER
+    // ========================================================
+
+    function openCart() {
+        const drawer =
+            document.getElementById(
+                "cartDrawer"
+            );
+
+        const overlay =
+            document.getElementById(
+                "cartOverlay"
+            );
+
+
+        drawer.classList.remove(
+            "closed"
+        );
+
+
+        overlay.classList.remove(
+            "pointer-events-none",
+            "opacity-0"
+        );
+
+
+        overlay.classList.add(
+            "opacity-100"
+        );
+
+
+        document.body.classList.add(
+            "no-scroll"
+        );
+
+
+        updateCartUI();
+    }
+
+
+    function closeCart() {
+        const drawer =
+            document.getElementById(
+                "cartDrawer"
+            );
+
+        const overlay =
+            document.getElementById(
+                "cartOverlay"
+            );
+
+
+        drawer.classList.add(
+            "closed"
+        );
+
+
+        overlay.classList.remove(
+            "opacity-100"
+        );
+
+
+        overlay.classList.add(
+            "opacity-0",
+            "pointer-events-none"
+        );
+
+
+        document.body.classList.remove(
+            "no-scroll"
+        );
+    }
+
+
+
+    // ========================================================
+    // MENU FILTER
+    // ========================================================
+
+    function setCategory(
+        category,
+        button
+    ) {
+        activeCategory =
+            String(category);
+
+
+        document.querySelectorAll(
+            ".category-button"
+        ).forEach(btn => {
+
+            btn.classList.remove(
+                "active"
+            );
+
+        });
+
+
+        button.classList.add(
+            "active"
+        );
+
+
+        filterFoods();
+    }
+
+
+    function filterFoods() {
+        const search =
+            document
+                .getElementById(
+                    "menuSearch"
+                )
+                .value
+                .trim()
+                .toLowerCase();
+
+
+        const cards =
+            document.querySelectorAll(
+                "[data-food-card]"
+            );
+
+
+        let visible = 0;
+
+
+        cards.forEach(card => {
+
+            const name =
+                (
+                    card.dataset.name || ""
+                ).toLowerCase();
+
+
+            const category =
+                String(
+                    card.dataset.category || ""
+                );
+
+
+            const matchesSearch =
+                !search ||
+                name.includes(search);
+
+
+            const matchesCategory =
+                activeCategory === "all" ||
+                category === activeCategory;
+
+
+            if (
+                matchesSearch &&
+                matchesCategory
+            ) {
+
+                card.classList.remove(
+                    "hidden"
+                );
+
+                visible += 1;
+
+            } else {
+
+                card.classList.add(
+                    "hidden"
+                );
+            }
+
+        });
+
+
+        const noResults =
+            document.getElementById(
+                "noResults"
+            );
+
+
+        if (
+            cards.length > 0 &&
+            visible === 0
+        ) {
+
+            noResults.classList.remove(
+                "hidden"
+            );
+
+        } else {
+
+            noResults.classList.add(
+                "hidden"
+            );
+        }
+    }
+
+
+
+    // ========================================================
+    // TOAST
+    // ========================================================
+
+    let toastTimer = null;
+
+
+    function showToast(message) {
+        const toast =
+            document.getElementById(
+                "cartToast"
+            );
+
+
+        toast.textContent = message;
+
+
+        toast.classList.remove(
+            "opacity-0",
+            "translate-y-[-10px]"
+        );
+
+
+        toast.classList.add(
+            "opacity-100",
+            "translate-y-0"
+        );
+
+
+        if (toastTimer) {
+            clearTimeout(toastTimer);
+        }
+
+
+        toastTimer = setTimeout(
+            () => {
+
+                toast.classList.remove(
+                    "opacity-100",
+                    "translate-y-0"
+                );
+
+                toast.classList.add(
+                    "opacity-0",
+                    "translate-y-[-10px]"
+                );
+
+            },
+            2200
+        );
+    }
+
+
+
+    // ========================================================
+    // KEYBOARD
+    // ========================================================
+
+    document.addEventListener(
+        "keydown",
+        function(event) {
+
+            if (event.key === "Escape") {
+                closeCart();
+            }
+
+        }
+    );
+
+
+    // ========================================================
+    // INITIALIZE
+    // ========================================================
+
+    updateCartUI();
+</script>
+
+
+</body>
+</html>

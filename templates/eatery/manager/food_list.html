@@ -1,0 +1,1197 @@
+{% extends "eatery/manager/base.html" %}
+
+{% block title %}
+    Menu | Dikubs Eatery
+{% endblock %}
+
+{% block header_title %}
+    Menu Management
+{% endblock %}
+
+
+{% block content %}
+
+<!-- ======================================================
+     PAGE HEADER
+     ====================================================== -->
+<div
+    class="
+        mb-8
+        flex flex-col gap-5
+        sm:flex-row
+        sm:items-end
+        sm:justify-between
+    "
+>
+
+    <div>
+
+        <div
+            class="
+                mb-3
+                inline-flex items-center gap-2
+                rounded-full
+                border border-[#EAD6AA]
+                bg-[#F9F1E0]
+                px-3 py-1.5
+            "
+        >
+            <span class="h-2 w-2 rounded-full bg-[#C9952C]"></span>
+
+            <span
+                class="
+                    text-[10px]
+                    font-black uppercase
+                    tracking-[0.18em]
+                    text-[#8B5E3C]
+                "
+            >
+                Menu Management
+            </span>
+        </div>
+
+
+        <h1
+            class="
+                text-2xl
+                font-black
+                tracking-tight
+                text-[#4E342E]
+                sm:text-3xl
+            "
+        >
+            Food Menu
+        </h1>
+
+
+        <p
+            class="
+                mt-2
+                max-w-xl
+                text-sm
+                leading-6
+                text-[#8D7B6B]
+            "
+        >
+            Manage meals, prices, availability and menu images.
+        </p>
+
+    </div>
+
+
+    <a
+        href="{% url 'eatery:food_create' %}"
+        class="
+            inline-flex
+            items-center
+            justify-center
+            gap-2
+            self-start
+            rounded-xl
+            bg-[#4E342E]
+            px-5 py-3
+            text-sm
+            font-black
+            text-white
+            shadow-sm
+            transition
+            hover:-translate-y-0.5
+            hover:bg-[#3E2723]
+            hover:shadow-md
+            sm:self-auto
+        "
+    >
+
+        <span
+            class="
+                flex h-6 w-6
+                items-center justify-center
+                rounded-full
+                bg-white/10
+                text-base
+            "
+        >
+            +
+        </span>
+
+        Add Food
+
+    </a>
+
+</div>
+
+
+
+<!-- ======================================================
+     FILTER PANEL
+     ====================================================== -->
+<section
+    class="
+        mb-6
+        overflow-hidden
+        rounded-2xl
+        border border-[#E8DDD0]
+        bg-[#FFFDF9]
+        shadow-sm
+    "
+>
+
+    <!-- FILTER HEADER -->
+    <div
+        class="
+            flex items-center
+            justify-between
+            gap-4
+            border-b border-[#E8DDD0]
+            bg-[#F9F1E0]
+            px-5 py-4
+        "
+    >
+
+        <div>
+
+            <p
+                class="
+                    text-[9px]
+                    font-black uppercase
+                    tracking-[0.16em]
+                    text-[#C9952C]
+                "
+            >
+                Find Menu Items
+            </p>
+
+            <h2
+                class="
+                    mt-1
+                    text-sm
+                    font-black
+                    text-[#4E342E]
+                "
+            >
+                Search & Filters
+            </h2>
+
+        </div>
+
+
+        <div
+            class="
+                flex h-9 w-9
+                items-center justify-center
+                rounded-lg
+                bg-[#F5E6C8]
+                text-[#8B5E3C]
+            "
+        >
+            ⌕
+        </div>
+
+    </div>
+
+
+
+    <form method="get" class="p-5">
+
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-4">
+
+
+            <!-- SEARCH -->
+            <div class="md:col-span-2">
+
+                <label
+                    for="foodSearch"
+                    class="
+                        mb-2
+                        block
+                        text-[10px]
+                        font-black uppercase
+                        tracking-[0.14em]
+                        text-[#8D7B6B]
+                    "
+                >
+                    Search
+                </label>
+
+
+                <div class="relative">
+
+                    <span
+                        class="
+                            pointer-events-none
+                            absolute
+                            inset-y-0 left-0
+                            flex items-center
+                            pl-4
+                            text-[#A89B8C]
+                        "
+                    >
+                        ⌕
+                    </span>
+
+
+                    <input
+                        id="foodSearch"
+                        type="text"
+                        name="search"
+                        value="{{ search_query }}"
+                        placeholder="Search food..."
+
+                        class="
+                            w-full
+                            rounded-xl
+                            border border-[#E8DDD0]
+                            bg-[#FAF6F0]
+                            py-3
+                            pl-10 pr-4
+                            text-sm
+                            font-semibold
+                            text-[#4E342E]
+                            outline-none
+                            transition
+
+                            placeholder:text-[#A89B8C]
+
+                            focus:border-[#C9952C]
+                            focus:bg-white
+                            focus:ring-4
+                            focus:ring-[#F9F1E0]
+                        "
+                    >
+
+                </div>
+
+            </div>
+
+
+
+            <!-- CATEGORY -->
+            <div>
+
+                <label
+                    for="categoryFilter"
+                    class="
+                        mb-2
+                        block
+                        text-[10px]
+                        font-black uppercase
+                        tracking-[0.14em]
+                        text-[#8D7B6B]
+                    "
+                >
+                    Category
+                </label>
+
+
+                <select
+                    id="categoryFilter"
+                    name="category"
+
+                    class="
+                        w-full
+                        rounded-xl
+                        border border-[#E8DDD0]
+                        bg-[#FAF6F0]
+                        px-4 py-3
+                        text-sm
+                        font-semibold
+                        text-[#4E342E]
+                        outline-none
+                        transition
+
+                        focus:border-[#C9952C]
+                        focus:bg-white
+                        focus:ring-4
+                        focus:ring-[#F9F1E0]
+                    "
+                >
+
+                    <option value="">
+                        All Categories
+                    </option>
+
+
+                    {% for category in categories %}
+
+                        <option
+                            value="{{ category.pk }}"
+
+                            {% if selected_category == category.pk|stringformat:"s" %}
+                                selected
+                            {% endif %}
+                        >
+                            {{ category.name }}
+                        </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+
+
+            <!-- AVAILABILITY -->
+            <div>
+
+                <label
+                    for="availabilityFilter"
+                    class="
+                        mb-2
+                        block
+                        text-[10px]
+                        font-black uppercase
+                        tracking-[0.14em]
+                        text-[#8D7B6B]
+                    "
+                >
+                    Availability
+                </label>
+
+
+                <select
+                    id="availabilityFilter"
+                    name="availability"
+
+                    class="
+                        w-full
+                        rounded-xl
+                        border border-[#E8DDD0]
+                        bg-[#FAF6F0]
+                        px-4 py-3
+                        text-sm
+                        font-semibold
+                        text-[#4E342E]
+                        outline-none
+                        transition
+
+                        focus:border-[#C9952C]
+                        focus:bg-white
+                        focus:ring-4
+                        focus:ring-[#F9F1E0]
+                    "
+                >
+
+                    <option value="">
+                        All
+                    </option>
+
+
+                    <option
+                        value="available"
+
+                        {% if selected_availability == "available" %}
+                            selected
+                        {% endif %}
+                    >
+                        Available
+                    </option>
+
+
+                    <option
+                        value="unavailable"
+
+                        {% if selected_availability == "unavailable" %}
+                            selected
+                        {% endif %}
+                    >
+                        Unavailable
+                    </option>
+
+                </select>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- FILTER ACTIONS -->
+        <div
+            class="
+                mt-5
+                flex flex-wrap
+                items-center
+                gap-3
+            "
+        >
+
+            <button
+                type="submit"
+                class="
+                    inline-flex
+                    items-center justify-center
+                    gap-2
+                    rounded-xl
+                    bg-[#4E342E]
+                    px-5 py-2.5
+                    text-sm
+                    font-black
+                    text-white
+                    transition
+                    hover:bg-[#3E2723]
+                "
+            >
+                Apply Filters
+            </button>
+
+
+            <a
+                href="{% url 'eatery:food_list' %}"
+                class="
+                    inline-flex
+                    items-center justify-center
+                    rounded-xl
+                    border border-[#E8DDD0]
+                    bg-white
+                    px-5 py-2.5
+                    text-sm
+                    font-black
+                    text-[#5D4037]
+                    transition
+                    hover:border-[#C9952C]
+                    hover:bg-[#F9F1E0]
+                "
+            >
+                Clear
+            </a>
+
+        </div>
+
+    </form>
+
+</section>
+
+
+
+<!-- ======================================================
+     RESULTS SUMMARY
+     ====================================================== -->
+<div
+    class="
+        mb-5
+        flex flex-col
+        gap-3
+        sm:flex-row
+        sm:items-center
+        sm:justify-between
+    "
+>
+
+    <div
+        class="
+            flex items-center
+            gap-3
+        "
+    >
+
+        <div
+            class="
+                flex h-9 w-9
+                items-center justify-center
+                rounded-lg
+                bg-[#F5E6C8]
+                text-sm
+                font-black
+                text-[#8B5E3C]
+            "
+        >
+            🍽
+        </div>
+
+
+        <p class="text-sm text-[#8D7B6B]">
+
+            Showing
+
+            <strong
+                class="
+                    font-black
+                    text-[#4E342E]
+                "
+            >
+                {{ total_foods }}
+            </strong>
+
+            food item{{ total_foods|pluralize }}
+
+        </p>
+
+    </div>
+
+</div>
+
+
+
+<!-- ======================================================
+     FOOD GRID
+     ====================================================== -->
+{% if foods %}
+
+    <div
+        class="
+            grid
+            grid-cols-1
+            gap-6
+            md:grid-cols-2
+            xl:grid-cols-3
+        "
+    >
+
+        {% for food in foods %}
+
+            <article
+                class="
+                    group
+                    overflow-hidden
+                    rounded-2xl
+                    border border-[#E8DDD0]
+                    bg-[#FFFDF9]
+                    shadow-sm
+                    transition
+                    duration-300
+                    hover:-translate-y-1
+                    hover:border-[#DDCDBB]
+                    hover:shadow-lg
+                    hover:shadow-[#4E342E]/5
+                "
+            >
+
+
+                <!-- =============================================
+                     IMAGE
+                     ============================================= -->
+                <div
+                    class="
+                        relative
+                        h-52
+                        overflow-hidden
+                        bg-[#F5EFE6]
+                    "
+                >
+
+                    {% if food.image %}
+
+                        <img
+                            src="{{ food.image.url }}"
+                            alt="{{ food.name }}"
+                            class="
+                                h-full
+                                w-full
+                                object-cover
+                                transition
+                                duration-500
+                                group-hover:scale-105
+                            "
+                        >
+
+                    {% else %}
+
+                        <div
+                            class="
+                                flex h-full w-full
+                                items-center justify-center
+                                bg-gradient-to-br
+                                from-[#FAF6F0]
+                                via-[#F5EFE6]
+                                to-[#F5E6C8]
+                            "
+                        >
+
+                            <div class="text-center">
+
+                                <div class="text-4xl">
+                                    🍽
+                                </div>
+
+
+                                <p
+                                    class="
+                                        mt-2
+                                        text-xs
+                                        font-black
+                                        text-[#A89B8C]
+                                    "
+                                >
+                                    No image
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    {% endif %}
+
+
+
+                    <!-- DARK IMAGE GRADIENT -->
+                    <div
+                        class="
+                            pointer-events-none
+                            absolute inset-x-0 bottom-0
+                            h-20
+                            bg-gradient-to-t
+                            from-[#3E2723]/20
+                            to-transparent
+                        "
+                    ></div>
+
+
+
+                    <!-- AVAILABILITY -->
+                    <div class="absolute left-4 top-4">
+
+                        {% if food.is_available %}
+
+                            <span
+                                class="
+                                    inline-flex
+                                    items-center
+                                    gap-1.5
+                                    rounded-full
+                                    border
+                                    border-white/40
+                                    bg-[#6B8E23]/95
+                                    px-3 py-1.5
+                                    text-[10px]
+                                    font-black uppercase
+                                    tracking-wide
+                                    text-white
+                                    shadow
+                                    backdrop-blur
+                                "
+                            >
+
+                                <span
+                                    class="
+                                        h-1.5 w-1.5
+                                        rounded-full
+                                        bg-white
+                                    "
+                                ></span>
+
+                                Available
+
+                            </span>
+
+                        {% else %}
+
+                            <span
+                                class="
+                                    inline-flex
+                                    items-center
+                                    gap-1.5
+                                    rounded-full
+                                    border
+                                    border-white/30
+                                    bg-[#C75B39]/95
+                                    px-3 py-1.5
+                                    text-[10px]
+                                    font-black uppercase
+                                    tracking-wide
+                                    text-white
+                                    shadow
+                                    backdrop-blur
+                                "
+                            >
+
+                                <span
+                                    class="
+                                        h-1.5 w-1.5
+                                        rounded-full
+                                        bg-white
+                                    "
+                                ></span>
+
+                                Unavailable
+
+                            </span>
+
+                        {% endif %}
+
+                    </div>
+
+
+
+                    <!-- FEATURED -->
+                    {% if food.is_featured %}
+
+                        <div class="absolute right-4 top-4">
+
+                            <span
+                                class="
+                                    inline-flex
+                                    items-center
+                                    gap-1.5
+                                    rounded-full
+                                    border border-[#F5E6C8]
+                                    bg-[#C9952C]
+                                    px-3 py-1.5
+                                    text-[10px]
+                                    font-black uppercase
+                                    tracking-wide
+                                    text-[#3E2723]
+                                    shadow
+                                "
+                            >
+                                ★ Featured
+                            </span>
+
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+
+
+                <!-- =============================================
+                     CONTENT
+                     ============================================= -->
+                <div class="p-5">
+
+
+                    <!-- CATEGORY -->
+                    <div class="mb-3">
+
+                        {% if food.category %}
+
+                            <div
+                                class="
+                                    mb-2
+                                    inline-flex
+                                    items-center
+                                    gap-1.5
+                                    rounded-full
+                                    bg-[#F9F1E0]
+                                    px-2.5 py-1
+                                "
+                            >
+
+                                <span
+                                    class="
+                                        h-1.5 w-1.5
+                                        rounded-full
+                                        bg-[#C9952C]
+                                    "
+                                ></span>
+
+
+                                <p
+                                    class="
+                                        text-[9px]
+                                        font-black uppercase
+                                        tracking-[0.14em]
+                                        text-[#8B5E3C]
+                                    "
+                                >
+                                    {{ food.category.name }}
+                                </p>
+
+                            </div>
+
+                        {% else %}
+
+                            <div
+                                class="
+                                    mb-2
+                                    inline-flex
+                                    rounded-full
+                                    bg-[#F5EFE6]
+                                    px-2.5 py-1
+                                "
+                            >
+
+                                <p
+                                    class="
+                                        text-[9px]
+                                        font-black uppercase
+                                        tracking-[0.14em]
+                                        text-[#A08F86]
+                                    "
+                                >
+                                    Uncategorized
+                                </p>
+
+                            </div>
+
+                        {% endif %}
+
+
+
+                        <!-- NAME + PRICE -->
+                        <div
+                            class="
+                                flex
+                                items-start
+                                justify-between
+                                gap-4
+                            "
+                        >
+
+                            <h2
+                                class="
+                                    min-w-0
+                                    text-lg
+                                    font-black
+                                    leading-6
+                                    text-[#4E342E]
+                                "
+                            >
+                                {{ food.name }}
+                            </h2>
+
+
+                            <p
+                                class="
+                                    whitespace-nowrap
+                                    text-lg
+                                    font-black
+                                    text-[#6B8E23]
+                                "
+                            >
+                                ₦{{ food.price|floatformat:2 }}
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- DESCRIPTION -->
+                    {% if food.description %}
+
+                        <p
+                            class="
+                                min-h-[48px]
+                                text-sm
+                                leading-6
+                                text-[#8D7B6B]
+                            "
+                        >
+                            {{ food.description|truncatechars:110 }}
+                        </p>
+
+                    {% else %}
+
+                        <p
+                            class="
+                                min-h-[48px]
+                                text-sm
+                                italic
+                                text-[#A89B8C]
+                            "
+                        >
+                            No description
+                        </p>
+
+                    {% endif %}
+
+
+
+                    <!-- =========================================
+                         ACTIONS
+                         ========================================= -->
+                    <div
+                        class="
+                            mt-5
+                            border-t
+                            border-[#EFE5DA]
+                            pt-4
+                        "
+                    >
+
+                        <div class="grid grid-cols-2 gap-2">
+
+
+                            <!-- EDIT -->
+                            <a
+                                href="{% url 'eatery:food_update' food.pk %}"
+                                class="
+                                    inline-flex
+                                    items-center
+                                    justify-center
+                                    rounded-xl
+                                    border
+                                    border-[#E8DDD0]
+                                    bg-white
+                                    px-4 py-2.5
+                                    text-center
+                                    text-xs
+                                    font-black
+                                    text-[#5D4037]
+                                    transition
+                                    hover:border-[#C9952C]
+                                    hover:bg-[#F9F1E0]
+                                "
+                            >
+                                Edit
+                            </a>
+
+
+
+                            <!-- AVAILABILITY -->
+                            <form
+                                method="post"
+                                action="{% url 'eatery:food_availability' food.pk %}"
+                            >
+
+                                {% csrf_token %}
+
+                                <button
+                                    type="submit"
+
+                                    class="
+                                        w-full
+                                        rounded-xl
+                                        border
+                                        px-3 py-2.5
+                                        text-xs
+                                        font-black
+                                        transition
+
+                                        {% if food.is_available %}
+
+                                            border-[#EAD6AA]
+                                            bg-[#F9F1E0]
+                                            text-[#8B5E3C]
+                                            hover:border-[#C9952C]
+                                            hover:bg-[#F5E6C8]
+
+                                        {% else %}
+
+                                            border-[#DCE7C1]
+                                            bg-[#F0F5E0]
+                                            text-[#4A7C2A]
+                                            hover:border-[#6B8E23]
+                                            hover:bg-[#E7EFCF]
+
+                                        {% endif %}
+                                    "
+                                >
+
+                                    {% if food.is_available %}
+                                        Mark Unavailable
+                                    {% else %}
+                                        Make Available
+                                    {% endif %}
+
+                                </button>
+
+                            </form>
+
+                        </div>
+
+
+
+                        <!-- DELETE -->
+                        <form
+                            method="post"
+                            action="{% url 'eatery:food_delete' food.pk %}"
+                            class="mt-2"
+                            onsubmit="return confirm('Delete {{ food.name|escapejs }} from the menu?');"
+                        >
+
+                            {% csrf_token %}
+
+                            <button
+                                type="submit"
+                                class="
+                                    w-full
+                                    rounded-xl
+                                    border
+                                    border-[#F0C7BA]
+                                    bg-[#FDEDE8]
+                                    px-4 py-2.5
+                                    text-xs
+                                    font-black
+                                    text-[#C75B39]
+                                    transition
+                                    hover:border-[#C75B39]
+                                    hover:bg-[#F9DDD4]
+                                "
+                            >
+                                Delete Food
+                            </button>
+
+                        </form>
+
+                    </div>
+
+                </div>
+
+            </article>
+
+        {% endfor %}
+
+    </div>
+
+
+
+<!-- ======================================================
+     EMPTY STATE
+     ====================================================== -->
+{% else %}
+
+    <div
+        class="
+            rounded-2xl
+            border
+            border-dashed
+            border-[#D8C8B7]
+            bg-[#FFFDF9]
+            px-6
+            py-20
+            text-center
+            shadow-sm
+        "
+    >
+
+        <div
+            class="
+                mx-auto
+                flex h-20 w-20
+                items-center justify-center
+                rounded-full
+                border border-[#EAD6AA]
+                bg-[#F9F1E0]
+                text-3xl
+            "
+        >
+            🍽
+        </div>
+
+
+        <div
+            class="
+                mx-auto
+                mt-5
+                inline-flex
+                items-center gap-2
+                rounded-full
+                bg-[#F5EFE6]
+                px-3 py-1
+                text-[9px]
+                font-black uppercase
+                tracking-[0.15em]
+                text-[#8B776E]
+            "
+        >
+            Menu Setup
+        </div>
+
+
+        <h2
+            class="
+                mt-4
+                text-lg
+                font-black
+                text-[#4E342E]
+            "
+        >
+            No food items found
+        </h2>
+
+
+        <p
+            class="
+                mx-auto
+                mt-2
+                max-w-md
+                text-sm
+                leading-6
+                text-[#8D7B6B]
+            "
+        >
+            {% if search_query or selected_category or selected_availability %}
+                No menu items match the filters you selected.
+                Try clearing the filters or changing your search.
+            {% else %}
+                Start building the Dikubs Eatery menu
+                by adding your first meal.
+            {% endif %}
+        </p>
+
+
+
+        <div
+            class="
+                mt-6
+                flex flex-col
+                items-center
+                justify-center
+                gap-3
+                sm:flex-row
+            "
+        >
+
+            {% if search_query or selected_category or selected_availability %}
+
+                <a
+                    href="{% url 'eatery:food_list' %}"
+                    class="
+                        inline-flex
+                        items-center justify-center
+                        rounded-xl
+                        border
+                        border-[#E8DDD0]
+                        bg-white
+                        px-5 py-3
+                        text-sm
+                        font-black
+                        text-[#5D4037]
+                        transition
+                        hover:border-[#C9952C]
+                        hover:bg-[#F9F1E0]
+                    "
+                >
+                    Clear Filters
+                </a>
+
+            {% endif %}
+
+
+            <a
+                href="{% url 'eatery:food_create' %}"
+                class="
+                    inline-flex
+                    items-center
+                    justify-center
+                    gap-2
+                    rounded-xl
+                    bg-[#4E342E]
+                    px-5 py-3
+                    text-sm
+                    font-black
+                    text-white
+                    shadow-sm
+                    transition
+                    hover:-translate-y-0.5
+                    hover:bg-[#3E2723]
+                    hover:shadow-md
+                "
+            >
+
+                <span
+                    class="
+                        flex h-5 w-5
+                        items-center justify-center
+                        rounded-full
+                        bg-white/10
+                    "
+                >
+                    +
+                </span>
+
+                Add First Food
+
+            </a>
+
+        </div>
+
+    </div>
+
+{% endif %}
+
+{% endblock %}

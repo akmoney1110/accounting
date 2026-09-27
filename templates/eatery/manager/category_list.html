@@ -1,0 +1,1265 @@
+{% extends "eatery/manager/base.html" %}
+
+{% block title %}
+    Categories | Dikubs Eatery
+{% endblock %}
+
+{% block header_title %}
+    Categories
+{% endblock %}
+
+
+{% block content %}
+
+<!-- ======================================================
+     PAGE HEADER
+     ====================================================== -->
+<div
+    class="
+        mb-8
+        flex
+        flex-col
+        gap-5
+        sm:flex-row
+        sm:items-end
+        sm:justify-between
+    "
+>
+
+    <!-- LEFT -->
+    <div>
+
+        <div
+            class="
+                mb-3
+                inline-flex
+                items-center
+                gap-2
+                rounded-full
+                border
+                border-[#EAD6AA]
+                bg-[#F9F1E0]
+                px-3
+                py-1.5
+            "
+        >
+
+            <span
+                class="
+                    h-2
+                    w-2
+                    rounded-full
+                    bg-[#C9952C]
+                "
+            ></span>
+
+
+            <span
+                class="
+                    text-[10px]
+                    font-black
+                    uppercase
+                    tracking-[0.18em]
+                    text-[#8B5E3C]
+                "
+            >
+                Menu Management
+            </span>
+
+        </div>
+
+
+        <h1
+            class="
+                text-2xl
+                font-black
+                tracking-tight
+                text-[#4E342E]
+                sm:text-3xl
+            "
+        >
+            Food Categories
+        </h1>
+
+
+        <p
+            class="
+                mt-2
+                max-w-xl
+                text-sm
+                leading-6
+                text-[#8D7B6B]
+            "
+        >
+            Organize the meals customers see on your menu.
+        </p>
+
+    </div>
+
+
+
+    <!-- ADD CATEGORY -->
+    <a
+        href="{% url 'eatery:category_create' %}"
+        class="
+            inline-flex
+            items-center
+            justify-center
+            gap-2
+            self-start
+            rounded-xl
+            bg-[#4E342E]
+            px-5
+            py-3
+            text-sm
+            font-black
+            text-white
+            shadow-sm
+            transition
+            hover:-translate-y-0.5
+            hover:bg-[#3E2723]
+            hover:shadow-md
+            sm:self-auto
+        "
+    >
+
+        <span
+            class="
+                flex
+                h-6
+                w-6
+                items-center
+                justify-center
+                rounded-full
+                bg-white/10
+                text-base
+            "
+        >
+            +
+        </span>
+
+        Add Category
+
+    </a>
+
+</div>
+
+
+
+<!-- ======================================================
+     INFORMATION STRIP
+     ====================================================== -->
+<div
+    class="
+        mb-6
+        grid
+        grid-cols-1
+        gap-3
+        sm:grid-cols-3
+    "
+>
+
+    <!-- ORGANIZE -->
+    <div
+        class="
+            flex
+            items-center
+            gap-3
+            rounded-xl
+            border
+            border-[#E8DDD0]
+            bg-white
+            p-4
+            shadow-sm
+        "
+    >
+
+        <div
+            class="
+                flex
+                h-10
+                w-10
+                shrink-0
+                items-center
+                justify-center
+                rounded-xl
+                bg-[#F9F1E0]
+                font-black
+                text-[#C9952C]
+            "
+        >
+            ▦
+        </div>
+
+
+        <div>
+
+            <p
+                class="
+                    text-xs
+                    font-black
+                    text-[#4E342E]
+                "
+            >
+                Organize Menu
+            </p>
+
+            <p
+                class="
+                    mt-0.5
+                    text-[11px]
+                    text-[#A08F86]
+                "
+            >
+                Group similar meals
+            </p>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- VISIBILITY -->
+    <div
+        class="
+            flex
+            items-center
+            gap-3
+            rounded-xl
+            border
+            border-[#DCE7C1]
+            bg-[#F0F5E0]
+            p-4
+        "
+    >
+
+        <div
+            class="
+                flex
+                h-10
+                w-10
+                shrink-0
+                items-center
+                justify-center
+                rounded-xl
+                bg-white
+                font-black
+                text-[#6B8E23]
+                shadow-sm
+            "
+        >
+            ✓
+        </div>
+
+
+        <div>
+
+            <p
+                class="
+                    text-xs
+                    font-black
+                    text-[#4E342E]
+                "
+            >
+                Control Visibility
+            </p>
+
+            <p
+                class="
+                    mt-0.5
+                    text-[11px]
+                    text-[#667849]
+                "
+            >
+                Show or hide categories
+            </p>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ORDER -->
+    <div
+        class="
+            flex
+            items-center
+            gap-3
+            rounded-xl
+            border
+            border-[#EAD6AA]
+            bg-[#F9F1E0]
+            p-4
+        "
+    >
+
+        <div
+            class="
+                flex
+                h-10
+                w-10
+                shrink-0
+                items-center
+                justify-center
+                rounded-xl
+                bg-white
+                font-black
+                text-[#8B5E3C]
+                shadow-sm
+            "
+        >
+            ↕
+        </div>
+
+
+        <div>
+
+            <p
+                class="
+                    text-xs
+                    font-black
+                    text-[#4E342E]
+                "
+            >
+                Display Order
+            </p>
+
+            <p
+                class="
+                    mt-0.5
+                    text-[11px]
+                    text-[#8B776E]
+                "
+            >
+                Control menu position
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- ======================================================
+     CATEGORY CARD
+     ====================================================== -->
+<section
+    class="
+        overflow-hidden
+        rounded-2xl
+        border
+        border-[#E8DDD0]
+        bg-[#FFFDF9]
+        shadow-sm
+    "
+>
+
+
+    <!-- ==================================================
+         CARD HEADER
+         ================================================== -->
+    <div
+        class="
+            flex
+            items-center
+            justify-between
+            gap-4
+            border-b
+            border-[#E8DDD0]
+            bg-[#F9F1E0]
+            px-5
+            py-5
+            sm:px-6
+        "
+    >
+
+        <div>
+
+            <p
+                class="
+                    text-[10px]
+                    font-black
+                    uppercase
+                    tracking-[0.18em]
+                    text-[#C9952C]
+                "
+            >
+                Menu Structure
+            </p>
+
+
+            <h2
+                class="
+                    mt-1
+                    font-black
+                    text-[#4E342E]
+                "
+            >
+                Categories
+            </h2>
+
+
+            <p
+                class="
+                    mt-1
+                    text-xs
+                    text-[#8D7B6B]
+                "
+            >
+                Manage customer menu categories.
+            </p>
+
+        </div>
+
+
+        <div
+            class="
+                flex
+                h-11
+                w-11
+                shrink-0
+                items-center
+                justify-center
+                rounded-xl
+                bg-[#F5E6C8]
+                text-lg
+                font-black
+                text-[#8B5E3C]
+            "
+        >
+            ▦
+        </div>
+
+    </div>
+
+
+
+    {% if categories %}
+
+
+        <!-- ==================================================
+             DESKTOP / TABLET TABLE
+             ================================================== -->
+        <div class="hidden overflow-x-auto md:block">
+
+            <table class="w-full">
+
+                <thead class="bg-[#FAF6F0]">
+
+                    <tr
+                        class="
+                            text-left
+                            text-[10px]
+                            font-black
+                            uppercase
+                            tracking-[0.15em]
+                            text-[#8B776E]
+                        "
+                    >
+
+                        <th class="px-6 py-4">
+                            Category
+                        </th>
+
+                        <th class="px-6 py-4">
+                            Foods
+                        </th>
+
+                        <th class="px-6 py-4">
+                            Status
+                        </th>
+
+                        <th class="px-6 py-4">
+                            Order
+                        </th>
+
+                        <th class="px-6 py-4 text-right">
+                            Actions
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+
+                <tbody
+                    class="
+                        divide-y
+                        divide-[#EFE5DA]
+                    "
+                >
+
+                    {% for category in categories %}
+
+                        <tr
+                            class="
+                                transition
+                                hover:bg-[#FAF6F0]
+                            "
+                        >
+
+
+                            <!-- =================================
+                                 CATEGORY
+                                 ================================= -->
+                            <td class="px-6 py-5">
+
+                                <div
+                                    class="
+                                        flex
+                                        items-start
+                                        gap-3
+                                    "
+                                >
+
+                                    <div
+                                        class="
+                                            flex
+                                            h-10
+                                            w-10
+                                            shrink-0
+                                            items-center
+                                            justify-center
+                                            rounded-xl
+                                            bg-[#F9F1E0]
+                                            font-black
+                                            text-[#C9952C]
+                                        "
+                                    >
+                                        ▦
+                                    </div>
+
+
+                                    <div class="min-w-0">
+
+                                        <p
+                                            class="
+                                                font-black
+                                                text-[#4E342E]
+                                            "
+                                        >
+                                            {{ category.name }}
+                                        </p>
+
+
+                                        {% if category.description %}
+
+                                            <p
+                                                class="
+                                                    mt-1
+                                                    max-w-md
+                                                    text-sm
+                                                    leading-5
+                                                    text-[#8D7B6B]
+                                                "
+                                            >
+                                                {{ category.description|truncatechars:80 }}
+                                            </p>
+
+                                        {% else %}
+
+                                            <p
+                                                class="
+                                                    mt-1
+                                                    text-xs
+                                                    italic
+                                                    text-[#A89B8C]
+                                                "
+                                            >
+                                                No description
+                                            </p>
+
+                                        {% endif %}
+
+                                    </div>
+
+                                </div>
+
+                            </td>
+
+
+
+                            <!-- =================================
+                                 FOODS
+                                 ================================= -->
+                            <td class="px-6 py-5">
+
+                                <div
+                                    class="
+                                        inline-flex
+                                        items-center
+                                        gap-2
+                                    "
+                                >
+
+                                    <span
+                                        class="
+                                            inline-flex
+                                            min-w-8
+                                            items-center
+                                            justify-center
+                                            rounded-full
+                                            bg-[#F5EFE6]
+                                            px-2.5
+                                            py-1
+                                            text-xs
+                                            font-black
+                                            text-[#5D4037]
+                                        "
+                                    >
+                                        {{ category.foods.count }}
+                                    </span>
+
+
+                                    <span
+                                        class="
+                                            text-xs
+                                            text-[#A08F86]
+                                        "
+                                    >
+                                        item{{ category.foods.count|pluralize }}
+                                    </span>
+
+                                </div>
+
+                            </td>
+
+
+
+                            <!-- =================================
+                                 STATUS
+                                 ================================= -->
+                            <td class="px-6 py-5">
+
+                                {% if category.is_active %}
+
+                                    <span
+                                        class="
+                                            inline-flex
+                                            items-center
+                                            gap-1.5
+                                            rounded-full
+                                            border
+                                            border-[#DCE7C1]
+                                            bg-[#F0F5E0]
+                                            px-3
+                                            py-1.5
+                                            text-[10px]
+                                            font-black
+                                            uppercase
+                                            tracking-wide
+                                            text-[#4A7C2A]
+                                        "
+                                    >
+
+                                        <span
+                                            class="
+                                                h-1.5
+                                                w-1.5
+                                                rounded-full
+                                                bg-[#6B8E23]
+                                            "
+                                        ></span>
+
+                                        Active
+
+                                    </span>
+
+                                {% else %}
+
+                                    <span
+                                        class="
+                                            inline-flex
+                                            items-center
+                                            gap-1.5
+                                            rounded-full
+                                            border
+                                            border-[#E8DDD0]
+                                            bg-[#F5EFE6]
+                                            px-3
+                                            py-1.5
+                                            text-[10px]
+                                            font-black
+                                            uppercase
+                                            tracking-wide
+                                            text-[#8D7B6B]
+                                        "
+                                    >
+
+                                        <span
+                                            class="
+                                                h-1.5
+                                                w-1.5
+                                                rounded-full
+                                                bg-[#A89B8C]
+                                            "
+                                        ></span>
+
+                                        Inactive
+
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+
+
+                            <!-- =================================
+                                 DISPLAY ORDER
+                                 ================================= -->
+                            <td class="px-6 py-5">
+
+                                <span
+                                    class="
+                                        inline-flex
+                                        h-9
+                                        min-w-9
+                                        items-center
+                                        justify-center
+                                        rounded-lg
+                                        border
+                                        border-[#EAD6AA]
+                                        bg-[#F9F1E0]
+                                        px-2
+                                        text-xs
+                                        font-black
+                                        text-[#8B5E3C]
+                                    "
+                                >
+                                    {{ category.order }}
+                                </span>
+
+                            </td>
+
+
+
+                            <!-- =================================
+                                 ACTIONS
+                                 ================================= -->
+                            <td class="px-6 py-5">
+
+                                <div
+                                    class="
+                                        flex
+                                        items-center
+                                        justify-end
+                                        gap-2
+                                    "
+                                >
+
+                                    <!-- EDIT -->
+                                    <a
+                                        href="{% url 'eatery:category_update' category.pk %}"
+                                        class="
+                                            inline-flex
+                                            items-center
+                                            justify-center
+                                            gap-1.5
+                                            rounded-lg
+                                            border
+                                            border-[#E8DDD0]
+                                            bg-white
+                                            px-3
+                                            py-2
+                                            text-xs
+                                            font-black
+                                            text-[#5D4037]
+                                            transition
+                                            hover:border-[#C9952C]
+                                            hover:bg-[#F9F1E0]
+                                            hover:text-[#4E342E]
+                                        "
+                                    >
+                                        Edit
+                                    </a>
+
+
+
+                                    <!-- DELETE -->
+                                    <form
+                                        method="post"
+                                        action="{% url 'eatery:category_delete' category.pk %}"
+                                        onsubmit="return confirm('Delete this category? Food items will remain but will no longer have this category.');"
+                                    >
+
+                                        {% csrf_token %}
+
+                                        <button
+                                            type="submit"
+                                            class="
+                                                inline-flex
+                                                items-center
+                                                justify-center
+                                                rounded-lg
+                                                border
+                                                border-[#F0C7BA]
+                                                bg-[#FDEDE8]
+                                                px-3
+                                                py-2
+                                                text-xs
+                                                font-black
+                                                text-[#C75B39]
+                                                transition
+                                                hover:border-[#C75B39]
+                                                hover:bg-[#F9DDD4]
+                                            "
+                                        >
+                                            Delete
+                                        </button>
+
+                                    </form>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+
+        <!-- ==================================================
+             MOBILE CATEGORY CARDS
+             ================================================== -->
+        <div
+            class="
+                divide-y
+                divide-[#EFE5DA]
+                md:hidden
+            "
+        >
+
+            {% for category in categories %}
+
+                <div class="p-5">
+
+
+                    <!-- TOP -->
+                    <div
+                        class="
+                            flex
+                            items-start
+                            justify-between
+                            gap-4
+                        "
+                    >
+
+                        <div
+                            class="
+                                flex
+                                min-w-0
+                                items-start
+                                gap-3
+                            "
+                        >
+
+                            <div
+                                class="
+                                    flex
+                                    h-10
+                                    w-10
+                                    shrink-0
+                                    items-center
+                                    justify-center
+                                    rounded-xl
+                                    bg-[#F9F1E0]
+                                    font-black
+                                    text-[#C9952C]
+                                "
+                            >
+                                ▦
+                            </div>
+
+
+                            <div class="min-w-0">
+
+                                <h3
+                                    class="
+                                        break-words
+                                        font-black
+                                        text-[#4E342E]
+                                    "
+                                >
+                                    {{ category.name }}
+                                </h3>
+
+
+                                {% if category.description %}
+
+                                    <p
+                                        class="
+                                            mt-1
+                                            text-xs
+                                            leading-5
+                                            text-[#8D7B6B]
+                                        "
+                                    >
+                                        {{ category.description|truncatechars:100 }}
+                                    </p>
+
+                                {% endif %}
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- STATUS -->
+                        {% if category.is_active %}
+
+                            <span
+                                class="
+                                    shrink-0
+                                    rounded-full
+                                    border
+                                    border-[#DCE7C1]
+                                    bg-[#F0F5E0]
+                                    px-2.5
+                                    py-1
+                                    text-[9px]
+                                    font-black
+                                    uppercase
+                                    tracking-wide
+                                    text-[#4A7C2A]
+                                "
+                            >
+                                Active
+                            </span>
+
+                        {% else %}
+
+                            <span
+                                class="
+                                    shrink-0
+                                    rounded-full
+                                    border
+                                    border-[#E8DDD0]
+                                    bg-[#F5EFE6]
+                                    px-2.5
+                                    py-1
+                                    text-[9px]
+                                    font-black
+                                    uppercase
+                                    tracking-wide
+                                    text-[#8D7B6B]
+                                "
+                            >
+                                Inactive
+                            </span>
+
+                        {% endif %}
+
+                    </div>
+
+
+
+                    <!-- META -->
+                    <div
+                        class="
+                            mt-4
+                            grid
+                            grid-cols-2
+                            gap-3
+                        "
+                    >
+
+                        <!-- FOOD COUNT -->
+                        <div
+                            class="
+                                rounded-xl
+                                bg-[#FAF6F0]
+                                p-3
+                            "
+                        >
+
+                            <p
+                                class="
+                                    text-[9px]
+                                    font-black
+                                    uppercase
+                                    tracking-wider
+                                    text-[#A08F86]
+                                "
+                            >
+                                Food Items
+                            </p>
+
+
+                            <p
+                                class="
+                                    mt-1
+                                    text-sm
+                                    font-black
+                                    text-[#4E342E]
+                                "
+                            >
+                                {{ category.foods.count }}
+                            </p>
+
+                        </div>
+
+
+
+                        <!-- ORDER -->
+                        <div
+                            class="
+                                rounded-xl
+                                bg-[#F9F1E0]
+                                p-3
+                            "
+                        >
+
+                            <p
+                                class="
+                                    text-[9px]
+                                    font-black
+                                    uppercase
+                                    tracking-wider
+                                    text-[#9A7951]
+                                "
+                            >
+                                Display Order
+                            </p>
+
+
+                            <p
+                                class="
+                                    mt-1
+                                    text-sm
+                                    font-black
+                                    text-[#8B5E3C]
+                                "
+                            >
+                                {{ category.order }}
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- MOBILE ACTIONS -->
+                    <div
+                        class="
+                            mt-4
+                            grid
+                            grid-cols-2
+                            gap-2
+                        "
+                    >
+
+                        <!-- EDIT -->
+                        <a
+                            href="{% url 'eatery:category_update' category.pk %}"
+                            class="
+                                inline-flex
+                                items-center
+                                justify-center
+                                rounded-xl
+                                border
+                                border-[#E8DDD0]
+                                bg-white
+                                px-4
+                                py-2.5
+                                text-xs
+                                font-black
+                                text-[#5D4037]
+                                transition
+                                hover:border-[#C9952C]
+                                hover:bg-[#F9F1E0]
+                            "
+                        >
+                            Edit
+                        </a>
+
+
+
+                        <!-- DELETE -->
+                        <form
+                            method="post"
+                            action="{% url 'eatery:category_delete' category.pk %}"
+                            onsubmit="return confirm('Delete this category? Food items will remain but will no longer have this category.');"
+                        >
+
+                            {% csrf_token %}
+
+                            <button
+                                type="submit"
+                                class="
+                                    w-full
+                                    rounded-xl
+                                    border
+                                    border-[#F0C7BA]
+                                    bg-[#FDEDE8]
+                                    px-4
+                                    py-2.5
+                                    text-xs
+                                    font-black
+                                    text-[#C75B39]
+                                    transition
+                                    hover:border-[#C75B39]
+                                    hover:bg-[#F9DDD4]
+                                "
+                            >
+                                Delete
+                            </button>
+
+                        </form>
+
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+
+    {% else %}
+
+
+        <!-- ==================================================
+             EMPTY STATE
+             ================================================== -->
+        <div
+            class="
+                px-6
+                py-20
+                text-center
+            "
+        >
+
+            <div
+                class="
+                    mx-auto
+                    flex
+                    h-20
+                    w-20
+                    items-center
+                    justify-center
+                    rounded-full
+                    border
+                    border-[#EAD6AA]
+                    bg-[#F9F1E0]
+                    text-2xl
+                    font-black
+                    text-[#C9952C]
+                "
+            >
+                ▦
+            </div>
+
+
+            <div
+                class="
+                    mx-auto
+                    mt-5
+                    inline-flex
+                    items-center
+                    gap-2
+                    rounded-full
+                    bg-[#F5EFE6]
+                    px-3
+                    py-1
+                    text-[9px]
+                    font-black
+                    uppercase
+                    tracking-[0.15em]
+                    text-[#8B776E]
+                "
+            >
+                Menu Setup
+            </div>
+
+
+            <h3
+                class="
+                    mt-4
+                    text-lg
+                    font-black
+                    text-[#4E342E]
+                "
+            >
+                No categories yet
+            </h3>
+
+
+            <p
+                class="
+                    mx-auto
+                    mt-2
+                    max-w-sm
+                    text-sm
+                    leading-6
+                    text-[#8D7B6B]
+                "
+            >
+                Create your first category to start
+                organizing the food customers see on
+                the Dikubs Eatery menu.
+            </p>
+
+
+            <a
+                href="{% url 'eatery:category_create' %}"
+                class="
+                    mt-6
+                    inline-flex
+                    items-center
+                    justify-center
+                    gap-2
+                    rounded-xl
+                    bg-[#4E342E]
+                    px-5
+                    py-3
+                    text-sm
+                    font-black
+                    text-white
+                    shadow-sm
+                    transition
+                    hover:-translate-y-0.5
+                    hover:bg-[#3E2723]
+                    hover:shadow-md
+                "
+            >
+
+                <span
+                    class="
+                        flex
+                        h-5
+                        w-5
+                        items-center
+                        justify-center
+                        rounded-full
+                        bg-white/10
+                    "
+                >
+                    +
+                </span>
+
+                Create First Category
+
+            </a>
+
+        </div>
+
+    {% endif %}
+
+</section>
+
+{% endblock %}

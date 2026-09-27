@@ -1,0 +1,1530 @@
+{% extends "eatery/manager/base.html" %}
+
+{% block title %}
+    {{ page_title }} | Dikubs Eatery
+{% endblock %}
+
+{% block header_title %}
+    {{ page_title }}
+{% endblock %}
+
+
+{% block content %}
+
+<div class="mx-auto max-w-5xl">
+
+
+    <!-- ======================================================
+         PAGE HEADER
+         ====================================================== -->
+    <div class="mb-7">
+
+        <a
+            href="{% url 'eatery:food_list' %}"
+            class="
+                inline-flex items-center gap-2
+                text-sm font-black
+                text-[#8D7B6B]
+                transition
+                hover:text-[#4E342E]
+            "
+        >
+            <span
+                class="
+                    flex h-8 w-8
+                    items-center justify-center
+                    rounded-lg
+                    border border-[#E8DDD0]
+                    bg-white
+                    text-[#4E342E]
+                    shadow-sm
+                    transition
+                    hover:border-[#C9952C]
+                    hover:bg-[#F9F1E0]
+                "
+            >
+                ←
+            </span>
+
+            Back to Menu
+        </a>
+
+
+        <div class="mt-6">
+
+            <div
+                class="
+                    mb-3
+                    inline-flex items-center gap-2
+                    rounded-full
+                    border border-[#EAD6AA]
+                    bg-[#F9F1E0]
+                    px-3 py-1.5
+                "
+            >
+                <span
+                    class="
+                        h-2 w-2
+                        rounded-full
+                        bg-[#C9952C]
+                    "
+                ></span>
+
+                <span
+                    class="
+                        text-[10px]
+                        font-black uppercase
+                        tracking-[0.18em]
+                        text-[#8B5E3C]
+                    "
+                >
+                    Menu Management
+                </span>
+            </div>
+
+
+            <h1
+                class="
+                    text-2xl
+                    font-black
+                    tracking-tight
+                    text-[#4E342E]
+                    sm:text-3xl
+                "
+            >
+                {{ page_title }}
+            </h1>
+
+
+            <p
+                class="
+                    mt-2
+                    max-w-2xl
+                    text-sm
+                    leading-6
+                    text-[#8D7B6B]
+                "
+            >
+                {% if food %}
+                    Update the meal information, pricing,
+                    image and customer menu settings.
+                {% else %}
+                    Add the food details customers will see
+                    and order from on the Dikubs Eatery menu.
+                {% endif %}
+            </p>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ======================================================
+         FOOD FORM
+         ====================================================== -->
+    <form
+        method="post"
+        enctype="multipart/form-data"
+        class="
+            overflow-hidden
+            rounded-2xl
+            border border-[#E8DDD0]
+            bg-[#FFFDF9]
+            shadow-sm
+        "
+    >
+
+        {% csrf_token %}
+
+
+
+        <!-- ==================================================
+             FORM HEADER
+             ================================================== -->
+        <div
+            class="
+                flex items-center
+                justify-between
+                gap-4
+                border-b border-[#E8DDD0]
+                bg-[#F9F1E0]
+                px-6 py-5
+                sm:px-8
+            "
+        >
+
+            <div>
+
+                <p
+                    class="
+                        text-[10px]
+                        font-black uppercase
+                        tracking-[0.18em]
+                        text-[#C9952C]
+                    "
+                >
+                    Food Details
+                </p>
+
+
+                <h2
+                    class="
+                        mt-1
+                        text-lg
+                        font-black
+                        text-[#4E342E]
+                    "
+                >
+                    {% if food %}
+                        Edit Menu Item
+                    {% else %}
+                        New Menu Item
+                    {% endif %}
+                </h2>
+
+
+                <p
+                    class="
+                        mt-1
+                        text-xs
+                        text-[#8D7B6B]
+                    "
+                >
+                    Enter the meal information and menu settings.
+                </p>
+
+            </div>
+
+
+            <div
+                class="
+                    flex h-11 w-11
+                    shrink-0
+                    items-center justify-center
+                    rounded-xl
+                    bg-[#F5E6C8]
+                    text-xl
+                "
+            >
+                🍽️
+            </div>
+
+        </div>
+
+
+
+        <!-- ==================================================
+             NON-FIELD ERRORS
+             ================================================== -->
+        {% if form.non_field_errors %}
+
+            <div class="px-6 pt-6 sm:px-8">
+
+                <div
+                    class="
+                        flex items-start gap-3
+                        rounded-xl
+                        border border-[#E5B9AB]
+                        bg-[#FDEDE8]
+                        p-4
+                    "
+                >
+
+                    <span
+                        class="
+                            flex h-8 w-8
+                            shrink-0
+                            items-center justify-center
+                            rounded-lg
+                            bg-white
+                            font-black
+                            text-[#C75B39]
+                        "
+                    >
+                        !
+                    </span>
+
+
+                    <div>
+
+                        <p
+                            class="
+                                text-xs
+                                font-black uppercase
+                                tracking-wide
+                                text-[#C75B39]
+                            "
+                        >
+                            Please check the form
+                        </p>
+
+
+                        <div
+                            class="
+                                mt-1
+                                text-sm
+                                leading-6
+                                text-[#8B4A37]
+                            "
+                        >
+                            {{ form.non_field_errors }}
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        {% endif %}
+
+
+
+        <!-- ==================================================
+             FORM GRID
+             ================================================== -->
+        <div class="grid grid-cols-1 lg:grid-cols-3">
+
+
+            <!-- =================================================
+                 MAIN FORM
+                 ================================================= -->
+            <div
+                class="
+                    p-6
+                    sm:p-8
+                    lg:col-span-2
+                "
+            >
+
+                <div class="space-y-7">
+
+
+                    <!-- =========================================
+                         FOOD NAME
+                         ========================================= -->
+                    <div>
+
+                        <div
+                            class="
+                                mb-2
+                                flex items-center
+                                justify-between
+                                gap-3
+                            "
+                        >
+
+                            <label
+                                for="{{ form.name.id_for_label }}"
+                                class="
+                                    text-sm
+                                    font-black
+                                    text-[#4E342E]
+                                "
+                            >
+                                Food Name
+                            </label>
+
+
+                            <span
+                                class="
+                                    text-[9px]
+                                    font-black uppercase
+                                    tracking-[0.12em]
+                                    text-[#C75B39]
+                                "
+                            >
+                                Required
+                            </span>
+
+                        </div>
+
+
+                        <div
+                            class="
+                                [&_input]:w-full
+                                [&_input]:rounded-xl
+                                [&_input]:border
+                                [&_input]:border-[#E8DDD0]
+                                [&_input]:bg-[#FAF6F0]
+                                [&_input]:px-4
+                                [&_input]:py-3
+                                [&_input]:text-sm
+                                [&_input]:font-semibold
+                                [&_input]:text-[#4E342E]
+                                [&_input]:outline-none
+                                [&_input]:transition
+
+                                [&_input::placeholder]:text-[#A89B8C]
+
+                                [&_input:focus]:border-[#C9952C]
+                                [&_input:focus]:bg-white
+                                [&_input:focus]:ring-4
+                                [&_input:focus]:ring-[#F9F1E0]
+                            "
+                        >
+                            {{ form.name }}
+                        </div>
+
+
+                        <p
+                            class="
+                                mt-2
+                                text-xs
+                                leading-5
+                                text-[#A08F86]
+                            "
+                        >
+                            Use the name customers will recognize
+                            on the menu.
+                        </p>
+
+
+                        {% for error in form.name.errors %}
+
+                            <p
+                                class="
+                                    mt-2
+                                    flex items-center gap-2
+                                    text-xs
+                                    font-bold
+                                    text-[#C75B39]
+                                "
+                            >
+                                <span>!</span>
+                                {{ error }}
+                            </p>
+
+                        {% endfor %}
+
+                    </div>
+
+
+
+                    <!-- =========================================
+                         CATEGORY
+                         ========================================= -->
+                    <div>
+
+                        <div
+                            class="
+                                mb-2
+                                flex items-center
+                                justify-between
+                                gap-4
+                            "
+                        >
+
+                            <label
+                                for="{{ form.category.id_for_label }}"
+                                class="
+                                    text-sm
+                                    font-black
+                                    text-[#4E342E]
+                                "
+                            >
+                                Category
+                            </label>
+
+
+                            <a
+                                href="{% url 'eatery:category_create' %}"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="
+                                    inline-flex
+                                    items-center gap-1
+                                    text-xs
+                                    font-black
+                                    text-[#6B8E23]
+                                    transition
+                                    hover:text-[#4A7C2A]
+                                "
+                            >
+                                <span>+</span>
+                                New Category
+                            </a>
+
+                        </div>
+
+
+                        <div
+                            class="
+                                [&_select]:w-full
+                                [&_select]:rounded-xl
+                                [&_select]:border
+                                [&_select]:border-[#E8DDD0]
+                                [&_select]:bg-[#FAF6F0]
+                                [&_select]:px-4
+                                [&_select]:py-3
+                                [&_select]:text-sm
+                                [&_select]:font-semibold
+                                [&_select]:text-[#4E342E]
+                                [&_select]:outline-none
+                                [&_select]:transition
+
+                                [&_select:focus]:border-[#C9952C]
+                                [&_select:focus]:bg-white
+                                [&_select:focus]:ring-4
+                                [&_select:focus]:ring-[#F9F1E0]
+                            "
+                        >
+                            {{ form.category }}
+                        </div>
+
+
+                        <p
+                            class="
+                                mt-2
+                                text-xs
+                                text-[#A08F86]
+                            "
+                        >
+                            Choose where this meal should appear
+                            on the customer menu.
+                        </p>
+
+
+                        {% for error in form.category.errors %}
+
+                            <p
+                                class="
+                                    mt-2
+                                    text-xs
+                                    font-bold
+                                    text-[#C75B39]
+                                "
+                            >
+                                {{ error }}
+                            </p>
+
+                        {% endfor %}
+
+                    </div>
+
+
+
+                    <!-- =========================================
+                         PRICE
+                         ========================================= -->
+                    <div>
+
+                        <div
+                            class="
+                                mb-2
+                                flex items-center
+                                justify-between
+                            "
+                        >
+
+                            <label
+                                for="{{ form.price.id_for_label }}"
+                                class="
+                                    text-sm
+                                    font-black
+                                    text-[#4E342E]
+                                "
+                            >
+                                Price
+                            </label>
+
+
+                            <span
+                                class="
+                                    text-[9px]
+                                    font-black uppercase
+                                    tracking-[0.12em]
+                                    text-[#C75B39]
+                                "
+                            >
+                                Required
+                            </span>
+
+                        </div>
+
+
+                        <div class="relative max-w-sm">
+
+                            <div
+                                class="
+                                    pointer-events-none
+                                    absolute
+                                    inset-y-0
+                                    left-0
+                                    z-10
+                                    flex
+                                    items-center
+                                    border-r
+                                    border-[#E8DDD0]
+                                    px-4
+                                    font-black
+                                    text-[#8B5E3C]
+                                "
+                            >
+                                ₦
+                            </div>
+
+
+                            <div
+                                class="
+                                    [&_input]:w-full
+                                    [&_input]:rounded-xl
+                                    [&_input]:border
+                                    [&_input]:border-[#E8DDD0]
+                                    [&_input]:bg-[#FAF6F0]
+                                    [&_input]:py-3
+                                    [&_input]:pl-14
+                                    [&_input]:pr-4
+                                    [&_input]:text-sm
+                                    [&_input]:font-black
+                                    [&_input]:text-[#4E342E]
+                                    [&_input]:outline-none
+                                    [&_input]:transition
+
+                                    [&_input:focus]:border-[#C9952C]
+                                    [&_input:focus]:bg-white
+                                    [&_input:focus]:ring-4
+                                    [&_input:focus]:ring-[#F9F1E0]
+                                "
+                            >
+                                {{ form.price }}
+                            </div>
+
+                        </div>
+
+
+                        <p
+                            class="
+                                mt-2
+                                text-xs
+                                text-[#A08F86]
+                            "
+                        >
+                            Enter the amount customers will pay
+                            for one serving.
+                        </p>
+
+
+                        {% for error in form.price.errors %}
+
+                            <p
+                                class="
+                                    mt-2
+                                    text-xs
+                                    font-bold
+                                    text-[#C75B39]
+                                "
+                            >
+                                {{ error }}
+                            </p>
+
+                        {% endfor %}
+
+                    </div>
+
+
+
+                    <!-- =========================================
+                         DESCRIPTION
+                         ========================================= -->
+                    <div>
+
+                        <label
+                            for="{{ form.description.id_for_label }}"
+                            class="
+                                mb-2
+                                block
+                                text-sm
+                                font-black
+                                text-[#4E342E]
+                            "
+                        >
+                            Description
+                        </label>
+
+
+                        <div
+                            class="
+                                [&_textarea]:min-h-[140px]
+                                [&_textarea]:w-full
+                                [&_textarea]:resize-y
+                                [&_textarea]:rounded-xl
+                                [&_textarea]:border
+                                [&_textarea]:border-[#E8DDD0]
+                                [&_textarea]:bg-[#FAF6F0]
+                                [&_textarea]:px-4
+                                [&_textarea]:py-3
+                                [&_textarea]:text-sm
+                                [&_textarea]:leading-6
+                                [&_textarea]:text-[#4E342E]
+                                [&_textarea]:outline-none
+                                [&_textarea]:transition
+
+                                [&_textarea::placeholder]:text-[#A89B8C]
+
+                                [&_textarea:focus]:border-[#C9952C]
+                                [&_textarea:focus]:bg-white
+                                [&_textarea:focus]:ring-4
+                                [&_textarea:focus]:ring-[#F9F1E0]
+                            "
+                        >
+                            {{ form.description }}
+                        </div>
+
+
+                        <p
+                            class="
+                                mt-2
+                                text-xs
+                                leading-5
+                                text-[#A08F86]
+                            "
+                        >
+                            Briefly describe the meal and what
+                            comes with it.
+                        </p>
+
+
+                        {% for error in form.description.errors %}
+
+                            <p
+                                class="
+                                    mt-2
+                                    text-xs
+                                    font-bold
+                                    text-[#C75B39]
+                                "
+                            >
+                                {{ error }}
+                            </p>
+
+                        {% endfor %}
+
+                    </div>
+
+
+
+                    <!-- =========================================
+                         FOOD IMAGE
+                         ========================================= -->
+                    <div>
+
+                        <label
+                            for="{{ form.image.id_for_label }}"
+                            class="
+                                mb-2
+                                block
+                                text-sm
+                                font-black
+                                text-[#4E342E]
+                            "
+                        >
+                            Food Image
+                        </label>
+
+
+
+                        <!-- CURRENT IMAGE -->
+                        {% if food and food.image %}
+
+                            <div
+                                class="
+                                    mb-4
+                                    overflow-hidden
+                                    rounded-2xl
+                                    border
+                                    border-[#E8DDD0]
+                                    bg-[#FAF6F0]
+                                    p-3
+                                "
+                            >
+
+                                <div
+                                    class="
+                                        relative
+                                        overflow-hidden
+                                        rounded-xl
+                                    "
+                                >
+
+                                    <img
+                                        src="{{ food.image.url }}"
+                                        alt="{{ food.name }}"
+                                        class="
+                                            h-56
+                                            w-full
+                                            object-cover
+                                        "
+                                    >
+
+
+                                    <div
+                                        class="
+                                            absolute
+                                            left-3
+                                            top-3
+                                            rounded-full
+                                            bg-[#3E2723]/90
+                                            px-3
+                                            py-1.5
+                                            text-[9px]
+                                            font-black
+                                            uppercase
+                                            tracking-wide
+                                            text-white
+                                            backdrop-blur
+                                        "
+                                    >
+                                        Current Image
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        {% endif %}
+
+
+
+                        <!-- IMAGE INPUT -->
+                        <div
+                            class="
+                                rounded-2xl
+                                border
+                                border-dashed
+                                border-[#D8C8B7]
+                                bg-[#FAF6F0]
+                                p-5
+
+                                [&_input[type=file]]:block
+                                [&_input[type=file]]:w-full
+                                [&_input[type=file]]:text-sm
+                                [&_input[type=file]]:text-[#8D7B6B]
+
+                                [&_input[type=file]::file-selector-button]:mr-4
+                                [&_input[type=file]::file-selector-button]:cursor-pointer
+                                [&_input[type=file]::file-selector-button]:rounded-lg
+                                [&_input[type=file]::file-selector-button]:border-0
+                                [&_input[type=file]::file-selector-button]:bg-[#4E342E]
+                                [&_input[type=file]::file-selector-button]:px-4
+                                [&_input[type=file]::file-selector-button]:py-2.5
+                                [&_input[type=file]::file-selector-button]:text-xs
+                                [&_input[type=file]::file-selector-button]:font-black
+                                [&_input[type=file]::file-selector-button]:text-white
+                            "
+                        >
+
+                            <div
+                                class="
+                                    mb-4
+                                    flex items-center gap-3
+                                "
+                            >
+
+                                <div
+                                    class="
+                                        flex h-10 w-10
+                                        shrink-0
+                                        items-center justify-center
+                                        rounded-xl
+                                        bg-[#F5E6C8]
+                                        text-lg
+                                    "
+                                >
+                                    🖼
+                                </div>
+
+
+                                <div>
+
+                                    <p
+                                        class="
+                                            text-sm
+                                            font-black
+                                            text-[#4E342E]
+                                        "
+                                    >
+                                        Upload Meal Photo
+                                    </p>
+
+                                    <p
+                                        class="
+                                            mt-0.5
+                                            text-xs
+                                            text-[#A08F86]
+                                        "
+                                    >
+                                        Choose a clear image of the meal.
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+
+                            {{ form.image }}
+
+                        </div>
+
+
+                        <p
+                            class="
+                                mt-2
+                                text-xs
+                                leading-5
+                                text-[#A08F86]
+                            "
+                        >
+                            Use a clear, attractive photo of the
+                            actual meal for the best customer experience.
+                        </p>
+
+
+                        {% for error in form.image.errors %}
+
+                            <p
+                                class="
+                                    mt-2
+                                    text-xs
+                                    font-bold
+                                    text-[#C75B39]
+                                "
+                            >
+                                {{ error }}
+                            </p>
+
+                        {% endfor %}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 MENU SETTINGS
+                 ================================================= -->
+            <aside
+                class="
+                    border-t
+                    border-[#E8DDD0]
+                    bg-[#FAF6F0]
+                    p-6
+                    lg:border-l
+                    lg:border-t-0
+                "
+            >
+
+                <div
+                    class="
+                        flex
+                        items-start
+                        gap-3
+                    "
+                >
+
+                    <div
+                        class="
+                            flex h-10 w-10
+                            shrink-0
+                            items-center justify-center
+                            rounded-xl
+                            bg-[#F5E6C8]
+                            font-black
+                            text-[#8B5E3C]
+                        "
+                    >
+                        ⚙
+                    </div>
+
+
+                    <div>
+
+                        <p
+                            class="
+                                text-[9px]
+                                font-black uppercase
+                                tracking-[0.16em]
+                                text-[#C9952C]
+                            "
+                        >
+                            Customer Menu
+                        </p>
+
+
+                        <h2
+                            class="
+                                mt-1
+                                font-black
+                                text-[#4E342E]
+                            "
+                        >
+                            Menu Settings
+                        </h2>
+
+                    </div>
+
+                </div>
+
+
+                <p
+                    class="
+                        mt-3
+                        text-xs
+                        leading-5
+                        text-[#8D7B6B]
+                    "
+                >
+                    Control whether customers can order this
+                    meal and whether it receives extra
+                    visibility on the menu.
+                </p>
+
+
+
+                <div class="mt-6 space-y-4">
+
+
+                    <!-- =========================================
+                         AVAILABLE
+                         ========================================= -->
+                    <label
+                        class="
+                            flex
+                            cursor-pointer
+                            items-start
+                            gap-3
+                            rounded-xl
+                            border
+                            border-[#DCE7C1]
+                            bg-[#F0F5E0]
+                            p-4
+                            transition
+                            hover:border-[#B8CB87]
+                            hover:shadow-sm
+                        "
+                    >
+
+                        <div
+                            class="
+                                pt-0.5
+
+                                [&_input]:h-5
+                                [&_input]:w-5
+                                [&_input]:cursor-pointer
+                                [&_input]:accent-[#6B8E23]
+                            "
+                        >
+                            {{ form.is_available }}
+                        </div>
+
+
+                        <div class="min-w-0">
+
+                            <div
+                                class="
+                                    flex
+                                    flex-wrap
+                                    items-center
+                                    gap-2
+                                "
+                            >
+
+                                <p
+                                    class="
+                                        text-sm
+                                        font-black
+                                        text-[#4E342E]
+                                    "
+                                >
+                                    Available
+                                </p>
+
+
+                                <span
+                                    class="
+                                        rounded-full
+                                        bg-white
+                                        px-2
+                                        py-0.5
+                                        text-[8px]
+                                        font-black
+                                        uppercase
+                                        tracking-wide
+                                        text-[#6B8E23]
+                                    "
+                                >
+                                    Ordering
+                                </span>
+
+                            </div>
+
+
+                            <p
+                                class="
+                                    mt-1
+                                    text-xs
+                                    leading-5
+                                    text-[#667849]
+                                "
+                            >
+                                Customers can currently
+                                order this item.
+                            </p>
+
+                        </div>
+
+                    </label>
+
+
+                    {% for error in form.is_available.errors %}
+
+                        <p
+                            class="
+                                text-xs
+                                font-bold
+                                text-[#C75B39]
+                            "
+                        >
+                            {{ error }}
+                        </p>
+
+                    {% endfor %}
+
+
+
+                    <!-- =========================================
+                         FEATURED
+                         ========================================= -->
+                    <label
+                        class="
+                            flex
+                            cursor-pointer
+                            items-start
+                            gap-3
+                            rounded-xl
+                            border
+                            border-[#EAD6AA]
+                            bg-[#F9F1E0]
+                            p-4
+                            transition
+                            hover:border-[#D8B869]
+                            hover:shadow-sm
+                        "
+                    >
+
+                        <div
+                            class="
+                                pt-0.5
+
+                                [&_input]:h-5
+                                [&_input]:w-5
+                                [&_input]:cursor-pointer
+                                [&_input]:accent-[#C9952C]
+                            "
+                        >
+                            {{ form.is_featured }}
+                        </div>
+
+
+                        <div class="min-w-0">
+
+                            <div
+                                class="
+                                    flex
+                                    flex-wrap
+                                    items-center
+                                    gap-2
+                                "
+                            >
+
+                                <p
+                                    class="
+                                        text-sm
+                                        font-black
+                                        text-[#4E342E]
+                                    "
+                                >
+                                    Featured
+                                </p>
+
+
+                                <span
+                                    class="
+                                        rounded-full
+                                        bg-white
+                                        px-2
+                                        py-0.5
+                                        text-[8px]
+                                        font-black
+                                        uppercase
+                                        tracking-wide
+                                        text-[#C9952C]
+                                    "
+                                >
+                                    Highlight
+                                </span>
+
+                            </div>
+
+
+                            <p
+                                class="
+                                    mt-1
+                                    text-xs
+                                    leading-5
+                                    text-[#8B776E]
+                                "
+                            >
+                                Highlight this meal on
+                                the customer menu.
+                            </p>
+
+                        </div>
+
+                    </label>
+
+
+                    {% for error in form.is_featured.errors %}
+
+                        <p
+                            class="
+                                text-xs
+                                font-bold
+                                text-[#C75B39]
+                            "
+                        >
+                            {{ error }}
+                        </p>
+
+                    {% endfor %}
+
+                </div>
+
+
+
+                <!-- =========================================
+                     EDIT METADATA
+                     ========================================= -->
+                {% if food %}
+
+                    <div
+                        class="
+                            mt-6
+                            overflow-hidden
+                            rounded-xl
+                            border
+                            border-[#E8DDD0]
+                            bg-white
+                        "
+                    >
+
+                        <div
+                            class="
+                                border-b
+                                border-[#E8DDD0]
+                                bg-[#F5EFE6]
+                                px-4
+                                py-3
+                            "
+                        >
+                            <p
+                                class="
+                                    text-[9px]
+                                    font-black
+                                    uppercase
+                                    tracking-[0.15em]
+                                    text-[#8B776E]
+                                "
+                            >
+                                Item Information
+                            </p>
+                        </div>
+
+
+                        <div class="p-4">
+
+                            <p
+                                class="
+                                    text-[9px]
+                                    font-black
+                                    uppercase
+                                    tracking-wide
+                                    text-[#A89B8C]
+                                "
+                            >
+                                Created
+                            </p>
+
+
+                            <p
+                                class="
+                                    mt-1
+                                    text-sm
+                                    font-bold
+                                    text-[#5D4037]
+                                "
+                            >
+                                {{ food.created_at|date:"M d, Y" }}
+                            </p>
+
+
+
+                            <div
+                                class="
+                                    my-4
+                                    border-t
+                                    border-[#EFE5DA]
+                                "
+                            ></div>
+
+
+
+                            <p
+                                class="
+                                    text-[9px]
+                                    font-black
+                                    uppercase
+                                    tracking-wide
+                                    text-[#A89B8C]
+                                "
+                            >
+                                Last Updated
+                            </p>
+
+
+                            <p
+                                class="
+                                    mt-1
+                                    text-sm
+                                    font-bold
+                                    text-[#5D4037]
+                                "
+                            >
+                                {{ food.updated_at|date:"M d, Y H:i" }}
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                {% endif %}
+
+
+
+                <!-- =========================================
+                     MENU TIP
+                     ========================================= -->
+                <div
+                    class="
+                        mt-6
+                        rounded-xl
+                        border
+                        border-[#EAD6AA]
+                        bg-[#F9F1E0]
+                        p-4
+                    "
+                >
+
+                    <div class="flex gap-3">
+
+                        <span
+                            class="
+                                flex h-7 w-7
+                                shrink-0
+                                items-center justify-center
+                                rounded-lg
+                                bg-white
+                                text-xs
+                                font-black
+                                text-[#C9952C]
+                            "
+                        >
+                            i
+                        </span>
+
+
+                        <div>
+
+                            <p
+                                class="
+                                    text-xs
+                                    font-black
+                                    text-[#8B5E3C]
+                                "
+                            >
+                                Menu Tip
+                            </p>
+
+
+                            <p
+                                class="
+                                    mt-1
+                                    text-[11px]
+                                    leading-5
+                                    text-[#8B776E]
+                                "
+                            >
+                                Use Featured for meals you want
+                                customers to notice first.
+                                Turn Available off when an item
+                                is temporarily unavailable.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </aside>
+
+        </div>
+
+
+
+        <!-- ==================================================
+             FOOTER ACTIONS
+             ================================================== -->
+        <div
+            class="
+                flex
+                flex-col-reverse
+                gap-3
+                border-t
+                border-[#E8DDD0]
+                bg-[#FAF6F0]
+                px-6
+                py-5
+
+                sm:flex-row
+                sm:items-center
+                sm:justify-between
+                sm:px-8
+            "
+        >
+
+            <p
+                class="
+                    hidden
+                    text-xs
+                    text-[#A08F86]
+                    sm:block
+                "
+            >
+                Changes will be reflected on the customer menu.
+            </p>
+
+
+
+            <div
+                class="
+                    flex
+                    flex-col-reverse
+                    gap-3
+                    sm:flex-row
+                    sm:items-center
+                "
+            >
+
+                <!-- CANCEL -->
+                <a
+                    href="{% url 'eatery:food_list' %}"
+                    class="
+                        inline-flex
+                        items-center
+                        justify-center
+                        rounded-xl
+                        border
+                        border-[#E8DDD0]
+                        bg-white
+                        px-6
+                        py-3
+                        text-center
+                        text-sm
+                        font-black
+                        text-[#5D4037]
+                        transition
+                        hover:border-[#C9952C]
+                        hover:bg-[#F9F1E0]
+                    "
+                >
+                    Cancel
+                </a>
+
+
+
+                <!-- SUBMIT -->
+                <button
+                    type="submit"
+                    class="
+                        inline-flex
+                        items-center
+                        justify-center
+                        gap-2
+                        rounded-xl
+                        bg-[#4E342E]
+                        px-7
+                        py-3
+                        text-sm
+                        font-black
+                        text-white
+                        shadow-sm
+                        transition
+                        hover:-translate-y-0.5
+                        hover:bg-[#3E2723]
+                        hover:shadow-md
+                        focus:outline-none
+                        focus:ring-4
+                        focus:ring-[#C9952C]/20
+                    "
+                >
+
+                    {% if food %}
+
+                        <span
+                            class="
+                                flex h-5 w-5
+                                items-center justify-center
+                                rounded-full
+                                bg-white/10
+                                text-xs
+                            "
+                        >
+                            ✓
+                        </span>
+
+                        Save Changes
+
+                    {% else %}
+
+                        <span
+                            class="
+                                flex h-5 w-5
+                                items-center justify-center
+                                rounded-full
+                                bg-white/10
+                                text-sm
+                            "
+                        >
+                            +
+                        </span>
+
+                        Add Food to Menu
+
+                    {% endif %}
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </form>
+
+</div>
+
+{% endblock %}

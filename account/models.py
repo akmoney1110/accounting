@@ -19,10 +19,11 @@ class User(AbstractUser):
         ADMIN = 'ADMIN', 'Super Admin'
         MANAGER = 'MANAGER', 'Manager'
         STAFF = 'STAFF', 'Staff / Operations'
+        EATERY_MANAGER = "EATERY_MANAGER", "Eatery-Manager"
         VENDOR = 'VENDOR', 'Vendor / Supplier'
         CLIENT = 'CLIENT', 'Client / Buyer'
 
-    role = models.CharField(max_length=10, choices=Roles.choices, default=Roles.ADMIN)
+    role = models.CharField(max_length=20, choices=Roles.choices, default=Roles.ADMIN)
     phone = models.CharField(max_length=20, blank=True, null=True)
     address = models.TextField(blank=True, null=True)
     credit_limit = models.DecimalField(
@@ -37,10 +38,15 @@ class User(AbstractUser):
     )
 
     def save(self, *args, **kwargs):
-        if self.role in (self.Roles.ADMIN, self.Roles.MANAGER):
+        if self.role in (
+        self.Roles.ADMIN,
+        self.Roles.MANAGER,
+        self.Roles.EATERY_MANAGER,
+    ):
             self.is_staff = True
         else:
             self.is_staff = False
+
         super().save(*args, **kwargs)
 
     def __str__(self):

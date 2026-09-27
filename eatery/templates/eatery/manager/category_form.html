@@ -1,0 +1,923 @@
+{% extends "eatery/manager/base.html" %}
+
+{% block title %}
+{{ page_title }} | Dikubs Eatery
+{% endblock %}
+
+{% block header_title %}
+{{ page_title }}
+{% endblock %}
+
+
+{% block content %}
+
+<div class="mx-auto max-w-3xl">
+
+
+    <!-- ======================================================
+         PAGE HEADER
+         ====================================================== -->
+    <div class="mb-6">
+
+        <a
+            href="{% url 'eatery:category_list' %}"
+            class="
+                inline-flex
+                items-center
+                gap-2
+                text-sm
+                font-black
+                text-[#8B776E]
+                transition
+                hover:text-[#4E342E]
+            "
+        >
+
+            <span
+                class="
+                    flex h-8 w-8
+                    items-center
+                    justify-center
+                    rounded-lg
+                    border border-[#E8DDD0]
+                    bg-white
+                    text-[#4E342E]
+                    shadow-sm
+                "
+            >
+                ←
+            </span>
+
+            Back to Categories
+
+        </a>
+
+
+
+        <div class="mt-6">
+
+            <div
+                class="
+                    mb-3
+                    inline-flex
+                    items-center
+                    gap-2
+                    rounded-full
+                    border border-[#EAD6AA]
+                    bg-[#F9F1E0]
+                    px-3 py-1.5
+                "
+            >
+
+                <span
+                    class="
+                        h-2 w-2
+                        rounded-full
+                        bg-[#C9952C]
+                    "
+                ></span>
+
+                <span
+                    class="
+                        text-[10px]
+                        font-black
+                        uppercase
+                        tracking-[0.18em]
+                        text-[#8B5E3C]
+                    "
+                >
+                    Menu Management
+                </span>
+
+            </div>
+
+
+            <h1
+                class="
+                    text-2xl
+                    font-black
+                    tracking-tight
+                    text-[#4E342E]
+                    sm:text-3xl
+                "
+            >
+                {{ page_title }}
+            </h1>
+
+
+            <p
+                class="
+                    mt-2
+                    max-w-xl
+                    text-sm
+                    leading-6
+                    text-[#8B776E]
+                "
+            >
+                {% if category %}
+                    Update this category's information,
+                    visibility and position on the customer menu.
+                {% else %}
+                    Create a new category to organize food
+                    items on the customer menu.
+                {% endif %}
+            </p>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ======================================================
+         FORM CARD
+         ====================================================== -->
+    <form
+        method="post"
+        class="
+            overflow-hidden
+            rounded-2xl
+            border border-[#E8DDD0]
+            bg-white
+            shadow-sm
+        "
+    >
+
+        {% csrf_token %}
+
+
+        <!-- ==================================================
+             FORM HEADER
+             ================================================== -->
+        <div
+            class="
+                flex
+                items-center
+                justify-between
+                gap-4
+                border-b
+                border-[#E8DDD0]
+                bg-[#F9F1E0]
+                px-6 py-5
+                sm:px-8
+            "
+        >
+
+            <div>
+
+                <p
+                    class="
+                        text-[10px]
+                        font-black
+                        uppercase
+                        tracking-[0.18em]
+                        text-[#C9952C]
+                    "
+                >
+                    Category Details
+                </p>
+
+
+                <h2
+                    class="
+                        mt-1
+                        text-lg
+                        font-black
+                        text-[#4E342E]
+                    "
+                >
+                    {% if category %}
+                        Edit Category
+                    {% else %}
+                        New Category
+                    {% endif %}
+                </h2>
+
+
+                <p
+                    class="
+                        mt-1
+                        text-xs
+                        text-[#8B776E]
+                    "
+                >
+                    Fill in the category information below.
+                </p>
+
+            </div>
+
+
+            <div
+                class="
+                    flex h-11 w-11
+                    shrink-0
+                    items-center
+                    justify-center
+                    rounded-xl
+                    bg-[#F5E6C8]
+                    text-lg
+                    text-[#8B5E3C]
+                "
+            >
+                ▦
+            </div>
+
+        </div>
+
+
+
+        <!-- ==================================================
+             FORM BODY
+             ================================================== -->
+        <div class="p-6 sm:p-8">
+
+
+            <!-- ==============================================
+                 NON-FIELD ERRORS
+                 ============================================== -->
+            {% if form.non_field_errors %}
+
+                <div
+                    class="
+                        mb-6
+                        rounded-xl
+                        border border-[#E5B9AB]
+                        bg-[#FDEDE8]
+                        p-4
+                    "
+                >
+
+                    <div
+                        class="
+                            flex
+                            items-start
+                            gap-3
+                        "
+                    >
+
+                        <div
+                            class="
+                                flex h-8 w-8
+                                shrink-0
+                                items-center
+                                justify-center
+                                rounded-lg
+                                bg-white
+                                font-black
+                                text-[#C75B39]
+                            "
+                        >
+                            !
+                        </div>
+
+
+                        <div>
+
+                            <p
+                                class="
+                                    text-xs
+                                    font-black
+                                    uppercase
+                                    tracking-wide
+                                    text-[#C75B39]
+                                "
+                            >
+                                Please check the form
+                            </p>
+
+
+                            <div
+                                class="
+                                    mt-1
+                                    text-sm
+                                    leading-6
+                                    text-[#8B4A37]
+                                "
+                            >
+                                {{ form.non_field_errors }}
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            {% endif %}
+
+
+
+            <div class="space-y-7">
+
+
+                <!-- ==========================================
+                     CATEGORY NAME
+                     ========================================== -->
+                <div>
+
+                    <div
+                        class="
+                            mb-2
+                            flex
+                            items-center
+                            justify-between
+                            gap-3
+                        "
+                    >
+
+                        <label
+                            for="{{ form.name.id_for_label }}"
+                            class="
+                                block
+                                text-sm
+                                font-black
+                                text-[#4E342E]
+                            "
+                        >
+                            Category Name
+                        </label>
+
+
+                        <span
+                            class="
+                                text-[10px]
+                                font-black
+                                uppercase
+                                tracking-wide
+                                text-[#C75B39]
+                            "
+                        >
+                            Required
+                        </span>
+
+                    </div>
+
+
+                    <div
+                        class="
+                            [&_input]:
+                            w-full
+
+                            [&_input]:
+                            rounded-xl
+
+                            [&_input]:
+                            border
+
+                            [&_input]:
+                            border-[#E8DDD0]
+
+                            [&_input]:
+                            bg-[#FAF6F0]
+
+                            [&_input]:
+                            px-4
+
+                            [&_input]:
+                            py-3
+
+                            [&_input]:
+                            text-sm
+
+                            [&_input]:
+                            font-semibold
+
+                            [&_input]:
+                            text-[#4E342E]
+
+                            [&_input]:
+                            outline-none
+
+                            [&_input]:
+                            transition
+
+                            [&_input:focus]:
+                            border-[#C9952C]
+
+                            [&_input:focus]:
+                            bg-white
+
+                            [&_input:focus]:
+                            ring-4
+
+                            [&_input:focus]:
+                            ring-[#F9F1E0]
+                        "
+                    >
+                        {{ form.name }}
+                    </div>
+
+
+                    <p
+                        class="
+                            mt-2
+                            text-xs
+                            leading-5
+                            text-[#A08F86]
+                        "
+                    >
+                        Example: Rice Meals, Swallow,
+                        Soups, Drinks or Snacks.
+                    </p>
+
+
+                    {% for error in form.name.errors %}
+
+                        <p
+                            class="
+                                mt-2
+                                flex
+                                items-center
+                                gap-1.5
+                                text-xs
+                                font-bold
+                                text-[#C75B39]
+                            "
+                        >
+                            <span>!</span>
+
+                            {{ error }}
+                        </p>
+
+                    {% endfor %}
+
+                </div>
+
+
+
+                <!-- ==========================================
+                     DESCRIPTION
+                     ========================================== -->
+                <div>
+
+                    <label
+                        for="{{ form.description.id_for_label }}"
+                        class="
+                            mb-2
+                            block
+                            text-sm
+                            font-black
+                            text-[#4E342E]
+                        "
+                    >
+                        Description
+                    </label>
+
+
+                    <div
+                        class="
+                            [&_textarea]:
+                            min-h-[130px]
+
+                            [&_textarea]:
+                            w-full
+
+                            [&_textarea]:
+                            resize-y
+
+                            [&_textarea]:
+                            rounded-xl
+
+                            [&_textarea]:
+                            border
+
+                            [&_textarea]:
+                            border-[#E8DDD0]
+
+                            [&_textarea]:
+                            bg-[#FAF6F0]
+
+                            [&_textarea]:
+                            px-4
+
+                            [&_textarea]:
+                            py-3
+
+                            [&_textarea]:
+                            text-sm
+
+                            [&_textarea]:
+                            leading-6
+
+                            [&_textarea]:
+                            text-[#4E342E]
+
+                            [&_textarea]:
+                            outline-none
+
+                            [&_textarea]:
+                            transition
+
+                            [&_textarea:focus]:
+                            border-[#C9952C]
+
+                            [&_textarea:focus]:
+                            bg-white
+
+                            [&_textarea:focus]:
+                            ring-4
+
+                            [&_textarea:focus]:
+                            ring-[#F9F1E0]
+                        "
+                    >
+                        {{ form.description }}
+                    </div>
+
+
+                    <p
+                        class="
+                            mt-2
+                            text-xs
+                            leading-5
+                            text-[#A08F86]
+                        "
+                    >
+                        Add a short description that
+                        explains what customers will find
+                        in this category.
+                    </p>
+
+
+                    {% for error in form.description.errors %}
+
+                        <p
+                            class="
+                                mt-2
+                                flex
+                                items-center
+                                gap-1.5
+                                text-xs
+                                font-bold
+                                text-[#C75B39]
+                            "
+                        >
+                            <span>!</span>
+
+                            {{ error }}
+                        </p>
+
+                    {% endfor %}
+
+                </div>
+
+
+
+                <!-- ==========================================
+                     DISPLAY ORDER
+                     ========================================== -->
+                <div>
+
+                    <label
+                        for="{{ form.order.id_for_label }}"
+                        class="
+                            mb-2
+                            block
+                            text-sm
+                            font-black
+                            text-[#4E342E]
+                        "
+                    >
+                        Display Order
+                    </label>
+
+
+                    <div
+                        class="
+                            max-w-xs
+
+                            [&_input]:
+                            w-full
+
+                            [&_input]:
+                            rounded-xl
+
+                            [&_input]:
+                            border
+
+                            [&_input]:
+                            border-[#E8DDD0]
+
+                            [&_input]:
+                            bg-[#FAF6F0]
+
+                            [&_input]:
+                            px-4
+
+                            [&_input]:
+                            py-3
+
+                            [&_input]:
+                            text-sm
+
+                            [&_input]:
+                            font-bold
+
+                            [&_input]:
+                            text-[#4E342E]
+
+                            [&_input]:
+                            outline-none
+
+                            [&_input]:
+                            transition
+
+                            [&_input:focus]:
+                            border-[#C9952C]
+
+                            [&_input:focus]:
+                            bg-white
+
+                            [&_input:focus]:
+                            ring-4
+
+                            [&_input:focus]:
+                            ring-[#F9F1E0]
+                        "
+                    >
+                        {{ form.order }}
+                    </div>
+
+
+
+                    <!-- EXPLANATION -->
+                    <div
+                        class="
+                            mt-3
+                            flex
+                            items-start
+                            gap-3
+                            rounded-xl
+                            border border-[#EAD6AA]
+                            bg-[#F9F1E0]
+                            p-3
+                        "
+                    >
+
+                        <div
+                            class="
+                                flex h-7 w-7
+                                shrink-0
+                                items-center
+                                justify-center
+                                rounded-lg
+                                bg-white
+                                text-xs
+                                font-black
+                                text-[#C9952C]
+                            "
+                        >
+                            i
+                        </div>
+
+
+                        <p
+                            class="
+                                text-xs
+                                leading-5
+                                text-[#8B5E3C]
+                            "
+                        >
+                            Lower numbers appear first
+                            on the customer menu.
+
+                            For example,
+                            <strong>1</strong>
+                            appears before
+                            <strong>2</strong>.
+                        </p>
+
+                    </div>
+
+
+                    {% for error in form.order.errors %}
+
+                        <p
+                            class="
+                                mt-2
+                                flex
+                                items-center
+                                gap-1.5
+                                text-xs
+                                font-bold
+                                text-[#C75B39]
+                            "
+                        >
+                            <span>!</span>
+
+                            {{ error }}
+                        </p>
+
+                    {% endfor %}
+
+                </div>
+
+
+
+                <!-- ==========================================
+                     ACTIVE CATEGORY
+                     ========================================== -->
+                <label
+                    class="
+                        flex
+                        cursor-pointer
+                        items-start
+                        gap-4
+                        rounded-2xl
+                        border border-[#DCE7C1]
+                        bg-[#F0F5E0]
+                        p-5
+                        transition
+                        hover:border-[#BFD090]
+                    "
+                >
+
+                    <div
+                        class="
+                            pt-0.5
+
+                            [&_input]:
+                            h-5
+
+                            [&_input]:
+                            w-5
+
+                            [&_input]:
+                            cursor-pointer
+
+                            [&_input]:
+                            accent-[#6B8E23]
+                        "
+                    >
+                        {{ form.is_active }}
+                    </div>
+
+
+                    <div class="min-w-0">
+
+                        <div
+                            class="
+                                flex
+                                flex-wrap
+                                items-center
+                                gap-2
+                            "
+                        >
+
+                            <p
+                                class="
+                                    text-sm
+                                    font-black
+                                    text-[#4E342E]
+                                "
+                            >
+                                Active Category
+                            </p>
+
+
+                            <span
+                                class="
+                                    rounded-full
+                                    bg-white
+                                    px-2 py-0.5
+                                    text-[9px]
+                                    font-black
+                                    uppercase
+                                    tracking-wide
+                                    text-[#6B8E23]
+                                "
+                            >
+                                Visible
+                            </span>
+
+                        </div>
+
+
+                        <p
+                            class="
+                                mt-1
+                                text-xs
+                                leading-5
+                                text-[#667849]
+                            "
+                        >
+                            When enabled, customers can
+                            see this category on the
+                            Dikubs Eatery menu.
+                        </p>
+
+                    </div>
+
+                </label>
+
+
+                {% for error in form.is_active.errors %}
+
+                    <p
+                        class="
+                            -mt-4
+                            text-xs
+                            font-bold
+                            text-[#C75B39]
+                        "
+                    >
+                        {{ error }}
+                    </p>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+
+
+        <!-- ==================================================
+             FORM ACTIONS
+             ================================================== -->
+        <div
+            class="
+                flex
+                flex-col-reverse
+                gap-3
+                border-t
+                border-[#E8DDD0]
+                bg-[#FAF6F0]
+                px-6 py-5
+                sm:flex-row
+                sm:items-center
+                sm:justify-end
+                sm:px-8
+            "
+        >
+
+            <a
+                href="{% url 'eatery:category_list' %}"
+
+                class="
+                    inline-flex
+                    items-center
+                    justify-center
+                    rounded-xl
+                    border border-[#E8DDD0]
+                    bg-white
+                    px-5 py-3
+                    text-sm
+                    font-black
+                    text-[#5D4037]
+                    transition
+                    hover:border-[#C9952C]
+                    hover:bg-[#F9F1E0]
+                "
+            >
+                Cancel
+            </a>
+
+
+
+            <button
+                type="submit"
+
+                class="
+                    inline-flex
+                    items-center
+                    justify-center
+                    gap-2
+                    rounded-xl
+                    bg-[#4E342E]
+                    px-6 py-3
+                    text-sm
+                    font-black
+                    text-white
+                    shadow-sm
+                    transition
+                    hover:-translate-y-0.5
+                    hover:bg-[#3E2723]
+                    hover:shadow-md
+                    focus:outline-none
+                    focus:ring-4
+                    focus:ring-[#C9952C]/20
+                "
+            >
+
+                {% if category %}
+
+                    <span>✓</span>
+                    Save Changes
+
+                {% else %}
+
+                    <span>+</span>
+                    Create Category
+
+                {% endif %}
+
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+{% endblock %}

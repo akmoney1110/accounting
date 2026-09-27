@@ -16,7 +16,7 @@ from .views import (
     
     # Payment Allocation
     AllocatePaymentView,
-    RemoveAllocationView,
+    RemoveAllocationView,DashboardRedirectView,
     BatchDeleteView,
     
     # AJAX
@@ -123,7 +123,7 @@ urlpatterns = [
     path('users/<int:pk>/profile/edit/', UserProfileEditView.as_view(), name='user_profile_edit'),  # NEW
     path('staff-directory/', StaffListView.as_view(), name='staff_list'),
 
-
+    path("dashboard/", DashboardRedirectView.as_view(), name="dashboard"),
     # AJAX Helpers
     path('ajax/users-by-type/', GetUsersByTypeView.as_view(), name='ajax_users_by_type'),
     path('ajax/products-by-user/', GetProductsByUserView.as_view(), name='ajax_products_by_user'),

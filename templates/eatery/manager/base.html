@@ -1,0 +1,1451 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        {% block title %}
+            Dikubs Eatery
+        {% endblock %}
+    </title>
+
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+
+    <style>
+
+        :root {
+            --sand-bg: #FAF6F0;
+            --sand-light: #F5EFE6;
+            --sand-border: #E8DDD0;
+
+            --soil-dark: #4E342E;
+            --soil-deeper: #3E2723;
+            --soil-text: #5D4037;
+
+            --harvest-gold: #C9952C;
+            --harvest-light: #F9F1E0;
+
+            --crop-green: #6B8E23;
+            --crop-light: #F0F5E0;
+
+            --terracotta: #C75B39;
+            --terracotta-light: #FDEDE8;
+
+            --wheat: #D4A843;
+            --cashew-cream: #F5E6C8;
+
+            --dry-brown: #8B5E3C;
+            --leaf-green: #4A7C2A;
+
+            --muted: #8D7B6B;
+            --muted-light: #A89B8C;
+        }
+
+
+        [x-cloak] {
+            display: none !important;
+        }
+
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+
+        body {
+            font-family:
+                Inter,
+                ui-sans-serif,
+                system-ui,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+
+            background:
+                radial-gradient(
+                    circle at 95% 5%,
+                    rgba(201, 149, 44, 0.05),
+                    transparent 25%
+                ),
+                var(--sand-bg);
+
+            color: var(--soil-text);
+        }
+
+
+        .sidebar-link {
+            transition:
+                background-color .2s ease,
+                color .2s ease,
+                transform .2s ease,
+                border-color .2s ease;
+        }
+
+
+        .sidebar-link:hover {
+            transform: translateX(3px);
+        }
+
+
+        /*
+         * Thin warm scrollbars for the manager area.
+         */
+        * {
+            scrollbar-width: thin;
+            scrollbar-color:
+                rgba(201, 149, 44, .35)
+                transparent;
+        }
+
+
+        *::-webkit-scrollbar {
+            width: 7px;
+            height: 7px;
+        }
+
+
+        *::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+
+        *::-webkit-scrollbar-thumb {
+            background:
+                rgba(201, 149, 44, .35);
+
+            border-radius: 999px;
+        }
+
+
+        *::-webkit-scrollbar-thumb:hover {
+            background:
+                rgba(201, 149, 44, .55);
+        }
+
+
+        ::selection {
+            background: var(--harvest-gold);
+            color: var(--soil-deeper);
+        }
+
+    </style>
+
+
+    {% block extra_head %}
+    {% endblock %}
+
+</head>
+
+
+
+<body
+    class="
+        bg-[#FAF6F0]
+        text-[#5D4037]
+    "
+>
+
+
+<div class="min-h-screen lg:flex">
+
+
+    <!-- ======================================================
+         MOBILE OVERLAY
+         ====================================================== -->
+    <div
+        id="sidebarOverlay"
+
+        class="
+            fixed inset-0
+            z-40
+            hidden
+            bg-[#2A1B17]/65
+            backdrop-blur-[2px]
+            lg:hidden
+        "
+
+        onclick="closeSidebar()"
+    ></div>
+
+
+
+    <!-- ======================================================
+         SIDEBAR
+         ====================================================== -->
+    <aside
+        id="sidebar"
+
+        class="
+            fixed
+            inset-y-0
+            left-0
+            z-50
+
+            flex
+            w-72
+            -translate-x-full
+            flex-col
+
+            border-r
+            border-white/5
+
+            bg-gradient-to-b
+            from-[#4E342E]
+            via-[#452E29]
+            to-[#3E2723]
+
+            text-white
+
+            shadow-2xl
+            shadow-black/10
+
+            transition-transform
+            duration-300
+
+            lg:static
+            lg:translate-x-0
+            lg:shadow-none
+        "
+    >
+
+
+        <!-- ==================================================
+             BRAND
+             ================================================== -->
+        <div
+            class="
+                border-b
+                border-[#F5E6C8]/10
+                px-6 py-7
+            "
+        >
+
+            <a
+                href="{% url 'eatery:manager_dashboard' %}"
+
+                class="
+                    group
+                    flex
+                    items-center
+                    gap-3
+                "
+            >
+
+                <!-- LOGO -->
+                <div
+                    class="
+                        flex
+                        h-12 w-12
+                        shrink-0
+                        items-center
+                        justify-center
+
+                        rounded-2xl
+
+                        bg-[#C9952C]
+
+                        text-lg
+                        font-black
+                        text-[#3E2723]
+
+                        shadow-lg
+                        shadow-black/10
+
+                        transition
+                        duration-200
+
+                        group-hover:scale-105
+                        group-hover:bg-[#D4A843]
+                    "
+                >
+                    D
+                </div>
+
+
+
+                <div class="min-w-0">
+
+                    <h1
+                        class="
+                            text-xl
+                            font-black
+                            tracking-tight
+                            text-white
+                        "
+                    >
+                        Dikubs
+                    </h1>
+
+
+                    <p
+                        class="
+                            mt-0.5
+                            text-[11px]
+                            font-semibold
+                            uppercase
+                            tracking-[0.12em]
+                            text-[#D7CCC8]
+                        "
+                    >
+                        Eatery Management
+                    </p>
+
+                </div>
+
+            </a>
+
+        </div>
+
+
+
+        <!-- ==================================================
+             NAVIGATION
+             ================================================== -->
+        <nav
+            class="
+                flex-1
+                space-y-1.5
+                overflow-y-auto
+                px-4 py-6
+            "
+        >
+
+
+            <!-- SECTION LABEL -->
+            <p
+                class="
+                    mb-3
+                    px-4
+                    text-[9px]
+                    font-black
+                    uppercase
+                    tracking-[0.2em]
+                    text-[#AFA09A]
+                "
+            >
+                Management
+            </p>
+
+
+
+            <!-- =================================================
+                 DASHBOARD
+                 ================================================= -->
+            <a
+                href="{% url 'eatery:manager_dashboard' %}"
+
+                onclick="closeSidebarOnMobile()"
+
+                class="
+                    sidebar-link
+                    flex
+                    items-center
+                    gap-3
+
+                    rounded-xl
+
+                    border
+
+                    px-4 py-3
+
+                    text-sm
+                    font-bold
+
+                    {% if request.resolver_match.url_name == 'manager_dashboard' %}
+
+                        border-[#D4A843]/40
+                        bg-[#C9952C]
+                        text-[#3E2723]
+                        shadow-md
+                        shadow-black/10
+
+                    {% else %}
+
+                        border-transparent
+                        text-[#D7CCC8]
+
+                        hover:border-white/5
+                        hover:bg-white/10
+                        hover:text-white
+
+                    {% endif %}
+                "
+            >
+
+                <span
+                    class="
+                        flex h-7 w-7
+                        items-center
+                        justify-center
+                        rounded-lg
+
+                        {% if request.resolver_match.url_name == 'manager_dashboard' %}
+                            bg-white/20
+                        {% else %}
+                            bg-white/5
+                        {% endif %}
+                    "
+                >
+                    ⌂
+                </span>
+
+
+                <span>
+                    Dashboard
+                </span>
+
+            </a>
+
+
+
+            <!-- =================================================
+                 ORDERS
+                 ================================================= -->
+            <a
+                href="{% url 'eatery:order_list' %}"
+
+                onclick="closeSidebarOnMobile()"
+
+                class="
+                    sidebar-link
+
+                    flex
+                    items-center
+                    justify-between
+                    gap-3
+
+                    rounded-xl
+
+                    border
+
+                    px-4 py-3
+
+                    text-sm
+                    font-bold
+
+                    {% if request.resolver_match.url_name == 'order_list' or request.resolver_match.url_name == 'order_detail' %}
+
+                        border-[#D4A843]/40
+                        bg-[#C9952C]
+                        text-[#3E2723]
+                        shadow-md
+                        shadow-black/10
+
+                    {% else %}
+
+                        border-transparent
+                        text-[#D7CCC8]
+
+                        hover:border-white/5
+                        hover:bg-white/10
+                        hover:text-white
+
+                    {% endif %}
+                "
+            >
+
+                <div
+                    class="
+                        flex
+                        min-w-0
+                        items-center
+                        gap-3
+                    "
+                >
+
+                    <span
+                        class="
+                            flex h-7 w-7
+                            shrink-0
+                            items-center
+                            justify-center
+                            rounded-lg
+
+                            {% if request.resolver_match.url_name == 'order_list' or request.resolver_match.url_name == 'order_detail' %}
+                                bg-white/20
+                            {% else %}
+                                bg-white/5
+                            {% endif %}
+                        "
+                    >
+                        ▣
+                    </span>
+
+
+                    <span>
+                        Orders
+                    </span>
+
+                </div>
+
+
+
+                {% if pending_orders_count %}
+
+                    <span
+                        class="
+                            min-w-6
+                            rounded-full
+
+                            bg-[#C75B39]
+
+                            px-2
+                            py-0.5
+
+                            text-center
+                            text-[10px]
+                            font-black
+                            text-white
+
+                            shadow-sm
+                        "
+                    >
+                        {{ pending_orders_count }}
+                    </span>
+
+                {% endif %}
+
+            </a>
+
+
+
+            <!-- =================================================
+                 MENU
+                 ================================================= -->
+            <a
+                href="{% url 'eatery:food_list' %}"
+
+                onclick="closeSidebarOnMobile()"
+
+                class="
+                    sidebar-link
+
+                    flex
+                    items-center
+                    gap-3
+
+                    rounded-xl
+
+                    border
+
+                    px-4 py-3
+
+                    text-sm
+                    font-bold
+
+                    {% if request.resolver_match.url_name == 'food_list' or request.resolver_match.url_name == 'food_create' or request.resolver_match.url_name == 'food_update' %}
+
+                        border-[#D4A843]/40
+                        bg-[#C9952C]
+                        text-[#3E2723]
+                        shadow-md
+                        shadow-black/10
+
+                    {% else %}
+
+                        border-transparent
+                        text-[#D7CCC8]
+
+                        hover:border-white/5
+                        hover:bg-white/10
+                        hover:text-white
+
+                    {% endif %}
+                "
+            >
+
+                <span
+                    class="
+                        flex h-7 w-7
+                        items-center
+                        justify-center
+                        rounded-lg
+
+                        {% if request.resolver_match.url_name == 'food_list' or request.resolver_match.url_name == 'food_create' or request.resolver_match.url_name == 'food_update' %}
+                            bg-white/20
+                        {% else %}
+                            bg-white/5
+                        {% endif %}
+                    "
+                >
+                    ☰
+                </span>
+
+
+                <span>
+                    Menu
+                </span>
+
+            </a>
+
+
+
+            <!-- =================================================
+                 CATEGORIES
+                 ================================================= -->
+            <a
+                href="{% url 'eatery:category_list' %}"
+
+                onclick="closeSidebarOnMobile()"
+
+                class="
+                    sidebar-link
+
+                    flex
+                    items-center
+                    gap-3
+
+                    rounded-xl
+
+                    border
+
+                    px-4 py-3
+
+                    text-sm
+                    font-bold
+
+                    {% if request.resolver_match.url_name == 'category_list' or request.resolver_match.url_name == 'category_create' or request.resolver_match.url_name == 'category_update' %}
+
+                        border-[#D4A843]/40
+                        bg-[#C9952C]
+                        text-[#3E2723]
+                        shadow-md
+                        shadow-black/10
+
+                    {% else %}
+
+                        border-transparent
+                        text-[#D7CCC8]
+
+                        hover:border-white/5
+                        hover:bg-white/10
+                        hover:text-white
+
+                    {% endif %}
+                "
+            >
+
+                <span
+                    class="
+                        flex h-7 w-7
+                        items-center
+                        justify-center
+                        rounded-lg
+
+                        {% if request.resolver_match.url_name == 'category_list' or request.resolver_match.url_name == 'category_create' or request.resolver_match.url_name == 'category_update' %}
+                            bg-white/20
+                        {% else %}
+                            bg-white/5
+                        {% endif %}
+                    "
+                >
+                    ▦
+                </span>
+
+
+                <span>
+                    Categories
+                </span>
+
+            </a>
+
+
+
+            <!-- =================================================
+                 DIVIDER
+                 ================================================= -->
+            <div
+                class="
+                    my-5
+                    border-t
+                    border-[#F5E6C8]/10
+                "
+            ></div>
+
+
+
+            <p
+                class="
+                    mb-3
+                    px-4
+                    text-[9px]
+                    font-black
+                    uppercase
+                    tracking-[0.2em]
+                    text-[#AFA09A]
+                "
+            >
+                Customer
+            </p>
+
+
+
+            <!-- =================================================
+                 CUSTOMER MENU
+                 ================================================= -->
+            <a
+                href="{% url 'eatery:menu' %}"
+
+                target="_blank"
+                rel="noopener noreferrer"
+
+                class="
+                    sidebar-link
+
+                    flex
+                    items-center
+                    justify-between
+                    gap-3
+
+                    rounded-xl
+
+                    border
+                    border-transparent
+
+                    px-4 py-3
+
+                    text-sm
+                    font-bold
+
+                    text-[#D7CCC8]
+
+                    hover:border-white/5
+                    hover:bg-white/10
+                    hover:text-white
+                "
+            >
+
+                <div
+                    class="
+                        flex
+                        items-center
+                        gap-3
+                    "
+                >
+
+                    <span
+                        class="
+                            flex h-7 w-7
+                            items-center
+                            justify-center
+                            rounded-lg
+                            bg-white/5
+                        "
+                    >
+                        ↗
+                    </span>
+
+
+                    <span>
+                        View Customer Menu
+                    </span>
+
+                </div>
+
+
+                <span
+                    class="
+                        text-xs
+                        text-[#AFA09A]
+                    "
+                >
+                    ↗
+                </span>
+
+            </a>
+
+        </nav>
+
+
+
+        <!-- ==================================================
+             USER AREA
+             ================================================== -->
+        <div
+            class="
+                border-t
+                border-[#F5E6C8]/10
+                bg-black/5
+                p-4
+            "
+        >
+
+
+            <!-- USER -->
+            <div
+                class="
+                    mb-4
+                    flex
+                    items-center
+                    gap-3
+
+                    rounded-xl
+
+                    bg-white/5
+
+                    px-3 py-3
+                "
+            >
+
+                <div
+                    class="
+                        flex
+                        h-10 w-10
+                        shrink-0
+                        items-center
+                        justify-center
+
+                        rounded-full
+
+                        bg-[#6B8E23]
+
+                        text-sm
+                        font-black
+                        text-white
+
+                        shadow-sm
+                    "
+                >
+                    {{ request.user.username|slice:":1"|upper }}
+                </div>
+
+
+
+                <div
+                    class="
+                        min-w-0
+                        flex-1
+                    "
+                >
+
+                    <p
+                        class="
+                            truncate
+                            text-sm
+                            font-black
+                            text-white
+                        "
+                    >
+                        {{ request.user.get_full_name|default:request.user.username }}
+                    </p>
+
+
+                    <p
+                        class="
+                            mt-0.5
+                            truncate
+                            text-[11px]
+                            text-[#BCAAA4]
+                        "
+                    >
+                        {{ request.user.get_role_display }}
+                    </p>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- LOGOUT -->
+            <a
+                href="{% url 'logout' %}"
+
+                class="
+                    flex
+                    w-full
+                    items-center
+                    justify-center
+                    gap-2
+
+                    rounded-xl
+
+                    border
+                    border-white/10
+
+                    px-4 py-2.5
+
+                    text-center
+                    text-sm
+                    font-bold
+
+                    text-[#D7CCC8]
+
+                    transition
+
+                    hover:border-[#C75B39]/40
+                    hover:bg-[#C75B39]/15
+                    hover:text-white
+                "
+            >
+
+                <span>
+                    Logout
+                </span>
+
+                <span class="text-xs">
+                    →
+                </span>
+
+            </a>
+
+        </div>
+
+    </aside>
+
+
+
+    <!-- ======================================================
+         MAIN CONTENT
+         ====================================================== -->
+    <main
+        class="
+            min-w-0
+            flex-1
+            bg-[#FAF6F0]
+        "
+    >
+
+
+        <!-- ==================================================
+             TOP HEADER
+             ================================================== -->
+        <header
+            class="
+                sticky
+                top-0
+                z-30
+
+                flex
+                h-20
+                items-center
+                justify-between
+
+                border-b
+                border-[#E8DDD0]
+
+                bg-[#FFFDF9]/95
+
+                px-4
+
+                backdrop-blur-xl
+
+                sm:px-6
+                lg:px-8
+            "
+        >
+
+
+            <!-- LEFT -->
+            <div
+                class="
+                    flex
+                    items-center
+                    gap-4
+                "
+            >
+
+
+                <!-- MOBILE MENU -->
+                <button
+                    type="button"
+
+                    onclick="openSidebar()"
+
+                    aria-label="Open navigation menu"
+
+                    class="
+                        flex
+                        h-10 w-10
+                        items-center
+                        justify-center
+
+                        rounded-xl
+
+                        border
+                        border-[#E8DDD0]
+
+                        bg-white
+
+                        text-xl
+                        text-[#4E342E]
+
+                        shadow-sm
+
+                        transition
+
+                        hover:border-[#C9952C]
+                        hover:bg-[#F9F1E0]
+
+                        lg:hidden
+                    "
+                >
+                    ☰
+                </button>
+
+
+
+                <!-- PAGE TITLE -->
+                <div>
+
+                    <h2
+                        class="
+                            font-black
+                            text-[#4E342E]
+                        "
+                    >
+                        {% block header_title %}
+                            Eatery Dashboard
+                        {% endblock %}
+                    </h2>
+
+
+                    <p
+                        class="
+                            hidden
+                            text-xs
+                            font-medium
+                            text-[#8D7B6B]
+                            sm:block
+                        "
+                    >
+                        Dikubs Eatery Management
+                    </p>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- RIGHT -->
+            <div
+                class="
+                    flex
+                    items-center
+                    gap-3
+                "
+            >
+
+
+                <!-- STATUS DOT -->
+                <div
+                    class="
+                        hidden
+                        items-center
+                        gap-2
+
+                        rounded-full
+
+                        border
+                        border-[#DCE7C1]
+
+                        bg-[#F0F5E0]
+
+                        px-3 py-1.5
+
+                        md:flex
+                    "
+                >
+
+                    <span
+                        class="
+                            h-2 w-2
+                            rounded-full
+                            bg-[#6B8E23]
+                        "
+                    ></span>
+
+
+                    <span
+                        class="
+                            text-[10px]
+                            font-black
+                            uppercase
+                            tracking-wide
+                            text-[#5D6D37]
+                        "
+                    >
+                        Management
+                    </span>
+
+                </div>
+
+
+
+                <!-- CURRENT USER -->
+                <div class="text-right">
+
+                    <p
+                        class="
+                            max-w-[130px]
+                            truncate
+                            text-sm
+                            font-black
+                            text-[#4E342E]
+                        "
+                    >
+                        {{ request.user.username }}
+                    </p>
+
+
+                    <p
+                        class="
+                            max-w-[130px]
+                            truncate
+                            text-[11px]
+                            text-[#8D7B6B]
+                        "
+                    >
+                        {{ request.user.get_role_display }}
+                    </p>
+
+                </div>
+
+
+
+                <!-- USER AVATAR -->
+                <div
+                    class="
+                        hidden
+                        h-9 w-9
+                        shrink-0
+                        items-center
+                        justify-center
+
+                        rounded-full
+
+                        bg-[#F9F1E0]
+
+                        text-xs
+                        font-black
+                        text-[#8B5E3C]
+
+                        sm:flex
+                    "
+                >
+                    {{ request.user.username|slice:":1"|upper }}
+                </div>
+
+            </div>
+
+        </header>
+
+
+
+        <!-- ==================================================
+             PAGE CONTENT
+             ================================================== -->
+        <div
+            class="
+                p-4
+                sm:p-6
+                lg:p-8
+            "
+        >
+
+
+            <!-- =================================================
+                 DJANGO MESSAGES
+                 ================================================= -->
+            {% if messages %}
+
+                <div class="mb-6 space-y-3">
+
+                    {% for message in messages %}
+
+                        <div
+                            class="
+                                flex
+                                items-start
+                                gap-3
+
+                                rounded-xl
+
+                                border
+
+                                px-4 py-3
+
+                                text-sm
+                                font-semibold
+
+                                shadow-sm
+
+
+                                {% if message.tags == 'success' %}
+
+                                    border-[#DCE7C1]
+                                    bg-[#F0F5E0]
+                                    text-[#4A7C2A]
+
+
+                                {% elif message.tags == 'error' %}
+
+                                    border-[#E5B9AB]
+                                    bg-[#FDEDE8]
+                                    text-[#A7462D]
+
+
+                                {% elif message.tags == 'warning' %}
+
+                                    border-[#EAD6AA]
+                                    bg-[#F9F1E0]
+                                    text-[#8B5E3C]
+
+
+                                {% else %}
+
+                                    border-[#E8DDD0]
+                                    bg-[#F5EFE6]
+                                    text-[#5D4037]
+
+                                {% endif %}
+                            "
+                        >
+
+
+                            <!-- ICON -->
+                            <span
+                                class="
+                                    flex
+                                    h-7 w-7
+                                    shrink-0
+                                    items-center
+                                    justify-center
+
+                                    rounded-lg
+
+                                    bg-white/70
+
+                                    text-xs
+                                    font-black
+                                "
+                            >
+
+                                {% if message.tags == 'success' %}
+
+                                    ✓
+
+                                {% elif message.tags == 'error' %}
+
+                                    !
+
+                                {% elif message.tags == 'warning' %}
+
+                                    !
+
+                                {% else %}
+
+                                    i
+
+                                {% endif %}
+
+                            </span>
+
+
+
+                            <!-- MESSAGE -->
+                            <div
+                                class="
+                                    min-w-0
+                                    flex-1
+                                    pt-0.5
+                                "
+                            >
+                                {{ message }}
+                            </div>
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            {% endif %}
+
+
+
+            <!-- =================================================
+                 CHILD TEMPLATE CONTENT
+                 ================================================= -->
+            {% block content %}
+            {% endblock %}
+
+        </div>
+
+    </main>
+
+</div>
+
+
+
+<!-- =========================================================
+     SIDEBAR JAVASCRIPT
+     ========================================================= -->
+<script>
+
+    const sidebar =
+        document.getElementById(
+            "sidebar"
+        );
+
+
+    const sidebarOverlay =
+        document.getElementById(
+            "sidebarOverlay"
+        );
+
+
+
+    // ========================================================
+    // OPEN MOBILE SIDEBAR
+    // ========================================================
+
+    function openSidebar() {
+
+        if (!sidebar || !sidebarOverlay) {
+            return;
+        }
+
+
+        sidebar.classList.remove(
+            "-translate-x-full"
+        );
+
+
+        sidebarOverlay.classList.remove(
+            "hidden"
+        );
+
+
+        /*
+         * Prevent the page behind the sidebar from
+         * scrolling while the mobile menu is open.
+         */
+        document.body.classList.add(
+            "overflow-hidden"
+        );
+
+    }
+
+
+
+    // ========================================================
+    // CLOSE MOBILE SIDEBAR
+    // ========================================================
+
+    function closeSidebar() {
+
+        if (!sidebar || !sidebarOverlay) {
+            return;
+        }
+
+
+        sidebar.classList.add(
+            "-translate-x-full"
+        );
+
+
+        sidebarOverlay.classList.add(
+            "hidden"
+        );
+
+
+        document.body.classList.remove(
+            "overflow-hidden"
+        );
+
+    }
+
+
+
+    // ========================================================
+    // CLOSE AFTER CLICKING MOBILE NAVIGATION
+    // ========================================================
+
+    function closeSidebarOnMobile() {
+
+        if (
+            window.innerWidth < 1024
+        ) {
+
+            closeSidebar();
+
+        }
+
+    }
+
+
+
+    // ========================================================
+    // ESCAPE KEY
+    // ========================================================
+
+    document.addEventListener(
+        "keydown",
+        function (event) {
+
+            if (
+                event.key === "Escape"
+            ) {
+
+                closeSidebar();
+
+            }
+
+        }
+    );
+
+
+
+    // ========================================================
+    // WINDOW RESIZE
+    // ========================================================
+
+    window.addEventListener(
+        "resize",
+        function () {
+
+            /*
+             * If the browser moves from mobile to desktop,
+             * remove the mobile overlay/body lock.
+             */
+            if (
+                window.innerWidth >= 1024
+            ) {
+
+                sidebarOverlay.classList.add(
+                    "hidden"
+                );
+
+
+                document.body.classList.remove(
+                    "overflow-hidden"
+                );
+
+            }
+
+        }
+    );
+
+</script>
+
+
+{% block extra_js %}
+{% endblock %}
+
+
+</body>
+</html>

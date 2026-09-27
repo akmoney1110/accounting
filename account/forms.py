@@ -729,121 +729,291 @@ AssignProductFormSet = formset_factory(
 # ============================================================
 # UPDATED USER CREATE FORM
 # ============================================================
-
 class UserCreateForm(BaseStyledForm):
+    """
+    Create users from the internal management dashboard.
+
+    Permission rules:
+    - Super Admin can create any role.
+    - Manager can create only Vendors and Clients.
+    - Other roles are not allowed to create users.
+
+    Business rules:
+    - Password must be confirmed.
+    - Only Clients can have a credit limit.
+    - Password is always hashed using set_password().
+    """
+
     password = forms.CharField(
-        widget=forms.PasswordInput(attrs={
-            'placeholder': 'Set a password',
-            'class': TWIND_INPUT
-        }),
-        help_text="User go use this password to login."
+        label="Password",
+        strip=False,
+        widget=forms.PasswordInput(
+            attrs={
+                "placeholder": "Set a password",
+                "class": TWIND_INPUT,
+                "autocomplete": "new-password",
+            }
+        ),
+        help_text="The user will use this password to log in.",
     )
 
     confirm_password = forms.CharField(
-        widget=forms.PasswordInput(attrs={
-            'placeholder': 'Type password again',
-            'class': TWIND_INPUT
-        }),
-        help_text="Type the same password to confirm."
+        label="Confirm Password",
+        strip=False,
+        widget=forms.PasswordInput(
+            attrs={
+                "placeholder": "Type password again",
+                "class": TWIND_INPUT,
+                "autocomplete": "new-password",
+            }
+        ),
+        help_text="Enter the same password again to confirm.",
     )
 
     class Meta:
         model = User
+
         fields = [
-            'username',
-            'first_name',
-            'last_name',
-            'email',
-            'role',
-            'phone',
-            'address',
-            'credit_limit'
+            "username",
+            "first_name",
+            "last_name",
+            "email",
+            "role",
+            "phone",
+            "address",
+            "credit_limit",
         ]
 
         widgets = {
-            'username': forms.TextInput(attrs={
-                'placeholder': 'e.g. farmer_john, buyer_mike'
-            }),
-            'first_name': forms.TextInput(attrs={
-                'placeholder': 'First name'
-            }),
-            'last_name': forms.TextInput(attrs={
-                'placeholder': 'Last name'
-            }),
-            'email': forms.EmailInput(attrs={
-                'placeholder': 'email@example.com'
-            }),
-            'phone': forms.TextInput(attrs={
-                'placeholder': '+234 800 000 0000'
-            }),
-            'address': forms.Textarea(attrs={
-                'rows': 2,
-                'placeholder': 'Village, Town, or Business address'
-            }),
-            'credit_limit': forms.NumberInput(attrs={
-                'placeholder': '0.00',
-                'step': '0.01'
-            }),
+            "username": forms.TextInput(
+                attrs={
+                    "placeholder": "e.g. farmer_john, buyer_mike",
+                    "autocomplete": "off",
+                }
+            ),
+
+            "first_name": forms.TextInput(
+                attrs={
+                    "placeholder": "First name",
+                }
+            ),
+
+            "last_name": forms.TextInput(
+                attrs={
+                    "placeholder": "Last name",
+                }
+            ),
+
+            "email": forms.EmailInput(
+                attrs={
+                    "placeholder": "email@example.com",
+                    "autocomplete": "off",
+                }
+            ),
+
+            "role": forms.Select(),
+
+            "phone": forms.TextInput(
+                attrs={
+                    "placeholder": "+234 800 000 0000",
+                    "autocomplete": "off",
+                }
+            ),
+
+            "address": forms.Textarea(
+                attrs={
+                    "rows": 2,
+                    "placeholder": "Village, Town, or Business address",
+                }
+            ),
+
+            "credit_limit": forms.NumberInput(
+                attrs={
+                    "placeholder": "0.00",
+                    "step": "0.01",
+                    "min": "0",
+                }
+            ),
         }
 
+    # ==========================================================
+    # FORM INITIALIZATION
+    # ==========================================================
     def __init__(self, *args, **kwargs):
-        self.request_user = kwargs.pop('request_user', None)
+        self.request_user = kwargs.pop("request_user", None)
 
         super().__init__(*args, **kwargs)
 
-        self.fields['email'].required = False
-        self.fields['first_name'].required = False
-        self.fields['last_name'].required = False
-        self.fields['phone'].required = False
-        self.fields['address'].required = False
-        self.fields['credit_limit'].required = False
+        # ------------------------------------------------------
+        # Optional profile fields
+        # ------------------------------------------------------
+        self.fields["email"].required = False
+        self.fields["first_name"].required = False
+        self.fields["last_name"].required = False
+        self.fields["phone"].required = False
+        self.fields["address"].required = False
+        self.fields["credit_limit"].required = False
 
-        self.fields['credit_limit'].initial = Decimal('0.00')
+        self.fields["credit_limit"].initial = Decimal("0.00")
 
-        # ==========================================================
-        # MANAGER ROLE RESTRICTION
-        # ==========================================================
-        if (
-            self.request_user
-            and self.request_user.role == User.Roles.MANAGER
-        ):
-            self.fields['role'].choices = [
+        # ------------------------------------------------------
+        # Role choices based on the logged-in user
+        # ------------------------------------------------------
+        if not self.request_user:
+            # No request user means we cannot safely determine
+            # who is creating the account.
+            self.fields["role"].choices = []
+            return
+
+        # ======================================================
+        # SUPER ADMIN
+        # Can create all available roles.
+        # ======================================================
+        if self.request_user.role == User.Roles.ADMIN:
+            self.fields["role"].choices = User.Roles.choices
+
+        # ======================================================
+        # MANAGER
+        # Can create Vendors and Clients only.
+        # ======================================================
+        elif self.request_user.role == User.Roles.MANAGER:
+            self.fields["role"].choices = [
                 (
                     User.Roles.VENDOR,
-                    User.Roles.VENDOR.label
+                    User.Roles.VENDOR.label,
                 ),
                 (
                     User.Roles.CLIENT,
-                    User.Roles.CLIENT.label
+                    User.Roles.CLIENT.label,
                 ),
             ]
 
+        # ======================================================
+        # EVERYONE ELSE
+        # STAFF, EATERY_MANAGER, VENDOR and CLIENT
+        # cannot create users.
+        # ======================================================
+        else:
+            self.fields["role"].choices = []
+
+    # ==========================================================
+    # USERNAME VALIDATION
+    # ==========================================================
+    def clean_username(self):
+        username = self.cleaned_data.get("username")
+
+        if not username:
+            return username
+
+        username = username.strip()
+
+        # Case-insensitive duplicate protection.
+        if User.objects.filter(username__iexact=username).exists():
+            raise forms.ValidationError(
+                "A user with this username already exists."
+            )
+
+        return username
+
+    # ==========================================================
+    # EMAIL VALIDATION
+    # ==========================================================
+    def clean_email(self):
+        email = self.cleaned_data.get("email")
+
+        if not email:
+            return ""
+
+        return email.strip().lower()
+
+    # ==========================================================
+    # PHONE VALIDATION
+    # ==========================================================
+    def clean_phone(self):
+        phone = self.cleaned_data.get("phone")
+
+        if not phone:
+            return ""
+
+        return phone.strip()
+
+    # ==========================================================
+    # CREDIT LIMIT VALIDATION
+    # ==========================================================
+    def clean_credit_limit(self):
+        credit_limit = self.cleaned_data.get("credit_limit")
+
+        if credit_limit is None:
+            return Decimal("0.00")
+
+        if credit_limit < Decimal("0.00"):
+            raise forms.ValidationError(
+                "Credit limit cannot be negative."
+            )
+
+        return credit_limit
+
+    # ==========================================================
+    # MAIN FORM VALIDATION
+    # ==========================================================
     def clean(self):
         cleaned = super().clean()
 
-        password = cleaned.get('password')
-        confirm = cleaned.get('confirm_password')
-        role = cleaned.get('role')
+        password = cleaned.get("password")
+        confirm_password = cleaned.get("confirm_password")
+        role = cleaned.get("role")
 
-        # ==========================================================
+        # ======================================================
         # PASSWORD CONFIRMATION
-        # ==========================================================
-        if password and confirm and password != confirm:
+        # ======================================================
+        if (
+            password
+            and confirm_password
+            and password != confirm_password
+        ):
             self.add_error(
-                'confirm_password',
-                "Passwords no match. Type the same thing twice."
+                "confirm_password",
+                "Passwords do not match. Enter the same password twice.",
             )
 
-        # ==========================================================
+        # ======================================================
+        # REQUEST USER MUST EXIST
+        # ======================================================
+        if not self.request_user:
+            self.add_error(
+                "role",
+                "Unable to determine who is creating this user.",
+            )
+
+            return cleaned
+
+        # ======================================================
+        # SUPER ADMIN SECURITY CHECK
+        #
+        # Admin may create any defined role.
+        # We still validate against Roles because HTML can
+        # be manually manipulated.
+        # ======================================================
+        if self.request_user.role == User.Roles.ADMIN:
+            allowed_roles = {
+                choice[0]
+                for choice in User.Roles.choices
+            }
+
+            if role and role not in allowed_roles:
+                self.add_error(
+                    "role",
+                    "Invalid user role selected.",
+                )
+
+        # ======================================================
         # MANAGER SECURITY CHECK
         #
-        # Never trust the HTML choices. Someone can manually submit
-        # role=ADMIN, role=MANAGER, etc.
-        # ==========================================================
-        if (
-            self.request_user
-            and self.request_user.role == User.Roles.MANAGER
-        ):
+        # Never trust the HTML dropdown alone.
+        # Someone could manually POST role=ADMIN,
+        # role=MANAGER or role=EATERY_MANAGER.
+        # ======================================================
+        elif self.request_user.role == User.Roles.MANAGER:
             allowed_roles = {
                 User.Roles.VENDOR,
                 User.Roles.CLIENT,
@@ -851,30 +1021,47 @@ class UserCreateForm(BaseStyledForm):
 
             if role not in allowed_roles:
                 self.add_error(
-                    'role',
-                    "Managers can only create Vendors and Clients."
+                    "role",
+                    "Managers can only create Vendors and Clients.",
                 )
 
-        # ==========================================================
-        # ONLY CLIENTS GET CREDIT LIMIT
-        # ==========================================================
+        # ======================================================
+        # ALL OTHER ROLES ARE NOT ALLOWED TO CREATE USERS
+        # ======================================================
+        else:
+            self.add_error(
+                "role",
+                "You do not have permission to create users.",
+            )
+
+        # ======================================================
+        # ONLY CLIENTS CAN HAVE CREDIT LIMITS
+        # ======================================================
         if role != User.Roles.CLIENT:
-            cleaned['credit_limit'] = Decimal('0.00')
+            cleaned["credit_limit"] = Decimal("0.00")
 
         return cleaned
 
+    # ==========================================================
+    # SAVE USER
+    # ==========================================================
     def save(self, commit=True):
         user = super().save(commit=False)
 
+        # Always hash password properly.
         user.set_password(
-            self.cleaned_data['password']
+            self.cleaned_data["password"]
         )
+
+        # Extra protection:
+        # Non-client accounts should never retain a credit limit.
+        if user.role != User.Roles.CLIENT:
+            user.credit_limit = Decimal("0.00")
 
         if commit:
             user.save()
 
-        return user 
-
+        return user
 
 
 from django.forms import modelformset_factory
