@@ -1,0 +1,44 @@
+
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="payment-status">
+    <h1>Complete Your Payment</h1>
+
+    <p>
+        Your order <strong>{{ order.order_number }}</strong>
+        has been saved, but payment has not yet been confirmed.
+    </p>
+
+    <p>
+        Order total:
+        <strong>₦{{ order.total_amount|floatformat:2 }}</strong>
+    </p>
+
+    <p>
+        Payment status: {{ order.get_payment_status_display }}
+    </p>
+
+    {% if messages %}
+        {% for message in messages %}
+            <p class="message">{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+
+    {% if order.payment_status != "paid" %}
+        <form
+            method="post"
+            action="{% url 'eatery:retry_payment' order.order_number %}"
+        >
+            {% csrf_token %}
+            <button type="submit">Retry Payment with Paystack</button>
+        </form>
+    {% else %}
+        <a href="{% url 'eatery:order_success' order.order_number %}">
+            View Order Confirmation
+        </a>
+    {% endif %}
+
+    <a href="{% url 'eatery:menu' %}">Return to Menu</a>
+</div>
+{% endblock %}

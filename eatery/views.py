@@ -602,7 +602,170 @@ def cart(request):
     )
 
 from .models import OrderItem
+
 class CheckoutView(View):
+    template_name = "eatery/checkout.html"
+
+    def get(self, request):
+        return render(
+            request,
+            self.template_name,
+            {"form": CustomerCheckoutForm()},
+        )
+
+    def post(self, request):
+        form = CustomerCheckoutForm(request.POST)
+        raw_cart = request.POST.get("cart_data", "")
+
+        if not form.is_valid():
+            return render(
+                request,
+                self.template_name,
+                {"form": form, "cart_data": raw_cart},
+            )
+
+        try:
+            cart_data = json.loads(raw_cart)
+        except (json.JSONDecodeError, TypeError):
+            messages.error(request, "Your cart could not be read.")
+            return redirect("eatery:cart")
+
+        if not isinstance(cart_data, list) or not cart_data:
+            messages.error(request, "Your cart is empty.")
+            return redirect("eatery:cart")
+
+        quantities = {}
+
+        for item in cart_data:
+            if not isinstance(item, dict):
+                continue
+
+            try:
+                food_id = int(item.get("id"))
+                quantity = int(item.get("quantity", 1))
+            except (TypeError, ValueError):
+                continue
+
+            if food_id <= 0 or quantity <= 0:
+                continue
+
+            quantities[food_id] = (
+                quantities.get(food_id, 0) + min(quantity, 100)
+            )
+
+        if not quantities:
+            messages.error(
+                request,
+                "Your cart contains no valid items.",
+            )
+            return redirect("eatery:cart")
+
+        foods = FoodItem.objects.filter(
+            id__in=quantities.keys(),
+            is_available=True,
+        )
+
+        foods_by_id = {food.id: food for food in foods}
+
+        if set(quantities) != set(foods_by_id):
+            messages.error(
+                request,
+                "One or more items are no longer available.",
+            )
+            return redirect("eatery:cart")
+
+        calculated_items = []
+        total_amount = Decimal("0.00")
+
+        for food_id, quantity in quantities.items():
+            food = foods_by_id[food_id]
+            unit_price = Decimal(str(food.price)).quantize(
+                Decimal("0.01")
+            )
+            subtotal = unit_price * quantity
+            total_amount += subtotal
+
+            calculated_items.append({
+                "food": food,
+                "quantity": quantity,
+                "unit_price": unit_price,
+                "subtotal": subtotal,
+            })
+
+        total_amount = total_amount.quantize(Decimal("0.01"))
+
+        if total_amount <= 0:
+            messages.error(request, "Invalid order total.")
+            return redirect("eatery:cart")
+
+        # Paystack requires an email. Enforce this in the form too.
+        email = form.cleaned_data.get("email")
+        if not email:
+            form.add_error("email", "Email is required for online payment.")
+            return render(
+                request,
+                self.template_name,
+                {"form": form, "cart_data": raw_cart},
+            )
+
+        try:
+            with transaction.atomic():
+                order = Order.objects.create(
+                    customer_name=form.cleaned_data["customer_name"],
+                    phone=form.cleaned_data["phone"],
+                    email=email,
+                    address=form.cleaned_data["address"],
+                    note=form.cleaned_data.get("note") or "",
+                    total_amount=total_amount,
+                    status="pending",
+                    payment_status="pending",
+                )
+
+                OrderItem.objects.bulk_create([
+                    OrderItem(
+                        order=order,
+                        food=item["food"],
+                        food_name=item["food"].name,
+                        unit_price=item["unit_price"],
+                        quantity=item["quantity"],
+                        subtotal=item["subtotal"],
+                    )
+                    for item in calculated_items
+                ])
+
+        except Exception:
+            logger.exception("Failed to create Dikubs Eatery order.")
+            messages.error(
+                request,
+                "We could not save your order. Please try again.",
+            )
+            return render(
+                request,
+                self.template_name,
+                {"form": form, "cart_data": raw_cart},
+            )
+
+        try:
+            payment = initialize_order_payment(request, order)
+        except Exception:
+            logger.exception(
+                "Paystack initialization failed for order %s",
+                order.order_number,
+            )
+            return redirect(
+                "eatery:payment_pending",
+                order_number=order.order_number,
+            )
+
+        if not payment:
+            return redirect(
+                "eatery:payment_pending",
+                order_number=order.order_number,
+            )
+
+        return redirect(payment.authorization_url)
+    
+class CheckouView(View):
     template_name = "eatery/checkout.html"
 
     # WhatsApp number:
@@ -1123,6 +1286,255 @@ def order_success(
 
 
 
+def verify_and_finalize_payment(reference):
+    """
+    Verify a Paystack reference and finalize its order once.
+    Returns (success, order).
+    """
+    payment = get_object_or_404(
+        PaystackPayment.objects.select_related("order"),
+        reference=reference,
+    )
+
+    # Already finalized? Never process it twice.
+    if payment.status == "success":
+        return True, payment.order
+
+    data = paystack_request(
+        "GET",
+        f"/transaction/verify/{payment.reference}",
+    )
+
+    valid = (
+        data.get("status") == "success"
+        and data.get("reference") == payment.reference
+        and data.get("currency") == "NGN"
+        and data.get("amount") == payment.amount_kobo
+    )
+
+    if not valid:
+        if data.get("status") in ("failed", "abandoned"):
+            payment.status = "failed"
+            payment.save(update_fields=["status", "updated_at"])
+
+        return False, payment.order
+
+    with transaction.atomic():
+        locked_payment = (
+            PaystackPayment.objects
+            .select_for_update()
+            .select_related("order")
+            .get(pk=payment.pk)
+        )
+
+        order = Order.objects.select_for_update().get(
+            pk=locked_payment.order_id
+        )
+
+        # A webhook and callback can arrive almost simultaneously.
+        if locked_payment.status == "success":
+            return True, order
+
+        # Do not let a late payment for an old attempt override
+        # an order already paid through another attempt.
+        if order.payment_status == "paid":
+            return False, order
+
+        locked_payment.status = "success"
+        locked_payment.gateway_transaction_id = str(
+            data.get("id", "")
+        )
+        locked_payment.paid_at = (
+            timezone.now()
+        )
+        locked_payment.save(
+            update_fields=[
+                "status",
+                "gateway_transaction_id",
+                "paid_at",
+                "updated_at",
+            ]
+        )
+
+        order.payment_status = "paid"
+        order.status = "confirmed"
+        order.save(
+            update_fields=[
+                "payment_status",
+                "status",
+                "updated_at",
+            ]
+        )
+
+    return True, order
+
+
+class PaystackCallbackView(View):
+    def get(self, request):
+        reference = request.GET.get("reference", "").strip()
+
+        if not reference:
+            messages.error(request, "Payment reference is missing.")
+            return redirect("eatery:menu")
+
+        try:
+            success, order = verify_and_finalize_payment(reference)
+        except Exception:
+            logger.exception("Paystack callback verification failed.")
+            messages.error(
+                request,
+                "We could not verify your payment yet. "
+                "Please try again shortly.",
+            )
+            return redirect(
+                "eatery:payment_pending",
+                order_number=(
+                    PaystackPayment.objects
+                    .filter(reference=reference)
+                    .values_list("order__order_number", flat=True)
+                    .first()
+                    or "unknown"
+                ),
+            )
+
+        if not success:
+            messages.warning(
+                request,
+                "Payment has not been confirmed. "
+                "You can retry when ready.",
+            )
+            return redirect(
+                "eatery:payment_pending",
+                order_number=order.order_number,
+            )
+
+        request.session["latest_eatery_order"] = order.pk
+        request.session["eatery_whatsapp_url"] = (
+            build_paid_order_whatsapp_url(order)
+        )
+
+        return redirect(
+            "eatery:order_success",
+            order_number=order.order_number,
+        )
+
+
+class PaymentPendingView(View):
+    template_name = "eatery/payment_pending.html"
+
+    def get(self, request, order_number):
+        order = get_object_or_404(
+            Order,
+            order_number=order_number,
+        )
+
+        # Only show payment details to the browser session that
+        # created this order.
+        if request.session.get("latest_eatery_order") != order.pk:
+            # For new orders, set this session value when the order
+            # is created, before redirecting to Paystack.
+            messages.error(request, "Please return to your checkout.")
+            return redirect("eatery:menu")
+
+        return render(
+            request,
+            self.template_name,
+            {"order": order},
+        )
+
+
+class RetryPaymentView(View):
+    def post(self, request, order_number):
+        order = get_object_or_404(
+            Order,
+            order_number=order_number,
+        )
+
+        if request.session.get("latest_eatery_order") != order.pk:
+            return redirect("eatery:menu")
+
+        if order.payment_status == "paid":
+            return redirect(
+                "eatery:order_success",
+                order_number=order.order_number,
+            )
+
+        try:
+            payment = initialize_order_payment(request, order)
+        except Exception:
+            logger.exception(
+                "Payment retry failed for order %s",
+                order.order_number,
+            )
+            messages.error(
+                request,
+                "We could not start payment. Please try again.",
+            )
+            return redirect(
+                "eatery:payment_pending",
+                order_number=order.order_number,
+            )
+
+        if payment:
+            return redirect(payment.authorization_url)
+
+        return redirect(
+            "eatery:payment_pending",
+            order_number=order.order_number,
+        )
+    
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+@csrf_exempt
+@require_POST
+def paystack_webhook(request):
+    secret = getattr(settings, "PAYSTACK_SECRET_KEY", "")
+
+    if not secret:
+        return HttpResponse(status=503)
+
+    supplied_signature = request.headers.get(
+        "x-paystack-signature", ""
+    )
+
+    expected_signature = hmac.new(
+        secret.encode("utf-8"),
+        request.body,
+        hashlib.sha512,
+    ).hexdigest()
+
+    if not hmac.compare_digest(
+        supplied_signature,
+        expected_signature,
+    ):
+        return HttpResponseBadRequest("Invalid signature")
+
+    try:
+        event = json.loads(request.body)
+    except (json.JSONDecodeError, UnicodeDecodeError):
+        return HttpResponseBadRequest("Invalid JSON")
+
+    if event.get("event") != "charge.success":
+        return HttpResponse(status=200)
+
+    reference = (
+        event.get("data", {}).get("reference", "")
+    )
+
+    if not reference:
+        return HttpResponseBadRequest("Missing reference")
+
+    try:
+        success, _ = verify_and_finalize_payment(reference)
+    except Exception:
+        logger.exception("Paystack webhook processing failed.")
+        # A non-2xx response allows Paystack to retry delivery.
+        return HttpResponse(status=500)
+
+    if not success:
+        return HttpResponse(status=400)
+
+    return HttpResponse(status=200)    
 
 
 
@@ -1321,7 +1733,229 @@ class EateryOrderStatusUpdateView(
             "eatery:order_detail",
             pk=order.pk,
         )
-    
+
+
+
+
+
+
+
+
+
+
+import hashlib
+import hmac
+import json
+import logging
+import uuid
+
+from decimal import Decimal, ROUND_HALF_UP
+from urllib.parse import quote
+
+import requests
+
+from django.conf import settings
+from django.contrib import messages
+from django.db import transaction
+from django.http import HttpResponse, HttpResponseBadRequest
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
+from django.utils import timezone
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+from django.views import View
+
+from .models import Order, OrderItem, FoodItem, PaystackPayment
+
+
+logger = logging.getLogger(__name__)
+
+
+def paystack_request(method, endpoint, **kwargs):
+    """Make an authenticated server-side request to Paystack."""
+    secret_key = getattr(settings, "PAYSTACK_SECRET_KEY", "")
+
+    if not secret_key:
+        raise RuntimeError("PAYSTACK_SECRET_KEY is not configured.")
+
+    headers = {
+        "Authorization": f"Bearer {secret_key}",
+        "Content-Type": "application/json",
+    }
+
+    response = requests.request(
+        method,
+        f"{settings.PAYSTACK_BASE_URL}{endpoint}",
+        headers=headers,
+        timeout=20,
+        **kwargs,
+    )
+
+    response.raise_for_status()
+    result = response.json()
+
+    if not result.get("status"):
+        raise RuntimeError("Paystack rejected the transaction request.")
+
+    return result.get("data", {})
+
+
+def naira_to_kobo(amount):
+    amount = Decimal(str(amount)).quantize(
+        Decimal("0.01"),
+        rounding=ROUND_HALF_UP,
+    )
+    return int(amount * 100)
+
+
+def initialize_order_payment(request, order):
+    """Create a new Paystack attempt for an existing unpaid order."""
+    if order.payment_status == "paid":
+        return None
+
+    if not order.email:
+        raise ValueError(
+            "A valid customer email is required for Paystack payment."
+        )
+
+    amount_kobo = naira_to_kobo(order.total_amount)
+
+    if amount_kobo <= 0:
+        raise ValueError("The order total must be greater than zero.")
+
+    payment = PaystackPayment.objects.create(
+        order=order,
+        reference=uuid.uuid4().hex,
+        amount_kobo=amount_kobo,
+        currency="NGN",
+        status="pending",
+    )
+
+    callback_url = request.build_absolute_uri(
+        reverse("eatery:paystack_callback")
+    )
+
+    try:
+        data = paystack_request(
+            "POST",
+            "/transaction/initialize",
+            json={
+                "email": order.email,
+                "amount": str(payment.amount_kobo),
+                "currency": "NGN",
+                "reference": payment.reference,
+                "callback_url": callback_url,
+                "metadata": {
+    "payment_type": "eatery",
+    "order_id": order.pk,
+    "order_number": order.order_number,
+    "payment_id": payment.pk,
+}
+            },
+        )
+    except Exception:
+        payment.status = "failed"
+        payment.save(update_fields=["status", "updated_at"])
+        raise
+
+    authorization_url = data.get("authorization_url")
+
+    if not authorization_url:
+        payment.status = "failed"
+        payment.save(update_fields=["status", "updated_at"])
+        raise RuntimeError("Paystack did not return a checkout URL.")
+
+    payment.authorization_url = authorization_url
+    payment.save(
+        update_fields=["authorization_url", "updated_at"]
+    )
+
+    order.payment_status = "pending"
+    order.save(update_fields=["payment_status", "updated_at"])
+
+    return payment
+
+
+def build_paid_order_whatsapp_url(order):
+    """Build a trusted WhatsApp message from saved order data."""
+    number = "2349150541630"
+
+    lines = [
+        "Hello Dikubs Eatery!",
+        "",
+        f"Paid order: {order.order_number}",
+        f"Payment status: PAID",
+        f"Total: ₦{order.total_amount:,.2f}",
+        "",
+        "ORDER ITEMS",
+    ]
+
+    for item in order.items.all():
+        lines.append(
+            f"{item.quantity} × {item.food_name} "
+            f"— ₦{item.subtotal:,.2f}"
+        )
+
+    lines.extend([
+        "",
+        f"Customer: {order.customer_name}",
+        f"Phone: {order.phone}",
+        f"Delivery address: {order.address}",
+    ])
+
+    if order.note:
+        lines.extend(["", f"Instructions: {order.note}"])
+
+    return (
+        f"https://wa.me/{number}"
+        f"?text={quote(chr(10).join(lines))}"
+    )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 from urllib.parse import quote
 
 
@@ -1736,3 +2370,12 @@ class EateryCustomerWhatsAppView(
         return redirect(
             whatsapp_url
         )
+    
+
+
+
+
+
+
+
+

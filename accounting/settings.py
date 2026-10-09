@@ -219,3 +219,20 @@ STATICFILES_DIRS = [
 # settings.py
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
+
+
+
+
+import os
+import os
+from dotenv import load_dotenv
+
+load_dotenv()  # Loads variables from your .env file into os.environ
+
+PAYSTACK_SECRET_KEY = os.getenv('PAYSTACK_SECRET_KEY')
+PAYSTACK_PUBLIC_KEY = os.getenv('PAYSTACK_PUBLIC_KEY')
+
+PAYSTACK_CURRENCY = "NGN"
+PAYSTACK_BASE_URL = "https://api.paystack.co"
+
+

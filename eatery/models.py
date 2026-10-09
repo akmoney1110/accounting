@@ -67,6 +67,12 @@ class Order(models.Model):
         ("delivered", "Delivered"),
         ("cancelled", "Cancelled"),
     ]
+    PAYMENT_STATUS_CHOICES = [
+        ("unpaid", "Unpaid"),
+        ("pending", "Pending Payment"),
+        ("paid", "Paid"),
+        ("failed", "Failed"),
+    ]
 
     # No Django user/customer account required.
     order_number = models.CharField(
@@ -81,6 +87,14 @@ class Order(models.Model):
     email = models.EmailField(
         blank=True,
         null=True,
+    )
+   
+
+    payment_status = models.CharField(
+    max_length=20,
+    choices=PAYMENT_STATUS_CHOICES,
+    default="unpaid",
+    db_index=True,
     )
 
     address = models.TextField()
@@ -160,3 +174,79 @@ class OrderItem(models.Model):
 
     def __str__(self):
         return f"{self.quantity} × {self.food_name}"
+    
+
+
+
+import uuid
+
+from django.db import models
+from django.utils import timezone
+
+
+
+class PaystackPayment(models.Model):
+    STATUS_CHOICES = [
+        ("pending", "Pending"),
+        ("success", "Successful"),
+        ("failed", "Failed"),
+    ]
+
+    order = models.ForeignKey(
+        "eatery.Order",
+        on_delete=models.PROTECT,
+        related_name="payments",
+    )
+
+    reference = models.CharField(
+        max_length=100,
+        unique=True,
+        default=uuid.uuid4,
+        editable=False,
+    )
+
+    amount_kobo = models.PositiveBigIntegerField()
+
+    currency = models.CharField(
+        max_length=3,
+        default="NGN",
+    )
+
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default="pending",
+        db_index=True,
+    )
+
+    authorization_url = models.URLField(
+        max_length=500,
+        blank=True,
+    )
+
+    gateway_transaction_id = models.CharField(
+        max_length=100,
+        blank=True,
+    )
+
+    paid_at = models.DateTimeField(
+        null=True,
+        blank=True,
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+    )
+
+    updated_at = models.DateTimeField(
+        auto_now=True,
+    )
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return (
+            f"{self.order.order_number} - "
+            f"{self.reference} - {self.status}"
+        )

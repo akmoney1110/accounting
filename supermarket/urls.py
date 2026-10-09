@@ -1,5 +1,9 @@
 from django.urls import path
-
+from .views import (
+    SupermarketPaystackCallbackView,
+    SupermarketPaymentPendingView,
+    SupermarketRetryPaymentView,
+)
 from . import views
 
 
@@ -297,4 +301,19 @@ path(
     views.ProductImageDeleteView.as_view(),
     name="product_image_delete",
 ),
+path(
+        "payment/paystack/callback/",
+        SupermarketPaystackCallbackView.as_view(),
+        name="paystack_callback",
+    ),
+    path(
+        "orders/<str:order_number>/payment-pending/",
+        SupermarketPaymentPendingView.as_view(),
+        name="payment_pending",
+    ),
+    path(
+        "orders/<str:order_number>/retry-payment/",
+        SupermarketRetryPaymentView.as_view(),
+        name="retry_payment",
+    ),
 ]

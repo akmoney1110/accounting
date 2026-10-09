@@ -1,6 +1,12 @@
 from django.urls import path
 
 from . import views
+from .views import (
+    PaystackCallbackView,
+    PaymentPendingView,
+    RetryPaymentView,
+    paystack_webhook,
+)
 
 
 app_name = "eatery"
@@ -85,6 +91,34 @@ urlpatterns = [
         views.FoodItemDeleteView.as_view(),
         name="food_delete",
     ),
+
+    path(
+        "payment/paystack/callback/",
+        PaystackCallbackView.as_view(),
+        name="paystack_callback",
+    ),
+    path(
+        "payment/pending/<str:order_number>/",
+        PaymentPendingView.as_view(),
+        name="payment_pending",
+    ),
+    path(
+        "payment/retry/<str:order_number>/",
+        RetryPaymentView.as_view(),
+        name="retry_payment",
+    ),
+    path(
+        "payment/paystack/webhook/",
+        paystack_webhook,
+        name="paystack_webhook",
+    ),
+
+
+
+
+
+
+
     path(
     "cart/",
     views.cart,

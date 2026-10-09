@@ -2538,13 +2538,527 @@ class SupermarketCartRemoveView(View):
                 cart.get_total_price()
             ),
         })
-    
+import logging
+
+from django.views import View
+from django.contrib import messages
+from django.shortcuts import redirect, render
+
+from .payment_services import initialize_supermarket_payment
+
+logger = logging.getLogger(__name__)
+
+
+
 
 # ============================================================
 # CHECKOUT
 # ============================================================
 
+# supermarket/views.py
+
+from decimal import Decimal
+from urllib.parse import quote
+import logging
+from .payment_services import initialize_supermarket_payment
+from django.conf import settings
+from django.contrib import messages
+from django.db import transaction
+from django.db.models import F
+from django.shortcuts import redirect, render
+from django.views import View
+
+from .cart import Cart
+from .forms import SupermarketCheckoutForm
+from .models import (
+    ProductVariant,
+    SupermarketOrder,
+    SupermarketOrderItem,
+)
+
+
+logger = logging.getLogger(__name__)
+
+
 class SupermarketCheckoutView(View):
+    template_name = "supermarket/store/checkout.html"
+
+    # WhatsApp number: country code and digits only.
+    WHATSAPP_NUMBER = "2347062548298"
+
+    # ---------------------------------------------------------
+    # GET
+    # ---------------------------------------------------------
+
+    def get(self, request):
+        cart = Cart(request)
+
+        if len(cart) == 0:
+            messages.info(request, "Your cart is empty.")
+            return redirect("supermarket:cart")
+
+        form = SupermarketCheckoutForm()
+
+        return render(
+            request,
+            self.template_name,
+            {
+                "form": form,
+                "cart": cart,
+            },
+        )
+
+    # ---------------------------------------------------------
+    # POST
+    # ---------------------------------------------------------
+
+    def post(self, request):
+        cart = Cart(request)
+
+        if len(cart) == 0:
+            messages.error(request, "Your cart is empty.")
+            return redirect("supermarket:cart")
+
+        form = SupermarketCheckoutForm(request.POST)
+
+        if not form.is_valid():
+            return render(
+                request,
+                self.template_name,
+                {
+                    "form": form,
+                    "cart": cart,
+                },
+            )
+
+        order = None
+        order_lines = []
+
+        # =====================================================
+        # STEP 1: CREATE ORDER AND RESERVE/DEDUCT STOCK
+        # =====================================================
+
+        try:
+            with transaction.atomic():
+
+                # ---------------------------------------------
+                # Validate cart data from the session
+                # ---------------------------------------------
+
+                cart_data = {}
+
+                for variant_id, cart_item in cart.cart.items():
+                    try:
+                        normalized_id = str(int(variant_id))
+                    except (TypeError, ValueError):
+                        raise ValueError(
+                            "Your cart contains an invalid product. "
+                            "Please refresh your cart and try again."
+                        )
+
+                    if not isinstance(cart_item, dict):
+                        raise ValueError(
+                            "A product in your cart has invalid data."
+                        )
+
+                    try:
+                        quantity = int(cart_item.get("quantity", 0))
+                    except (TypeError, ValueError):
+                        raise ValueError(
+                            "A product in your cart has an invalid quantity."
+                        )
+
+                    if quantity < 1:
+                        raise ValueError(
+                            "A product in your cart has an invalid quantity."
+                        )
+
+                    # Avoid duplicate normalized IDs.
+                    if normalized_id in cart_data:
+                        raise ValueError(
+                            "Your cart contains duplicate product entries. "
+                            "Please refresh your cart."
+                        )
+
+                    cart_data[normalized_id] = {
+                        "quantity": quantity,
+                    }
+
+                if not cart_data:
+                    raise ValueError("Your cart is empty.")
+
+                variant_ids = [
+                    int(variant_id)
+                    for variant_id in cart_data
+                ]
+
+                # ---------------------------------------------
+                # Lock variant rows to protect concurrent sales
+                # ---------------------------------------------
+
+                variants = list(
+                    ProductVariant.objects
+                    .select_for_update(of=("self",))
+                    .select_related(
+                        "product",
+                        "product__brand",
+                        "product__category",
+                    )
+                    .prefetch_related(
+                        "attribute_values__attribute",
+                        "attribute_values__value",
+                    )
+                    .filter(pk__in=variant_ids)
+                    .order_by("pk")
+                )
+
+                variants_by_id = {
+                    str(variant.pk): variant
+                    for variant in variants
+                }
+
+                if len(variants_by_id) != len(cart_data):
+                    raise ValueError(
+                        "One or more products in your cart are no longer "
+                        "available. Please review your cart and try again."
+                    )
+
+                # ---------------------------------------------
+                # Validate each item and calculate subtotal
+                # ---------------------------------------------
+
+                subtotal = Decimal("0.00")
+
+                for variant_id, cart_item in cart_data.items():
+                    variant = variants_by_id.get(variant_id)
+                    quantity = cart_item["quantity"]
+
+                    if variant is None:
+                        raise ValueError(
+                            "A product in your cart is no longer available."
+                        )
+
+                    product = variant.product
+                    variant_name = (
+                        variant.variant_description or variant.sku or ""
+                    )
+
+                    if not product.is_active:
+                        raise ValueError(
+                            f"{product.name} is no longer available."
+                        )
+
+                    if not variant.is_active:
+                        raise ValueError(
+                            f"{product.name} ({variant_name}) "
+                            "is no longer available."
+                        )
+
+                    if (
+                        variant.track_stock
+                        and variant.stock_quantity < quantity
+                    ):
+                        raise ValueError(
+                            f"Only {variant.stock_quantity} unit(s) of "
+                            f"{product.name} ({variant_name}) "
+                            "are currently available."
+                        )
+
+                    # Always calculate price using the database.
+                    unit_price = Decimal(str(variant.current_price))
+
+                    if not unit_price.is_finite() or unit_price < 0:
+                        raise ValueError(
+                            f"{product.name} currently has an invalid price."
+                        )
+
+                    line_total = unit_price * quantity
+                    subtotal += line_total
+
+                    order_lines.append(
+                        {
+                            "variant": variant,
+                            "product": product,
+                            "product_name": product.name,
+                            "sku": variant.sku or "",
+                            "variant_description": (
+                                variant.variant_full_description or ""
+                            ),
+                            "quantity": quantity,
+                            "unit_price": unit_price,
+                            "subtotal": line_total,
+                            "stock_deducted": (
+                                variant.track_stock
+                            ),
+                        }
+                    )
+
+                if not order_lines:
+                    raise ValueError("Your cart is empty.")
+
+                if not subtotal.is_finite() or subtotal <= 0:
+                    raise ValueError(
+                        "The order total is invalid. Please contact us."
+                    )
+
+                # ---------------------------------------------
+                # Create the order
+                # ---------------------------------------------
+
+                order = SupermarketOrder.objects.create(
+                    customer_name=form.cleaned_data["customer_name"],
+                    phone=form.cleaned_data["phone"],
+                    email=(
+                        form.cleaned_data.get("email") or None
+                    ),
+                    address=form.cleaned_data["address"],
+                    note=form.cleaned_data.get("note") or "",
+                    subtotal=subtotal,
+                    total_amount=subtotal,
+                    status="pending",
+                    payment_status="unpaid",
+                )
+
+                # ---------------------------------------------
+                # Create immutable order-item price snapshots
+                # ---------------------------------------------
+
+                order_items = []
+
+                for line in order_lines:
+                    variant = line["variant"]
+
+                    order_items.append(
+                        SupermarketOrderItem(
+                            order=order,
+                            product=line["product"],
+                            variant=variant,
+                            product_name=line["product_name"],
+                            sku=line["sku"],
+                            size="",
+                            color="",
+                            variant_description=(
+                                line["variant_description"]
+                            ),
+                            unit_price=line["unit_price"],
+                            quantity=line["quantity"],
+                            subtotal=line["subtotal"],
+                            stock_deducted=line["stock_deducted"],
+                        )
+                    )
+
+                SupermarketOrderItem.objects.bulk_create(order_items)
+
+                # ---------------------------------------------
+                # Deduct stock once, within this transaction
+                # ---------------------------------------------
+
+                for line in order_lines:
+                    variant = line["variant"]
+
+                    if variant.track_stock:
+                        ProductVariant.objects.filter(
+                            pk=variant.pk
+                        ).update(
+                            stock_quantity=F("stock_quantity")
+                            - line["quantity"]
+                        )
+
+            # The database transaction has committed here.
+
+        except ValueError as error:
+            messages.error(request, str(error))
+
+            return render(
+                request,
+                self.template_name,
+                {
+                    "form": form,
+                    "cart": cart,
+                },
+            )
+
+        except Exception:
+            logger.exception(
+                "Supermarket order creation failed."
+            )
+
+            messages.error(
+                request,
+                "We could not create your order. Please try again.",
+            )
+
+            return render(
+                request,
+                self.template_name,
+                {
+                    "form": form,
+                    "cart": cart,
+                },
+            )
+
+        # =====================================================
+        # STEP 2: SAVE ORDER ACCESS AND CLEAR CART
+        # =====================================================
+        #
+        # Do this only after the order transaction commits.
+        # Payment initialization failure must not create a
+        # second order if the customer retries.
+        # =====================================================
+
+        request.session["latest_supermarket_order"] = order.pk
+
+        try:
+            cart.clear()
+        except Exception:
+            logger.exception(
+                "Could not clear cart after supermarket order %s.",
+                order.order_number,
+            )
+
+        # =====================================================
+        # STEP 3: BUILD WHATSAPP ORDER MESSAGE
+        # =====================================================
+
+        whatsapp_lines = [
+            "🛒 *NEW SUPERMARKET ORDER*",
+            "",
+            f"*Order:* #{order.order_number}",
+            "",
+            "👤 *CUSTOMER DETAILS*",
+            f"Name: {order.customer_name}",
+            f"Phone: {order.phone}",
+        ]
+
+        if order.email:
+            whatsapp_lines.append(f"Email: {order.email}")
+
+        whatsapp_lines.extend(
+            [
+                "",
+                "🛍️ *ORDER ITEMS*",
+                "",
+            ]
+        )
+
+        for line in order_lines:
+            whatsapp_lines.append(
+                f"• {line['quantity']} × {line['product_name']}"
+            )
+
+            if line["variant_description"]:
+                whatsapp_lines.append(
+                    f"  {line['variant_description']}"
+                )
+
+            if line["sku"]:
+                whatsapp_lines.append(f"  SKU: {line['sku']}")
+
+            whatsapp_lines.append(
+                f"  ₦{line['unit_price']:,.2f} each "
+                f"= ₦{line['subtotal']:,.2f}"
+            )
+
+            whatsapp_lines.append("")
+
+        whatsapp_lines.extend(
+            [
+                "━━━━━━━━━━━━━━━━━━",
+                f"💰 *TOTAL: ₦{order.total_amount:,.2f}*",
+                "━━━━━━━━━━━━━━━━━━",
+                "",
+                "📍 *DELIVERY ADDRESS*",
+                str(order.address),
+            ]
+        )
+
+        if order.note:
+            whatsapp_lines.extend(
+                [
+                    "",
+                    "📝 *CUSTOMER NOTE*",
+                    str(order.note),
+                ]
+            )
+
+        whatsapp_lines.extend(
+            [
+                "",
+                "💳 *PAYMENT STATUS*",
+                "Awaiting payment verification.",
+                "",
+                "Please confirm order and delivery details.",
+            ]
+        )
+
+        whatsapp_message = "\n".join(whatsapp_lines)
+
+        whatsapp_url = (
+            f"https://wa.me/{self.WHATSAPP_NUMBER}"
+            f"?text={quote(whatsapp_message)}"
+        )
+
+        request.session["supermarket_whatsapp_url"] = whatsapp_url
+
+        # =====================================================
+        # STEP 4: INITIALIZE PAYSTACK
+        # =====================================================
+        #
+        # The service must:
+        # - use order.total_amount, not a browser-supplied amount;
+        # - use the order's unique payment reference;
+        # - send the amount in kobo for NGN;
+        # - save the payment reference and initialization status;
+        # - return Paystack's authorization URL.
+        #
+        # It should raise an exception if initialization fails.
+        # =====================================================
+
+   
+        try:
+            payment_result = initialize_supermarket_payment(
+        order=order,
+        request=request,
+    )
+
+            # The service returns a SupermarketPaystackPayment instance.
+            # Replace `authorization_url` below if your model uses
+            # a different field name.
+            authorization_url = getattr(
+        payment_result,
+        "authorization_url",
+        None,
+    )
+
+            if not authorization_url:
+                raise ValueError(
+            "The payment record has no authorization URL. "
+            "Check the payment model and initialization service."
+        )
+
+        except Exception:
+            logger.exception(
+        "Paystack initialization failed for supermarket order %s.",
+        order.order_number,
+    )
+
+            messages.warning(
+        request,
+        "Your order was created, but online payment could not "
+        "be started. Please open the order's payment page and retry.",
+    )
+
+            return redirect(
+        "supermarket:payment_pending",
+        order_number=order.order_number,
+    )
+
+        return redirect(authorization_url)
+
+
+
+
+class SupermarketChecoutView(View):
 
     template_name = (
         "supermarket/store/checkout.html"
@@ -4725,4 +5239,144 @@ class SupermarketOrderPaymentUpdateView(
         return redirect(
             "supermarket:order_detail",
             pk=pk,
+        )    
+    
+
+
+
+from django.shortcuts import get_object_or_404
+from django.urls import reverse
+from django.utils.http import urlencode
+
+from .models import SupermarketPaystackPayment
+from .payment_services import (
+    verify_supermarket_payment,
+    initialize_supermarket_payment,
+)
+
+
+class SupermarketPaystackCallbackView(View):
+
+    def get(self, request):
+        reference = request.GET.get("reference", "").strip()
+
+        if not reference:
+            messages.error(request, "Payment reference is missing.")
+            return redirect("supermarket:store")
+
+        payment = get_object_or_404(
+            SupermarketPaystackPayment.objects.select_related("order"),
+            reference=reference,
+        )
+
+        order = payment.order
+
+        # Preserve session access to the order even if the
+        # customer returns from Paystack in a new browser tab.
+        request.session["latest_supermarket_order"] = order.pk
+
+        try:
+            success, order = verify_supermarket_payment(reference)
+        except Exception:
+            logger.exception(
+                "Supermarket payment verification failed: %s",
+                reference,
+            )
+            messages.warning(
+                request,
+                "We could not verify your payment yet. "
+                "Please check your order status or retry shortly.",
+            )
+            return redirect(
+                "supermarket:payment_pending",
+                order_number=order.order_number,
+            )
+
+        if not success:
+            messages.warning(
+                request,
+                "Payment has not been confirmed. "
+                "Please retry or contact the supermarket.",
+            )
+            return redirect(
+                "supermarket:payment_pending",
+                order_number=order.order_number,
+            )
+
+        messages.success(request, "Your payment was verified.")
+
+        # The success page can show the WhatsApp contact button.
+        return redirect(
+            "supermarket:order_success",
+            order_number=order.order_number,
+        )
+
+
+class SupermarketPaymentPendingView(View):
+
+    template_name = "supermarket/store/payment_pending.html"
+
+    def get(self, request, order_number):
+        order = get_object_or_404(
+            SupermarketOrder,
+            order_number=order_number,
+        )
+
+        if request.session.get("latest_supermarket_order") != order.pk:
+            messages.error(request, "Please return to your checkout.")
+            return redirect("supermarket:store")
+
+        return render(
+            request,
+            self.template_name,
+            {"order": order},
+        )
+
+
+class SupermarketRetryPaymentView(View):
+
+    def post(self, request, order_number):
+        order = get_object_or_404(
+            SupermarketOrder,
+            order_number=order_number,
+        )
+
+        if request.session.get("latest_supermarket_order") != order.pk:
+            return redirect("supermarket:store")
+
+        if order.payment_status == "paid":
+            return redirect(
+                "supermarket:order_success",
+                order_number=order.order_number,
+            )
+
+        if order.status == "cancelled":
+            messages.error(
+                request,
+                "A cancelled order cannot be paid. Please place a new order.",
+            )
+            return redirect("supermarket:store")
+
+        try:
+            payment = initialize_supermarket_payment(request, order)
+        except Exception:
+            logger.exception(
+                "Supermarket payment retry failed: %s",
+                order.order_number,
+            )
+            messages.error(
+                request,
+                "We could not start payment. Please try again.",
+            )
+            return redirect(
+                "supermarket:payment_pending",
+                order_number=order.order_number,
+            )
+
+        if payment:
+            return redirect(payment.authorization_url)
+
+        return redirect(
+            "supermarket:payment_pending",
+            order_number=order.order_number,
         )    
