@@ -1,0 +1,1191 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="Dikubs Supermarket — quality products, convenient shopping and easy WhatsApp ordering."
+    >
+
+    <meta
+        name="theme-color"
+        content="#17351f"
+    >
+
+    <title>Dikubs Supermarket</title>
+
+    <!-- =========================================================
+         TAILWIND CSS CDN
+         ========================================================= -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- =========================================================
+         TAILWIND CONFIG
+         ========================================================= -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        dikubs: {
+                            50:  '#f7f8f4',
+                            100: '#eef1ea',
+                            200: '#dfe6dc',
+                            300: '#cbd7c8',
+                            400: '#9caf9a',
+                            500: '#718b70',
+                            600: '#536f53',
+                            700: '#3c583f',
+                            800: '#29422f',
+                            900: '#17351f',
+                            950: '#0f2716',
+                        },
+
+                        gold: {
+                            300: '#e4d69c',
+                            400: '#d1c184',
+                            500: '#c8b77a',
+                            600: '#ad9a5d',
+                        }
+                    },
+
+                    fontFamily: {
+                        sans: [
+                            'Inter',
+                            'ui-sans-serif',
+                            'system-ui',
+                            '-apple-system',
+                            'BlinkMacSystemFont',
+                            'Segoe UI',
+                            'sans-serif'
+                        ],
+
+                        display: [
+                            'Playfair Display',
+                            'Georgia',
+                            'serif'
+                        ]
+                    },
+
+                    boxShadow: {
+                        'dikubs':
+                            '0 25px 70px rgba(23, 53, 31, 0.12)',
+
+                        'dikubs-lg':
+                            '0 35px 100px rgba(23, 53, 31, 0.18)',
+
+                        'gold':
+                            '0 15px 45px rgba(200, 183, 122, 0.18)',
+                    },
+
+                    backgroundImage: {
+                        'dikubs-grid':
+                            'linear-gradient(rgba(23,53,31,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(23,53,31,.035) 1px, transparent 1px)',
+
+                        'dikubs-radial':
+                            'radial-gradient(circle at center, rgba(200,183,122,.18), transparent 65%)',
+                    },
+
+                    animation: {
+                        'float':
+                            'float 6s ease-in-out infinite',
+
+                        'pulse-soft':
+                            'pulseSoft 3s ease-in-out infinite',
+
+                        'marquee':
+                            'marquee 25s linear infinite',
+                    },
+
+                    keyframes: {
+                        float: {
+                            '0%, 100%': {
+                                transform: 'translateY(0)'
+                            },
+                            '50%': {
+                                transform: 'translateY(-8px)'
+                            }
+                        },
+
+                        pulseSoft: {
+                            '0%, 100%': {
+                                opacity: '0.55'
+                            },
+                            '50%': {
+                                opacity: '1'
+                            }
+                        },
+
+                        marquee: {
+                            '0%': {
+                                transform: 'translateX(0)'
+                            },
+                            '100%': {
+                                transform: 'translateX(-50%)'
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- =========================================================
+         GOOGLE FONTS
+         ========================================================= -->
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <!-- =========================================================
+         LUCIDE ICONS
+         ========================================================= -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- =========================================================
+         CUSTOM BASE STYLES
+         ========================================================= -->
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: Inter, sans-serif;
+            background: #f7f8f4;
+            color: #17351f;
+            margin: 0;
+        }
+
+        ::selection {
+            background: #c8b77a;
+            color: #17351f;
+        }
+
+        /* Premium scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #eef1ea;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #718b70;
+            border-radius: 999px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #536f53;
+        }
+
+        /* Product image zoom */
+        .product-image {
+            transition:
+                transform 0.7s cubic-bezier(.2,.8,.2,1);
+        }
+
+        .product-card:hover .product-image {
+            transform: scale(1.06);
+        }
+
+        /* Smooth cards */
+        .product-card {
+            transition:
+                transform .35s ease,
+                box-shadow .35s ease,
+                border-color .35s ease;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow:
+                0 25px 70px rgba(23,53,31,.12);
+        }
+
+        /* Hide scrollbar but retain scrolling */
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Glass effect */
+        .glass {
+            background: rgba(255,255,255,.72);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+        }
+
+        /* Gold shine */
+        .gold-shine {
+            background:
+                linear-gradient(
+                    120deg,
+                    #ad9a5d 0%,
+                    #e4d69c 45%,
+                    #c8b77a 70%,
+                    #ad9a5d 100%
+                );
+        }
+
+        /* Decorative ring */
+        .dikubs-ring {
+            border: 1px solid rgba(200,183,122,.35);
+            box-shadow:
+                inset 0 0 40px rgba(200,183,122,.06);
+        }
+
+        /* Focus accessibility */
+        :focus-visible {
+            outline: 3px solid rgba(200,183,122,.75);
+            outline-offset: 3px;
+        }
+
+        /* Prevent horizontal overflow */
+        body {
+            overflow-x: hidden;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- YOUR DIKUBS STOREFRONT CONTENT GOES HERE -->
+
+
+
+<div class="min-h-screen bg-slate-50 px-4 py-8 sm:px-6 sm:py-14">
+
+    <div class="mx-auto max-w-4xl">
+
+        <!-- ================================================
+             SUCCESS CARD
+        ================================================= -->
+
+        <div class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-xl shadow-slate-200/50">
+
+            <!-- ============================================
+                 SUCCESS HEADER
+            ============================================= -->
+
+            <div class="relative overflow-hidden bg-gradient-to-br from-emerald-600 via-emerald-600 to-teal-700 px-6 py-12 text-center text-white sm:px-10 sm:py-14">
+
+                <!-- Decorative background -->
+
+                <div class="pointer-events-none absolute -right-16 -top-20 h-64 w-64 rounded-full border border-white/10"></div>
+
+                <div class="pointer-events-none absolute -bottom-24 -left-16 h-64 w-64 rounded-full bg-white/5"></div>
+
+                <div class="relative z-10">
+
+                    <!-- Success icon -->
+
+                    <div class="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-white/15 ring-8 ring-white/10">
+
+                        <div class="flex h-14 w-14 items-center justify-center rounded-full bg-white text-3xl font-black text-emerald-600 shadow-lg">
+                            ✓
+                        </div>
+
+                    </div>
+
+                    <!-- Heading -->
+
+                    <div class="mt-6">
+
+                        <span class="inline-flex items-center rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.2em] text-emerald-50">
+                            Order Successfully Placed
+                        </span>
+
+                        <h1 class="mt-4 text-3xl font-black tracking-tight sm:text-4xl">
+                            Thank You for Your Order!
+                        </h1>
+
+                        <p class="mx-auto mt-3 max-w-xl text-sm leading-7 text-emerald-50 sm:text-base">
+                            Thank you, {{ order.customer_name }}.
+                            Your order has been received by Dikubs Supermarket.
+                            Please send your order details through WhatsApp
+                            so our team can confirm the next steps.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ============================================
+                 MAIN CONTENT
+            ============================================= -->
+
+            <div class="space-y-8 p-5 sm:p-8 lg:p-10">
+
+                <!-- ========================================
+                     ORDER NUMBER
+                ========================================= -->
+
+                <div class="rounded-2xl border border-emerald-100 bg-emerald-50/70 p-5 sm:p-6">
+
+                    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+
+                        <div>
+
+                            <p class="text-xs font-extrabold uppercase tracking-[0.18em] text-emerald-700">
+                                Your Order Number
+                            </p>
+
+                            <p
+                                id="order-number"
+                                class="mt-2 break-all text-xl font-black tracking-tight text-slate-900 sm:text-2xl"
+                            >
+                                {{ order.order_number }}
+                            </p>
+
+                            <p class="mt-2 text-xs leading-5 text-slate-500">
+                                Keep this number for future reference.
+                            </p>
+
+                        </div>
+
+                        <button
+                            type="button"
+                            id="copy-order-number"
+                            class="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl border border-emerald-200 bg-white px-4 py-3 text-sm font-bold text-emerald-800 transition hover:border-emerald-400 hover:bg-emerald-100"
+                        >
+
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="18"
+                                height="18"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.8"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                aria-hidden="true"
+                            >
+                                <rect x="8" y="8" width="13" height="13" rx="2"></rect>
+                                <path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"></path>
+                            </svg>
+
+                            <span id="copy-order-number-text">
+                                Copy Number
+                            </span>
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ========================================
+                     ORDER STATUS
+                ========================================= -->
+
+                <div class="grid gap-4 sm:grid-cols-2">
+
+                    <!-- Order status -->
+
+                    <div class="rounded-2xl border border-slate-200 bg-white p-5">
+
+                        <div class="flex items-center gap-3">
+
+                            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="21"
+                                    height="21"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="1.8"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    aria-hidden="true"
+                                >
+                                    <rect x="3" y="4" width="18" height="17" rx="2"></rect>
+                                    <path d="M8 2v4M16 2v4M3 10h18"></path>
+                                    <path d="m9 15 2 2 4-4"></path>
+                                </svg>
+
+                            </div>
+
+                            <div>
+
+                                <p class="text-xs font-bold uppercase tracking-wider text-slate-400">
+                                    Order Status
+                                </p>
+
+                                <p class="mt-1 text-sm font-black text-slate-900">
+                                    {{ order.get_status_display }}
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Payment status -->
+
+                    <div class="rounded-2xl border border-slate-200 bg-white p-5">
+
+                        <div class="flex items-center gap-3">
+
+                            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-600">
+
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="21"
+                                    height="21"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="1.8"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    aria-hidden="true"
+                                >
+                                    <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+                                    <path d="M2 10h20"></path>
+                                    <path d="M6 15h4"></path>
+                                </svg>
+
+                            </div>
+
+                            <div>
+
+                                <p class="text-xs font-bold uppercase tracking-wider text-slate-400">
+                                    Payment Status
+                                </p>
+
+                                <p class="mt-1 text-sm font-black text-slate-900">
+                                    {{ order.get_payment_status_display }}
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ========================================
+                     WHATSAPP HANDOFF
+                ========================================= -->
+
+                <div class="rounded-2xl border border-green-200 bg-gradient-to-br from-green-50 to-emerald-50 p-5 sm:p-6">
+
+                    <div class="flex items-start gap-4">
+
+                        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-green-600 text-white shadow-sm">
+
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="25"
+                                height="25"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.8"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                aria-hidden="true"
+                            >
+                                <path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8v.5Z"></path>
+                                <path d="M9 9.5c.5 2 2 3.5 4 4l1.5-1 2 1.5c-.5 1.5-1.5 2-3 2-3.5-.5-6-3-6.5-6.5 0-1.5.5-2.5 2-3l1.5 2Z"></path>
+                            </svg>
+
+                        </div>
+
+                        <div class="min-w-0 flex-1">
+
+                            <h2 class="text-lg font-black text-slate-900">
+                                Complete Your Order on WhatsApp
+                            </h2>
+
+                            <p class="mt-2 text-sm leading-6 text-slate-600">
+                                Your order has been saved successfully.
+                                Send the prepared order message to our
+                                team on WhatsApp to confirm availability,
+                                payment and delivery arrangements.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- WhatsApp button -->
+
+                    <a
+                        href="{% url 'supermarket:order_whatsapp' order.order_number %}"
+                        id="whatsapp-order-button"
+                        class="mt-6 flex w-full items-center justify-center gap-3 rounded-xl bg-green-600 px-5 py-4 text-center text-sm font-black text-white shadow-lg shadow-green-600/20 transition hover:-translate-y-0.5 hover:bg-green-700 hover:shadow-xl sm:text-base"
+                    >
+
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="21"
+                            height="21"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.8"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            aria-hidden="true"
+                        >
+                            <path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8v.5Z"></path>
+                        </svg>
+
+                        <span>
+                            Send Order to WhatsApp
+                        </span>
+
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="18"
+                            height="18"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            aria-hidden="true"
+                        >
+                            <path d="M5 12h14"></path>
+                            <path d="m12 5 7 7-7 7"></path>
+                        </svg>
+
+                    </a>
+
+
+                    <p class="mt-3 text-center text-xs leading-5 text-green-800">
+                        WhatsApp will open with your order details.
+                        Please press Send to deliver the message.
+                    </p>
+
+                </div>
+
+
+                <!-- ========================================
+                     ORDER ITEMS
+                ========================================= -->
+
+                <section>
+
+                    <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
+
+                        <div>
+
+                            <h2 class="text-xl font-black tracking-tight text-slate-900">
+                                Order Summary
+                            </h2>
+
+                            <p class="mt-1 text-sm text-slate-500">
+                                Products included in your order.
+                            </p>
+
+                        </div>
+
+                        <span class="rounded-full bg-slate-100 px-3 py-1.5 text-xs font-bold text-slate-600">
+                            {{ order.items.count }} item{{ order.items.count|pluralize }}
+                        </span>
+
+                    </div>
+
+
+                    <div class="overflow-hidden rounded-2xl border border-slate-200">
+
+                        <div class="divide-y divide-slate-100">
+
+                            {% for item in order.items.all %}
+
+                                <div class="p-4 sm:p-5">
+
+                                    <div class="flex items-start justify-between gap-4">
+
+                                        <div class="min-w-0 flex-1">
+
+                                            <h3 class="text-sm font-black leading-6 text-slate-900 sm:text-base">
+                                                {{ item.product_name }}
+                                            </h3>
+
+
+                                            <!-- Variant -->
+
+                                            {% if item.variant_description %}
+
+                                                <p class="mt-1 text-sm leading-6 text-slate-500">
+                                                    {{ item.variant_description }}
+                                                </p>
+
+                                            {% endif %}
+
+
+                                            <!-- SKU -->
+
+                                            {% if item.sku %}
+
+                                                <p class="mt-1 text-xs font-medium text-slate-400">
+                                                    SKU: {{ item.sku }}
+                                                </p>
+
+                                            {% endif %}
+
+
+                                            <!-- Quantity and unit price -->
+
+                                            <div class="mt-3 flex flex-wrap items-center gap-2">
+
+                                                <span class="inline-flex items-center rounded-lg bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-700">
+                                                    Qty: {{ item.quantity }}
+                                                </span>
+
+                                                <span class="text-xs font-medium text-slate-500">
+                                                    ₦{{ item.unit_price|floatformat:2 }} each
+                                                </span>
+
+                                            </div>
+
+                                        </div>
+
+
+                                        <!-- Line total -->
+
+                                        <p class="shrink-0 text-right text-sm font-black text-slate-900 sm:text-base">
+                                            ₦{{ item.subtotal|floatformat:2 }}
+                                        </p>
+
+                                    </div>
+
+                                </div>
+
+                            {% empty %}
+
+                                <div class="p-8 text-center text-sm text-slate-500">
+                                    No order items found.
+                                </div>
+
+                            {% endfor %}
+
+                        </div>
+
+
+                        <!-- Subtotal -->
+
+                        <div class="border-t border-slate-200 bg-slate-50 p-5">
+
+                            <div class="flex items-center justify-between gap-4">
+
+                                <span class="text-sm font-medium text-slate-600">
+                                    Subtotal
+                                </span>
+
+                                <span class="text-sm font-bold text-slate-900">
+                                    ₦{{ order.subtotal|floatformat:2 }}
+                                </span>
+
+                            </div>
+
+                            <div class="mt-3 flex items-start justify-between gap-4">
+
+                                <span class="text-sm font-medium text-slate-600">
+                                    Delivery
+                                </span>
+
+                                <span class="text-right text-xs font-semibold text-amber-700">
+                                    To be confirmed
+                                </span>
+
+                            </div>
+
+                            <div class="my-5 border-t border-dashed border-slate-200"></div>
+
+                            <div class="flex items-end justify-between gap-4">
+
+                                <div>
+
+                                    <p class="text-sm font-bold text-slate-700">
+                                        Order Total
+                                    </p>
+
+                                    <p class="mt-1 text-xs text-slate-500">
+                                        Excludes any delivery fee.
+                                    </p>
+
+                                </div>
+
+                                <p class="text-2xl font-black tracking-tight text-slate-900">
+                                    ₦{{ order.total_amount|floatformat:2 }}
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- ========================================
+                     CUSTOMER AND DELIVERY DETAILS
+                ========================================= -->
+
+                <section>
+
+                    <div class="mb-4">
+
+                        <h2 class="text-xl font-black tracking-tight text-slate-900">
+                            Delivery Details
+                        </h2>
+
+                        <p class="mt-1 text-sm text-slate-500">
+                            Information provided during checkout.
+                        </p>
+
+                    </div>
+
+
+                    <div class="rounded-2xl border border-slate-200 p-5 sm:p-6">
+
+                        <dl class="grid gap-5 sm:grid-cols-2">
+
+                            <!-- Customer name -->
+
+                            <div>
+
+                                <dt class="text-xs font-bold uppercase tracking-wider text-slate-400">
+                                    Customer
+                                </dt>
+
+                                <dd class="mt-1.5 break-words text-sm font-bold text-slate-900">
+                                    {{ order.customer_name }}
+                                </dd>
+
+                            </div>
+
+
+                            <!-- Phone -->
+
+                            <div>
+
+                                <dt class="text-xs font-bold uppercase tracking-wider text-slate-400">
+                                    Phone Number
+                                </dt>
+
+                                <dd class="mt-1.5 break-words text-sm font-bold text-slate-900">
+
+                                    <a
+                                        href="tel:{{ order.phone }}"
+                                        class="transition hover:text-emerald-700"
+                                    >
+                                        {{ order.phone }}
+                                    </a>
+
+                                </dd>
+
+                            </div>
+
+
+                            <!-- Email -->
+
+                            {% if order.email %}
+
+                                <div>
+
+                                    <dt class="text-xs font-bold uppercase tracking-wider text-slate-400">
+                                        Email Address
+                                    </dt>
+
+                                    <dd class="mt-1.5 break-all text-sm font-bold text-slate-900">
+                                        {{ order.email }}
+                                    </dd>
+
+                                </div>
+
+                            {% endif %}
+
+
+                            <!-- Order date -->
+
+                            <div>
+
+                                <dt class="text-xs font-bold uppercase tracking-wider text-slate-400">
+                                    Order Date
+                                </dt>
+
+                                <dd class="mt-1.5 text-sm font-bold text-slate-900">
+                                    {{ order.created_at|date:"d M Y, h:i A" }}
+                                </dd>
+
+                            </div>
+
+
+                            <!-- Address -->
+
+                            <div class="sm:col-span-2">
+
+                                <dt class="text-xs font-bold uppercase tracking-wider text-slate-400">
+                                    Delivery Address
+                                </dt>
+
+                                <dd class="mt-1.5 whitespace-pre-line break-words text-sm leading-6 font-bold text-slate-900">{{ order.address }}</dd>
+
+                            </div>
+
+
+                            <!-- Customer note -->
+
+                            {% if order.note %}
+
+                                <div class="border-t border-slate-100 pt-5 sm:col-span-2">
+
+                                    <dt class="text-xs font-bold uppercase tracking-wider text-slate-400">
+                                        Additional Instructions
+                                    </dt>
+
+                                    <dd class="mt-2 whitespace-pre-line break-words text-sm leading-6 text-slate-700">{{ order.note }}</dd>
+
+                                </div>
+
+                            {% endif %}
+
+                        </dl>
+
+                    </div>
+
+                </section>
+
+
+                <!-- ========================================
+                     WHAT HAPPENS NEXT
+                ========================================= -->
+
+                <section class="rounded-2xl border border-blue-100 bg-blue-50/60 p-5 sm:p-6">
+
+                    <h2 class="text-base font-black text-slate-900">
+                        What Happens Next?
+                    </h2>
+
+                    <div class="mt-5 space-y-5">
+
+                        <!-- Step 1 -->
+
+                        <div class="flex items-start gap-3">
+
+                            <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs font-black text-white">
+                                1
+                            </span>
+
+                            <div>
+
+                                <h3 class="text-sm font-bold text-slate-900">
+                                    Send Your Order
+                                </h3>
+
+                                <p class="mt-1 text-xs leading-5 text-slate-600">
+                                    Open WhatsApp and send the prepared
+                                    order message to Dikubs Supermarket.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- Step 2 -->
+
+                        <div class="flex items-start gap-3">
+
+                            <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs font-black text-white">
+                                2
+                            </span>
+
+                            <div>
+
+                                <h3 class="text-sm font-bold text-slate-900">
+                                    Order Confirmation
+                                </h3>
+
+                                <p class="mt-1 text-xs leading-5 text-slate-600">
+                                    Our team will review your order and
+                                    confirm availability, payment and
+                                    delivery arrangements.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- Step 3 -->
+
+                        <div class="flex items-start gap-3">
+
+                            <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs font-black text-white">
+                                3
+                            </span>
+
+                            <div>
+
+                                <h3 class="text-sm font-bold text-slate-900">
+                                    Processing and Delivery
+                                </h3>
+
+                                <p class="mt-1 text-xs leading-5 text-slate-600">
+                                    Once your order is confirmed,
+                                    our team will arrange the next steps.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- ========================================
+                     CONTINUE SHOPPING
+                ========================================= -->
+
+                <a
+                    href="{% url 'supermarket:store' %}"
+                    class="flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-4 text-center text-sm font-black text-slate-800 transition hover:border-slate-400 hover:bg-slate-50"
+                >
+
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        aria-hidden="true"
+                    >
+                        <path d="m15 18-6-6 6-6"></path>
+                    </svg>
+
+                    Continue Shopping
+
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================================================
+             FOOTER
+        ================================================= -->
+
+        <p class="mt-6 text-center text-xs leading-6 text-slate-400">
+            Thank you for shopping with Dikubs Supermarket.
+            Keep your order number for reference.
+        </p>
+
+    </div>
+
+</div>
+
+
+<!-- ========================================================
+     AUTO WHATSAPP HANDOFF
+
+     The success view passes whatsapp_url only once,
+     using request.session.pop().
+========================================================= -->
+
+{% if whatsapp_url %}
+
+    {{ whatsapp_url|json_script:"supermarket-whatsapp-url" }}
+
+{% endif %}
+
+
+<script>
+    document.addEventListener(
+        "DOMContentLoaded",
+        function () {
+
+            // ================================================
+            // COPY ORDER NUMBER
+            // ================================================
+
+            const copyButton = document.getElementById(
+                "copy-order-number"
+            );
+
+            const copyText = document.getElementById(
+                "copy-order-number-text"
+            );
+
+            const orderNumber = document.getElementById(
+                "order-number"
+            );
+
+
+            if (
+                copyButton &&
+                copyText &&
+                orderNumber
+            ) {
+
+                copyButton.addEventListener(
+                    "click",
+                    async function () {
+
+                        const value = (
+                            orderNumber.textContent || ""
+                        ).trim();
+
+                        if (!value) {
+                            return;
+                        }
+
+                        try {
+
+                            await navigator.clipboard.writeText(
+                                value
+                            );
+
+                            copyText.textContent = "Copied!";
+
+                            setTimeout(
+                                function () {
+                                    copyText.textContent = "Copy Number";
+                                },
+                                2000
+                            );
+
+                        } catch (error) {
+
+                            copyText.textContent = "Copy Failed";
+
+                            setTimeout(
+                                function () {
+                                    copyText.textContent = "Copy Number";
+                                },
+                                2000
+                            );
+
+                        }
+
+                    }
+                );
+
+            }
+
+
+            // ================================================
+            // AUTOMATIC WHATSAPP HANDOFF
+            // ================================================
+
+            const whatsappData = document.getElementById(
+                "supermarket-whatsapp-url"
+            );
+
+            if (!whatsappData) {
+                return;
+            }
+
+
+            let whatsappUrl = null;
+
+            try {
+
+                whatsappUrl = JSON.parse(
+                    whatsappData.textContent
+                );
+
+            } catch (error) {
+
+                return;
+
+            }
+
+
+            if (!whatsappUrl) {
+                return;
+            }
+
+
+            /*
+             * Navigate in the current tab.
+             *
+             * This is generally more reliable than trying
+             * to open a new tab automatically, which browsers
+             * may block.
+             *
+             * The customer can return to the success page
+             * using the browser's Back button.
+             */
+
+            setTimeout(
+                function () {
+
+                    window.location.assign(
+                        whatsappUrl
+                    );
+
+                },
+                900
+            );
+
+        }
+    );
+</script>
+
+
+    <!-- =========================================================
+         LUCIDE INITIALIZATION
+         ========================================================= -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            if (window.lucide) {
+                lucide.createIcons();
+            }
+        });
+    </script>
+
+</body>
+</html>
+

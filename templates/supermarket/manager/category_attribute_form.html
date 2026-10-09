@@ -1,0 +1,381 @@
+{% extends "supermarket/manager/base.html" %}
+
+{% block title %}
+    {{ title }}
+{% endblock %}
+
+{% block page_title %}
+    {{ title }}
+{% endblock %}
+
+
+{% block content %}
+
+<div class="mx-auto max-w-3xl">
+
+    <!-- CATEGORY -->
+    <div
+        class="
+            mb-5 rounded-2xl
+            bg-gray-950
+            p-6 text-white
+        "
+    >
+
+        <p
+            class="
+                text-xs font-black
+                uppercase
+                tracking-[0.18em]
+                text-emerald-400
+            "
+        >
+            Category
+        </p>
+
+        <h2
+            class="
+                mt-2 text-xl
+                font-black
+            "
+        >
+            {{ category.name }}
+        </h2>
+
+
+        {% if category.parent %}
+
+            <p
+                class="
+                    mt-1 text-sm
+                    text-gray-400
+                "
+            >
+                {{ category.parent.name }}
+                →
+                {{ category.name }}
+            </p>
+
+        {% endif %}
+
+    </div>
+
+
+    <form
+        method="post"
+        class="
+            overflow-hidden
+            rounded-2xl
+            border border-gray-200
+            bg-white
+        "
+    >
+
+        {% csrf_token %}
+
+
+        <div
+            class="
+                border-b border-gray-200
+                p-6
+            "
+        >
+
+            <h3
+                class="
+                    text-lg font-black
+                "
+            >
+                Attribute Configuration
+            </h3>
+
+            <p
+                class="
+                    mt-1 text-sm
+                    text-gray-500
+                "
+            >
+                Choose an attribute and determine
+                how it behaves for products in
+                {{ category.name }}.
+            </p>
+
+        </div>
+
+
+        <div class="p-6">
+
+            {% if form.non_field_errors %}
+
+                <div
+                    class="
+                        mb-6 rounded-xl
+                        border border-red-200
+                        bg-red-50 p-4
+                        text-sm font-bold
+                        text-red-700
+                    "
+                >
+
+                    {% for error in form.non_field_errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+
+                </div>
+
+            {% endif %}
+
+
+            <!-- ATTRIBUTE -->
+            <div>
+
+                <label
+                    for="{{ form.attribute.id_for_label }}"
+                    class="
+                        mb-2 block
+                        text-sm font-black
+                    "
+                >
+                    Attribute
+
+                    <span class="text-red-500">
+                        *
+                    </span>
+                </label>
+
+                {{ form.attribute }}
+
+
+                {% for error in form.attribute.errors %}
+
+                    <p
+                        class="
+                            mt-2 text-xs
+                            font-bold
+                            text-red-600
+                        "
+                    >
+                        {{ error }}
+                    </p>
+
+                {% endfor %}
+
+
+                <p
+                    class="
+                        mt-2 text-xs
+                        leading-5
+                        text-gray-500
+                    "
+                >
+                    Only attributes that have not
+                    already been assigned to this
+                    category are shown.
+                </p>
+
+            </div>
+
+
+            <!-- ORDER -->
+            <div class="mt-6">
+
+                <label
+                    for="{{ form.order.id_for_label }}"
+                    class="
+                        mb-2 block
+                        text-sm font-black
+                    "
+                >
+                    Display Order
+                </label>
+
+                {{ form.order }}
+
+
+                {% for error in form.order.errors %}
+
+                    <p
+                        class="
+                            mt-2 text-xs
+                            font-bold
+                            text-red-600
+                        "
+                    >
+                        {{ error }}
+                    </p>
+
+                {% endfor %}
+
+
+                <p
+                    class="
+                        mt-2 text-xs
+                        text-gray-500
+                    "
+                >
+                    Lower numbers appear first
+                    on the variant form.
+                </p>
+
+            </div>
+
+
+            <!-- REQUIRED -->
+            <label
+                class="
+                    mt-6 flex
+                    cursor-pointer
+                    items-start gap-4
+                    rounded-2xl
+                    border border-gray-200
+                    bg-gray-50
+                    p-5
+                "
+            >
+
+                <div class="pt-0.5">
+                    {{ form.is_required }}
+                </div>
+
+                <div>
+
+                    <p
+                        class="
+                            text-sm font-black
+                            text-gray-950
+                        "
+                    >
+                        Required Attribute
+                    </p>
+
+                    <p
+                        class="
+                            mt-1 text-xs
+                            leading-5
+                            text-gray-500
+                        "
+                    >
+                        Managers must select a value
+                        for this attribute whenever
+                        they create a product variant.
+                    </p>
+
+                </div>
+
+            </label>
+
+
+            <!-- VARIANT ATTRIBUTE -->
+            <label
+                class="
+                    mt-4 flex
+                    cursor-pointer
+                    items-start gap-4
+                    rounded-2xl
+                    border border-gray-200
+                    bg-gray-50
+                    p-5
+                "
+            >
+
+                <div class="pt-0.5">
+                    {{ form.is_variant_attribute }}
+                </div>
+
+                <div>
+
+                    <p
+                        class="
+                            text-sm font-black
+                            text-gray-950
+                        "
+                    >
+                        Use for Product Variants
+                    </p>
+
+                    <p
+                        class="
+                            mt-1 text-xs
+                            leading-5
+                            text-gray-500
+                        "
+                    >
+                        Enable this when the attribute
+                        distinguishes purchasable
+                        versions of a product.
+                    </p>
+
+                    <p
+                        class="
+                            mt-2 text-xs
+                            font-bold
+                            text-emerald-700
+                        "
+                    >
+                        Example: Color, Size,
+                        Storage or RAM.
+                    </p>
+
+                </div>
+
+            </label>
+
+
+            <!-- ACTIONS -->
+            <div
+                class="
+                    mt-8 flex
+                    flex-col-reverse
+                    gap-3
+                    border-t border-gray-200
+                    pt-6
+                    sm:flex-row
+                    sm:justify-end
+                "
+            >
+
+                <a
+                    href="{% url 'supermarket:category_attribute_list' category.pk %}"
+                    class="
+                        rounded-xl
+                        border border-gray-300
+                        px-5 py-3
+                        text-center
+                        text-sm font-black
+                        text-gray-700
+                        transition
+                        hover:bg-gray-50
+                    "
+                >
+                    Cancel
+                </a>
+
+
+                <button
+                    type="submit"
+                    class="
+                        rounded-xl
+                        bg-emerald-500
+                        px-6 py-3
+                        text-sm font-black
+                        text-gray-950
+                        transition
+                        hover:bg-emerald-400
+                    "
+                >
+                    {% if category_attribute %}
+                        Save Changes
+                    {% else %}
+                        Assign Attribute
+                    {% endif %}
+                </button>
+
+            </div>
+
+        </div>
+
+    </form>
+
+</div>
+
+{% endblock %}

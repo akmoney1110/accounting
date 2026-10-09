@@ -1,0 +1,117 @@
+{% extends "supermarket/manager/base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+
+
+{% block content %}
+
+<div class="mx-auto max-w-3xl">
+
+    <form
+        method="post"
+        enctype="multipart/form-data"
+        class="
+            rounded-2xl border
+            border-gray-200 bg-white p-6
+        "
+    >
+
+        {% csrf_token %}
+
+        {{ form.non_field_errors }}
+
+
+        <div>
+            <label class="mb-2 block text-sm font-black">
+                Brand Name
+            </label>
+
+            {{ form.name }}
+            {{ form.name.errors }}
+        </div>
+
+
+        <div class="mt-6">
+            <label class="mb-2 block text-sm font-black">
+                Logo
+            </label>
+
+            {% if brand and brand.logo %}
+                <img
+                    src="{{ brand.logo.url }}"
+                    alt="{{ brand.name }}"
+                    class="
+                        mb-4 h-24 w-24
+                        rounded-xl object-contain
+                    "
+                >
+            {% endif %}
+
+            {{ form.logo }}
+            {{ form.logo.errors }}
+        </div>
+
+
+        <div class="mt-6">
+            <label class="mb-2 block text-sm font-black">
+                Description
+            </label>
+
+            {{ form.description }}
+            {{ form.description.errors }}
+        </div>
+
+
+        <div
+            class="
+                mt-6 flex items-center gap-3
+                rounded-xl bg-gray-50 p-4
+            "
+        >
+            {{ form.is_active }}
+
+            <label class="text-sm font-black">
+                Active Brand
+            </label>
+        </div>
+
+
+        <div
+            class="
+                mt-8 flex justify-end gap-3
+                border-t border-gray-200 pt-6
+            "
+        >
+
+            <a
+                href="{% url 'supermarket:brand_list' %}"
+                class="
+                    rounded-xl border
+                    border-gray-300
+                    px-5 py-3
+                    text-sm font-black
+                "
+            >
+                Cancel
+            </a>
+
+            <button
+                type="submit"
+                class="
+                    rounded-xl bg-emerald-500
+                    px-6 py-3
+                    text-sm font-black
+                    text-gray-950
+                "
+            >
+                Save Brand
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+{% endblock %}

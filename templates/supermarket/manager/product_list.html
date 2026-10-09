@@ -1,0 +1,306 @@
+{% extends "supermarket/manager/base.html" %}
+
+{% block title %}Products{% endblock %}
+{% block page_title %}Products{% endblock %}
+
+{% block header_actions %}
+<a
+    href="{% url 'supermarket:product_add' %}"
+    class="
+        rounded-xl bg-emerald-500
+        px-4 py-2.5 text-sm font-black
+        text-gray-950
+    "
+>
+    + Add Product
+</a>
+{% endblock %}
+
+
+{% block content %}
+
+<!-- FILTERS -->
+<form
+    method="get"
+    class="
+        mb-6 grid gap-3
+        rounded-2xl border
+        border-gray-200
+        bg-white p-4
+        md:grid-cols-4
+    "
+>
+
+    <input
+        type="search"
+        name="q"
+        value="{{ search }}"
+        placeholder="Search product or SKU..."
+        class="
+            rounded-xl border border-gray-300
+            px-4 py-3 text-sm outline-none
+            focus:border-emerald-500
+        "
+    >
+
+    <select
+        name="category"
+        class="
+            rounded-xl border border-gray-300
+            px-4 py-3 text-sm
+        "
+    >
+        <option value="">
+            All Categories
+        </option>
+
+        {% for category in categories %}
+            <option
+                value="{{ category.pk }}"
+                {% if selected_category == category.pk|stringformat:"s" %}
+                    selected
+                {% endif %}
+            >
+                {{ category.name }}
+            </option>
+        {% endfor %}
+    </select>
+
+
+    <select
+        name="brand"
+        class="
+            rounded-xl border border-gray-300
+            px-4 py-3 text-sm
+        "
+    >
+        <option value="">
+            All Brands
+        </option>
+
+        {% for brand in brands %}
+            <option
+                value="{{ brand.pk }}"
+                {% if selected_brand == brand.pk|stringformat:"s" %}
+                    selected
+                {% endif %}
+            >
+                {{ brand.name }}
+            </option>
+        {% endfor %}
+    </select>
+
+
+    <button
+        type="submit"
+        class="
+            rounded-xl bg-gray-950
+            px-5 py-3
+            text-sm font-black text-white
+        "
+    >
+        Filter
+    </button>
+
+</form>
+
+
+<!-- PRODUCTS -->
+<div
+    class="
+        overflow-hidden rounded-2xl
+        border border-gray-200 bg-white
+    "
+>
+
+    {% if products %}
+
+        <div class="divide-y divide-gray-100">
+
+            {% for product in products %}
+
+                <div
+                    class="
+                        flex flex-col gap-5 p-5
+                        lg:flex-row
+                        lg:items-center
+                        lg:justify-between
+                    "
+                >
+
+                    <div class="flex items-center gap-4">
+
+                        {% if product.image %}
+
+                            <img
+                                src="{{ product.image.url }}"
+                                alt="{{ product.name }}"
+                                class="
+                                    h-20 w-20
+                                    rounded-xl object-cover
+                                "
+                            >
+
+                        {% else %}
+
+                            <div
+                                class="
+                                    flex h-20 w-20
+                                    items-center justify-center
+                                    rounded-xl bg-gray-100
+                                    text-2xl
+                                "
+                            >
+                                📦
+                            </div>
+
+                        {% endif %}
+
+
+                        <div>
+
+                            <div
+                                class="
+                                    flex flex-wrap
+                                    items-center gap-2
+                                "
+                            >
+
+                                <h3 class="font-black">
+                                    {{ product.name }}
+                                </h3>
+
+                                {% if product.is_featured %}
+                                    <span
+                                        class="
+                                            rounded-full
+                                            bg-amber-50
+                                            px-2 py-1
+                                            text-[10px]
+                                            font-black
+                                            text-amber-700
+                                        "
+                                    >
+                                        FEATURED
+                                    </span>
+                                {% endif %}
+
+                            </div>
+
+
+                            <p
+                                class="
+                                    mt-1 text-sm
+                                    text-gray-500
+                                "
+                            >
+                                {% if product.brand %}
+                                    {{ product.brand.name }}
+                                    ·
+                                {% endif %}
+
+                                {% if product.category %}
+                                    {{ product.category.name }}
+                                {% else %}
+                                    Uncategorized
+                                {% endif %}
+                            </p>
+
+
+                            <div
+                                class="
+                                    mt-2 flex flex-wrap
+                                    gap-3 text-xs
+                                    font-bold text-gray-500
+                                "
+                            >
+
+                                <span>
+                                    {{ product.variants.count }}
+                                    variant{{ product.variants.count|pluralize }}
+                                </span>
+
+                                {% if product.starting_price %}
+                                    <span>
+                                        From ₦{{ product.starting_price|floatformat:2 }}
+                                    </span>
+                                {% endif %}
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="flex gap-2">
+
+                        <a
+                            href="{% url 'supermarket:product_detail' product.pk %}"
+                            class="
+                                rounded-lg
+                                bg-gray-950
+                                px-4 py-2
+                                text-xs font-black
+                                text-white
+                            "
+                        >
+                            Manage
+                        </a>
+
+                        <a
+                            href="{% url 'supermarket:product_edit' product.pk %}"
+                            class="
+                                rounded-lg border
+                                border-gray-200
+                                px-4 py-2
+                                text-xs font-bold
+                            "
+                        >
+                            Edit
+                        </a>
+
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    {% else %}
+
+        <div class="p-20 text-center">
+
+            <div class="text-5xl">
+                📦
+            </div>
+
+            <h3 class="mt-4 text-xl font-black">
+                No products found
+            </h3>
+
+            <p class="mt-2 text-sm text-gray-500">
+                Add your first supermarket product.
+            </p>
+
+            <a
+                href="{% url 'supermarket:product_add' %}"
+                class="
+                    mt-6 inline-flex
+                    rounded-xl bg-emerald-500
+                    px-5 py-3
+                    text-sm font-black
+                    text-gray-950
+                "
+            >
+                + Add Product
+            </a>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

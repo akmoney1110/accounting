@@ -22,8 +22,10 @@ class User(AbstractUser):
         EATERY_MANAGER = "EATERY_MANAGER", "Eatery-Manager"
         VENDOR = 'VENDOR', 'Vendor / Supplier'
         CLIENT = 'CLIENT', 'Client / Buyer'
+        SUPERMARKET_MANAGER = "SUPERMARKET_MANAGER", "Supermarket Manager"
 
-    role = models.CharField(max_length=20, choices=Roles.choices, default=Roles.ADMIN)
+
+    role = models.CharField(max_length=30, choices=Roles.choices, default=Roles.ADMIN)
     phone = models.CharField(max_length=20, blank=True, null=True)
     address = models.TextField(blank=True, null=True)
     credit_limit = models.DecimalField(
@@ -42,6 +44,7 @@ class User(AbstractUser):
         self.Roles.ADMIN,
         self.Roles.MANAGER,
         self.Roles.EATERY_MANAGER,
+        self.Roles.SUPERMARKET_MANAGER,
     ):
             self.is_staff = True
         else:

@@ -67,6 +67,20 @@ def eatery_manager_required(view_func):
 
     return user_passes_test(check)(view_func)
 
+
+class SupermarketManagerRequiredMixin(
+    UserPassesTestMixin
+):
+    def test_func(self):
+        user = self.request.user
+
+        return (
+            user.is_authenticated
+            and user.role in (
+                User.Roles.ADMIN,
+                User.Roles.SUPERMARKET_MANAGER,
+            )
+        )
 def staff_required(view_func):
     def check(user):
         if not user.is_authenticated:
@@ -159,6 +173,10 @@ class LoginView(View):
 
         if user.role == User.Roles.EATERY_MANAGER:
             return redirect("eatery:manager_dashboard")
+        if user.role == User.Roles.SUPERMARKET_MANAGER:
+            return redirect(
+                "supermarket:manager_dashboard"
+            )
 
         if user.role == User.Roles.VENDOR:
             return redirect("vendor_portal")

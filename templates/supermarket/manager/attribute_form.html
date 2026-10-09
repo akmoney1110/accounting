@@ -1,0 +1,114 @@
+{% extends "supermarket/manager/base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+
+
+{% block content %}
+
+<div class="mx-auto max-w-2xl">
+
+    <form
+        method="post"
+        class="
+            rounded-2xl
+            border border-gray-200
+            bg-white p-6
+        "
+    >
+
+        {% csrf_token %}
+
+        {{ form.non_field_errors }}
+
+
+        <div>
+            <label class="mb-2 block text-sm font-black">
+                Attribute Name
+            </label>
+
+            {{ form.name }}
+            {{ form.name.errors }}
+        </div>
+
+
+        <div class="mt-6">
+            <label class="mb-2 block text-sm font-black">
+                Slug
+            </label>
+
+            {{ form.slug }}
+            {{ form.slug.errors }}
+
+            <p class="mt-2 text-xs text-gray-500">
+                Example: "Screen Size" → screen-size
+            </p>
+        </div>
+
+
+        <div class="mt-6">
+            <label class="mb-2 block text-sm font-black">
+                Display Order
+            </label>
+
+            {{ form.order }}
+            {{ form.order.errors }}
+        </div>
+
+
+        <div
+            class="
+                mt-6 flex items-center gap-3
+                rounded-xl bg-gray-50 p-4
+            "
+        >
+
+            {{ form.is_active }}
+
+            <label class="text-sm font-black">
+                Active Attribute
+            </label>
+
+        </div>
+
+
+        <div
+            class="
+                mt-8 flex justify-end gap-3
+                border-t border-gray-200 pt-6
+            "
+        >
+
+            <a
+                href="{% url 'supermarket:attribute_list' %}"
+                class="
+                    rounded-xl border
+                    border-gray-300
+                    px-5 py-3
+                    text-sm font-black
+                "
+            >
+                Cancel
+            </a>
+
+
+            <button
+                type="submit"
+                class="
+                    rounded-xl
+                    bg-emerald-500
+                    px-6 py-3
+                    text-sm font-black
+                    text-gray-950
+                "
+            >
+                Save Attribute
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+{% endblock %}

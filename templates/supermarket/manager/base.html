@@ -1,0 +1,678 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        {% block title %}
+            Supermarket Manager
+        {% endblock %}
+        | Dikubs
+    </title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family:
+                Inter,
+                ui-sans-serif,
+                system-ui,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+        }
+    </style>
+
+    {% block extra_head %}{% endblock %}
+</head>
+
+<body class="bg-gray-50 text-gray-900">
+
+<div class="min-h-screen">
+
+    <!-- MOBILE OVERLAY -->
+    <div
+        id="sidebarOverlay"
+        onclick="closeSidebar()"
+        class="
+            fixed inset-0 z-40 hidden
+            bg-gray-950/50
+            backdrop-blur-sm
+            lg:hidden
+        "
+    ></div>
+
+
+    <!-- =====================================================
+         SIDEBAR
+         ===================================================== -->
+    <aside
+        id="sidebar"
+        class="
+            fixed bottom-0 left-0 top-0
+            z-50 w-72
+            -translate-x-full
+            border-r border-gray-800
+            bg-gray-950
+            text-white
+            transition-transform
+            duration-300
+            lg:translate-x-0
+        "
+    >
+
+        <div
+            class="
+                flex h-full
+                flex-col
+            "
+        >
+
+            <!-- LOGO -->
+            <div
+                class="
+                    flex h-20
+                    items-center
+                    justify-between
+                    border-b
+                    border-white/10
+                    px-6
+                "
+            >
+
+                <a
+                    href="{% url 'supermarket:manager_dashboard' %}"
+                    class="flex items-center gap-3"
+                >
+
+                    <div
+                        class="
+                            flex h-11 w-11
+                            items-center
+                            justify-center
+                            rounded-2xl
+                            bg-emerald-500
+                            text-xl
+                            font-black
+                            text-gray-950
+                        "
+                    >
+                        D
+                    </div>
+
+                    <div>
+                        <p
+                            class="
+                                text-lg
+                                font-black
+                                leading-none
+                            "
+                        >
+                            Dikubs
+                        </p>
+
+                        <p
+                            class="
+                                mt-1
+                                text-[10px]
+                                font-black
+                                uppercase
+                                tracking-[0.18em]
+                                text-emerald-400
+                            "
+                        >
+                            Supermarket
+                        </p>
+                    </div>
+
+                </a>
+
+
+                <button
+                    type="button"
+                    onclick="closeSidebar()"
+                    class="
+                        flex h-9 w-9
+                        items-center
+                        justify-center
+                        rounded-lg
+                        bg-white/5
+                        text-xl
+                        lg:hidden
+                    "
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+            <!-- NAVIGATION -->
+            <nav
+                class="
+                    flex-1
+                    overflow-y-auto
+                    px-4 py-6
+                "
+            >
+
+                <p
+                    class="
+                        mb-3 px-3
+                        text-[10px]
+                        font-black
+                        uppercase
+                        tracking-[0.2em]
+                        text-gray-500
+                    "
+                >
+                    Overview
+                </p>
+
+
+                <a
+                    href="{% url 'supermarket:manager_dashboard' %}"
+                    class="
+                        mb-1 flex
+                        items-center
+                        gap-3
+                        rounded-xl
+                        px-3 py-3
+                        text-sm
+                        font-bold
+                        transition
+
+                        {% if request.resolver_match.url_name == 'manager_dashboard' %}
+                            bg-emerald-500
+                            text-gray-950
+                        {% else %}
+                            text-gray-300
+                            hover:bg-white/5
+                            hover:text-white
+                        {% endif %}
+                    "
+                >
+                    <span>▦</span>
+                    Dashboard
+                </a>
+
+
+                <p
+                    class="
+                        mb-3 mt-8 px-3
+                        text-[10px]
+                        font-black
+                        uppercase
+                        tracking-[0.2em]
+                        text-gray-500
+                    "
+                >
+                    Store
+                </p>
+
+
+                <!-- ORDERS -->
+                <a
+    href="{% url 'supermarket:order_list' %}"
+    class="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-bold transition hover:bg-slate-100"
+>
+    <span>Orders</span>
+</a>
+
+
+                <!-- PRODUCTS -->
+                <a
+    href="{% url 'supermarket:product_list' %}"
+    class="
+        mb-1 flex items-center gap-3
+        rounded-xl px-3 py-3
+        text-sm font-bold transition
+
+        {% if request.resolver_match.url_name == 'product_list' or request.resolver_match.url_name == 'product_add' or request.resolver_match.url_name == 'product_detail' or request.resolver_match.url_name == 'product_edit' or request.resolver_match.url_name == 'variant_add' or request.resolver_match.url_name == 'variant_edit' %}
+            bg-white/10 text-white
+        {% else %}
+            text-gray-300
+            hover:bg-white/5
+            hover:text-white
+        {% endif %}
+    "
+>
+    <span>📦</span>
+    Products
+</a>
+
+
+                <!-- CATEGORIES -->
+                <a
+                    href="{% url 'supermarket:category_list' %}"
+                    class="
+                        mb-1 flex
+                        items-center
+                        gap-3
+                        rounded-xl
+                        px-3 py-3
+                        text-sm
+                        font-bold
+                        transition
+
+                        {% if request.resolver_match.url_name == 'category_list' or request.resolver_match.url_name == 'category_add' or request.resolver_match.url_name == 'category_edit' %}
+                            bg-white/10
+                            text-white
+                        {% else %}
+                            text-gray-300
+                            hover:bg-white/5
+                            hover:text-white
+                        {% endif %}
+                    "
+                >
+                    <span>▤</span>
+                    Categories
+                </a>
+
+
+                <!-- BRANDS -->
+                <a
+    href="{% url 'supermarket:brand_list' %}"
+    class="
+        mb-1 flex items-center gap-3
+        rounded-xl px-3 py-3
+        text-sm font-bold transition
+
+        {% if request.resolver_match.url_name == 'brand_list' or request.resolver_match.url_name == 'brand_add' or request.resolver_match.url_name == 'brand_edit' %}
+            bg-white/10 text-white
+        {% else %}
+            text-gray-300
+            hover:bg-white/5
+            hover:text-white
+        {% endif %}
+    "
+>
+    <span>🏷️</span>
+    Brands
+</a>
+
+                <!-- ATTRIBUTES -->
+                <a
+    href="{% url 'supermarket:attribute_list' %}"
+    class="
+        mb-1 flex items-center gap-3
+        rounded-xl px-3 py-3
+        text-sm font-bold transition
+
+        {% if request.resolver_match.url_name == 'attribute_list' or request.resolver_match.url_name == 'attribute_add' or request.resolver_match.url_name == 'attribute_edit' or request.resolver_match.url_name == 'attribute_value_add' %}
+            bg-white/10 text-white
+        {% else %}
+            text-gray-300
+            hover:bg-white/5
+            hover:text-white
+        {% endif %}
+    "
+>
+    <span>⚙️</span>
+    Attributes
+</a>
+
+
+                <!-- INVENTORY -->
+                <div
+                    class="
+                        mb-1 flex
+                        items-center
+                        gap-3
+                        rounded-xl
+                        px-3 py-3
+                        text-sm
+                        font-bold
+                        text-gray-500
+                    "
+                >
+                    <span>📊</span>
+                    Inventory
+
+                    <span
+                        class="
+                            ml-auto
+                            rounded-full
+                            bg-white/5
+                            px-2 py-1
+                            text-[9px]
+                            uppercase
+                        "
+                    >
+                        Soon
+                    </span>
+                </div>
+
+
+                <p
+                    class="
+                        mb-3 mt-8 px-3
+                        text-[10px]
+                        font-black
+                        uppercase
+                        tracking-[0.2em]
+                        text-gray-500
+                    "
+                >
+                    Website
+                </p>
+
+
+                <div
+                    class="
+                        flex items-center
+                        gap-3
+                        rounded-xl
+                        px-3 py-3
+                        text-sm
+                        font-bold
+                        text-gray-500
+                    "
+                >
+                    <span>🌐</span>
+                    View Store
+
+                    <span
+                        class="
+                            ml-auto
+                            rounded-full
+                            bg-white/5
+                            px-2 py-1
+                            text-[9px]
+                            uppercase
+                        "
+                    >
+                        Soon
+                    </span>
+                </div>
+
+            </nav>
+
+
+            <!-- USER -->
+            <div
+                class="
+                    border-t
+                    border-white/10
+                    p-4
+                "
+            >
+
+                <div
+                    class="
+                        rounded-2xl
+                        bg-white/5
+                        p-4
+                    "
+                >
+
+                    <div
+                        class="
+                            flex items-center
+                            gap-3
+                        "
+                    >
+
+                        <div
+                            class="
+                                flex h-10 w-10
+                                items-center
+                                justify-center
+                                rounded-full
+                                bg-emerald-500/20
+                                font-black
+                                text-emerald-400
+                            "
+                        >
+                            {{ request.user.username|slice:":1"|upper }}
+                        </div>
+
+                        <div class="min-w-0">
+
+                            <p
+                                class="
+                                    truncate
+                                    text-sm
+                                    font-black
+                                "
+                            >
+                                {{ request.user.username }}
+                            </p>
+
+                            <p
+                                class="
+                                    mt-0.5
+                                    text-xs
+                                    text-gray-500
+                                "
+                            >
+                                {{ request.user.get_role_display }}
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <a
+                        href="{% url 'logout' %}"
+                        class="
+                            mt-4 block
+                            rounded-lg
+                            border
+                            border-white/10
+                            px-3 py-2
+                            text-center
+                            text-xs
+                            font-bold
+                            text-gray-300
+                            transition
+                            hover:bg-white/5
+                            hover:text-white
+                        "
+                    >
+                        Sign Out
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </aside>
+
+
+
+    <!-- =====================================================
+         MAIN AREA
+         ===================================================== -->
+    <div class="lg:pl-72">
+
+        <!-- TOP BAR -->
+        <header
+            class="
+                sticky top-0
+                z-30
+                flex h-20
+                items-center
+                justify-between
+                border-b
+                border-gray-200
+                bg-white/95
+                px-4
+                backdrop-blur-xl
+                sm:px-6
+                lg:px-8
+            "
+        >
+
+            <div class="flex items-center gap-3">
+
+                <button
+                    type="button"
+                    onclick="openSidebar()"
+                    class="
+                        flex h-10 w-10
+                        items-center
+                        justify-center
+                        rounded-xl
+                        border
+                        border-gray-200
+                        bg-white
+                        lg:hidden
+                    "
+                >
+                    ☰
+                </button>
+
+
+                <div>
+
+                    <p
+                        class="
+                            text-xs
+                            font-bold
+                            text-gray-400
+                        "
+                    >
+                        Dikubs Supermarket
+                    </p>
+
+                    <h1
+                        class="
+                            text-base
+                            font-black
+                            sm:text-lg
+                        "
+                    >
+                        {% block page_title %}
+                            Dashboard
+                        {% endblock %}
+                    </h1>
+
+                </div>
+
+            </div>
+
+
+            <div class="flex items-center gap-3">
+
+                {% block header_actions %}
+                {% endblock %}
+
+            </div>
+
+        </header>
+
+
+        <!-- MESSAGES -->
+        {% if messages %}
+
+            <div
+                class="
+                    mx-auto
+                    max-w-[1600px]
+                    px-4 pt-6
+                    sm:px-6
+                    lg:px-8
+                "
+            >
+
+                {% for message in messages %}
+
+                    <div
+                        class="
+                            mb-3 rounded-xl
+                            border px-4 py-3
+                            text-sm font-bold
+
+                            {% if message.tags == 'success' %}
+                                border-emerald-200
+                                bg-emerald-50
+                                text-emerald-700
+                            {% elif message.tags == 'error' %}
+                                border-red-200
+                                bg-red-50
+                                text-red-700
+                            {% else %}
+                                border-blue-200
+                                bg-blue-50
+                                text-blue-700
+                            {% endif %}
+                        "
+                    >
+                        {{ message }}
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% endif %}
+
+
+        <!-- PAGE CONTENT -->
+        <main
+            class="
+                mx-auto
+                max-w-[1600px]
+                p-4
+                sm:p-6
+                lg:p-8
+            "
+        >
+
+            {% block content %}
+            {% endblock %}
+
+        </main>
+
+    </div>
+
+</div>
+
+
+<script>
+    function openSidebar() {
+        document
+            .getElementById("sidebar")
+            .classList
+            .remove("-translate-x-full");
+
+        document
+            .getElementById("sidebarOverlay")
+            .classList
+            .remove("hidden");
+    }
+
+
+    function closeSidebar() {
+        document
+            .getElementById("sidebar")
+            .classList
+            .add("-translate-x-full");
+
+        document
+            .getElementById("sidebarOverlay")
+            .classList
+            .add("hidden");
+    }
+</script>
+
+{% block extra_js %}{% endblock %}
+
+</body>
+</html>

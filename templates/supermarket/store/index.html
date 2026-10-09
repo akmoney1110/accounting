@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Dikubs Supermarket — quality products, convenient shopping and easy ordering.">
+    <meta name="theme-color" content="#1b120e">
+    <title>Dikubs Supermarket</title>
+
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        /* Unified DIKUBS brand palette */
+                        dikubs: {
+                            50:  '#faf8f3',   /* earth-50 sand */
+                            100: '#f7f3eb',   /* sand-light */
+                            200: '#efe6d5',
+                            300: '#e6dac3',   /* sand-base */
+                            400: '#d4a359',   /* cashew-gold */
+                            500: '#c9952c',
+                            600: '#a67842',
+                            700: '#8b5e3c',
+                            800: '#4e342e',   /* earth-brown */
+                            900: '#2d1e18',
+                            950: '#1b120e'    /* earth-dark */
+                        },
+                        gold: {
+                            300: '#e8c988',
+                            400: '#d4a359',
+                            500: '#c9952c',
+                            600: '#a67842',
+                            700: '#8b5e3c'
+                        },
+                        crop: {
+                            50:  '#f4f7f1',
+                            100: '#e8f0e1',
+                            300: '#a8bd98',
+                            500: '#6b8e23',
+                            700: '#3b5a32',
+                            900: '#243a1f'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter','ui-sans-serif','system-ui','sans-serif'],
+                        display: ['Playfair Display','Georgia','serif']
+                    },
+                    boxShadow: {
+                        dikubs:    '0 25px 70px rgba(45,30,24,.10)',
+                        'dikubs-lg':'0 35px 100px rgba(45,30,24,.18)',
+                        gold:      '0 12px 40px rgba(212,163,89,.28)'
+                    },
+                    animation: {
+                        float:   'float 6s ease-in-out infinite',
+                        marquee: 'marquee 28s linear infinite',
+                        pulseSoft:'pulseSoft 3s ease-in-out infinite'
+                    },
+                    keyframes: {
+                        float:{'0%,100%':{transform:'translateY(0)'},'50%':{transform:'translateY(-8px)'}},
+                        marquee:{'0%':{transform:'translateX(0)'},'100%':{transform:'translateX(-50%)'}},
+                        pulseSoft:{'0%,100%':{opacity:'1'},'50%':{opacity:'.55'}}
+                    }
+                }
+            }
+        }
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:wght@600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        html { scroll-behavior:smooth; }
+        body {
+            font-family:Inter,sans-serif;
+            background:#faf8f3;             /* sand-light */
+            color:#2d1e18;                  /* earth-brown */
+            overflow-x:hidden;
+        }
+        .font-display { font-family:'Playfair Display',Georgia,serif; }
+
+        ::selection { background:#d4a359; color:#1b120e; }
+        ::-webkit-scrollbar { width:8px; }
+        ::-webkit-scrollbar-track { background:#f7f3eb; }
+        ::-webkit-scrollbar-thumb { background:#c9952c; border-radius:999px; }
+
+        .no-scrollbar::-webkit-scrollbar { display:none; }
+        .no-scrollbar { -ms-overflow-style:none; scrollbar-width:none; }
+
+        .glass       { background:rgba(255,255,255,.78); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); }
+        .glass-dark  { background:rgba(27,18,14,.82);    backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px); }
+
+        .gold-gradient-text {
+            background:linear-gradient(135deg,#e8c988 0%,#d4a359 45%,#a67842 100%);
+            -webkit-background-clip:text;
+            -webkit-text-fill-color:transparent;
+        }
+        .hero-grid {
+            background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),
+                             linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);
+            background-size:36px 36px;
+        }
+
+        .product-card { transition:transform .35s cubic-bezier(.16,1,.3,1), box-shadow .35s, border-color .35s; }
+        .product-card:hover { transform:translateY(-6px); box-shadow:0 22px 55px rgba(45,30,24,.12); border-color:rgba(212,163,89,.45); }
+        .product-img { transition:transform .7s cubic-bezier(.16,1,.3,1); }
+        .product-card:hover .product-img { transform:scale(1.08); }
+
+        .category-pill { transition:all .25s ease; }
+        .category-pill:hover { transform:translateY(-3px); }
+
+        :focus-visible { outline:3px solid rgba(212,163,89,.75); outline-offset:3px; }
+
+        @keyframes shimmer {
+            0%   { background-position: -200% 0; }
+            100% { background-position:  200% 0; }
+        }
+        .btn-shimmer {
+            background-image:linear-gradient(110deg, #d4a359 0%, #e8c988 45%, #d4a359 55%, #a67842 100%);
+            background-size:200% 100%;
+            animation:shimmer 3.5s linear infinite;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen bg-[#faf8f3]">
+
+    <!-- ===================== ANNOUNCEMENT ===================== -->
+    <div class="bg-dikubs-950 border-b border-white/10 text-gold-400">
+        <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-2 sm:px-6 lg:px-8">
+            <div class="flex min-w-0 items-center gap-2 text-[10px] font-black uppercase tracking-[.14em] sm:text-[11px]">
+                <span class="h-2 w-2 shrink-0 animate-pulse rounded-full bg-crop-500"></span>
+                <span class="truncate">Quality shopping • Convenient ordering • Dikubs Supermarket</span>
+            </div>
+            <div class="hidden items-center gap-5 text-[10px] font-semibold text-dikubs-200/70 md:flex">
+                <span class="flex items-center gap-1.5">
+                    <i data-lucide="shield-check" class="h-3.5 w-3.5 text-gold-400"></i>Shop with confidence
+                </span>
+                <span class="flex items-center gap-1.5">
+                    <i data-lucide="message-circle" class="h-3.5 w-3.5 text-gold-400"></i>Easy ordering
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================== NAVIGATION ===================== -->
+    <header id="main-header" class="sticky top-0 z-40 border-b border-white/10 bg-dikubs-950/95 text-white shadow-lg backdrop-blur-md">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div class="flex h-[76px] items-center gap-3 sm:gap-5">
+
+                <a href="{% url 'supermarket:store' %}" class="group flex shrink-0 items-center gap-3">
+                    <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-gold-400 to-gold-600 text-2xl font-black text-dikubs-950 shadow-gold transition duration-300 group-hover:scale-105">
+                        D
+                    </div>
+                    <div class="hidden sm:block">
+                        <span class="block font-display text-2xl font-bold leading-none tracking-tight text-dikubs-100">Dikubs</span>
+                        <span class="mt-1 block text-[9px] font-extrabold uppercase tracking-[.27em] text-gold-400">Supermarket</span>
+                    </div>
+                </a>
+
+                <nav class="hidden items-center gap-5 lg:flex">
+                    <a href="#categories"      class="text-xs font-bold text-dikubs-200/75 hover:text-gold-400 transition">Categories</a>
+                    <a href="#catalog-section" class="text-xs font-bold text-dikubs-200/75 hover:text-gold-400 transition">Shop</a>
+                    <a href="#why-dikubs"      class="text-xs font-bold text-dikubs-200/75 hover:text-gold-400 transition">Why Dikubs</a>
+                </nav>
+
+                <!-- Header search -->
+                <form method="get" class="relative ml-auto hidden max-w-xl flex-1 md:block">
+                    <div class="flex items-center">
+                        <i data-lucide="search" class="absolute left-4 h-4 w-4 text-dikubs-300/70"></i>
+                        <input
+                            type="text"
+                            name="q"
+                            value="{{ search }}"
+                            placeholder="Search products, brands or SKU..."
+                            class="w-full rounded-full border border-white/15 bg-white/10 py-2.5 pl-11 pr-24 text-sm text-white outline-none placeholder:text-dikubs-300/55 focus:border-gold-400/60 focus:bg-dikubs-900/80"
+                        >
+                        <button type="submit" class="absolute right-1.5 rounded-full bg-gold-400 px-4 py-2 text-[11px] font-black text-dikubs-950 hover:bg-gold-300 transition">
+                            Search
+                        </button>
+                    </div>
+                    {% if selected_category %}<input type="hidden" name="category" value="{{ selected_category }}">{% endif %}
+                    {% if selected_brand %}<input type="hidden" name="brand" value="{{ selected_brand }}">{% endif %}
+                </form>
+
+                <div class="ml-auto flex items-center gap-2 md:ml-0">
+                    <a href="{% url 'supermarket:cart' %}"
+                       class="relative inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-gold-400 to-gold-500 px-3.5 py-2.5 text-sm font-black text-dikubs-950 shadow-gold hover:from-gold-300 hover:to-gold-400 transition sm:px-4">
+                        <i data-lucide="shopping-bag" class="h-4 w-4"></i>
+                        <span class="hidden sm:inline">Cart</span>
+                        <span id="supermarket-cart-count"
+                              class="inline-flex min-w-5 items-center justify-center rounded-full bg-dikubs-950 px-1.5 py-1 text-[10px] font-black text-gold-400">
+                            {{ supermarket_cart_count }}
+                        </span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Mobile search -->
+            <form method="get" class="pb-3 md:hidden">
+                <div class="relative flex items-center">
+                    <i data-lucide="search" class="absolute left-4 h-4 w-4 text-dikubs-300/70"></i>
+                    <input type="text" name="q" value="{{ search }}" placeholder="Search products, brands..."
+                           class="w-full rounded-2xl border border-white/10 bg-white/10 py-3 pl-11 pr-20 text-xs text-white outline-none placeholder:text-dikubs-300/55">
+                    <button type="submit" class="absolute right-1.5 rounded-xl bg-gold-400 px-3.5 py-2 text-[10px] font-black text-dikubs-950">
+                        Search
+                    </button>
+                </div>
+            </form>
+        </div>
+    </header>
+
+    <!-- ===================== HERO ===================== -->
+    <section class="relative isolate overflow-hidden bg-dikubs-950 text-white">
+        <div class="hero-grid pointer-events-none absolute inset-0 opacity-60"></div>
+        <div class="pointer-events-none absolute -right-40 -top-40 h-[36rem] w-[36rem] rounded-full bg-gold-400/15 blur-3xl"></div>
+        <div class="pointer-events-none absolute -bottom-40 -left-40 h-[30rem] w-[30rem] rounded-full bg-crop-500/15 blur-3xl"></div>
+
+        <div class="relative mx-auto max-w-7xl px-4 pb-16 pt-10 sm:px-6 lg:px-8 lg:pb-20 lg:pt-14">
+            <div class="grid items-center gap-12 lg:grid-cols-12">
+
+                <div class="lg:col-span-7">
+                    <div class="inline-flex items-center gap-2 rounded-full border border-gold-400/25 bg-white/5 px-4 py-2 backdrop-blur">
+                        <span class="h-2 w-2 rounded-full bg-gold-400"></span>
+                        <span class="text-[10px] font-black uppercase tracking-[.18em] text-gold-300 sm:text-xs">
+                            Quality • Convenience • Trust
+                        </span>
+                    </div>
+
+                    <h1 class="mt-6 font-display text-4xl font-black leading-[1.04] tracking-tight sm:text-6xl lg:text-7xl">
+                        Everything you need,
+                        <span class="gold-gradient-text block">all in one place.</span>
+                    </h1>
+
+                    <p class="mt-6 max-w-2xl text-base leading-8 text-dikubs-100/80 sm:text-lg">
+                        Discover quality groceries, household essentials, lifestyle products and more —
+                        thoughtfully presented so shopping feels simple.
+                    </p>
+
+                    <div class="mt-7 flex flex-wrap gap-3">
+                        <span class="rounded-xl border border-white/10 bg-white/5 px-3.5 py-2 text-xs font-bold text-dikubs-100/85">✓ Quality Products</span>
+                        <span class="rounded-xl border border-white/10 bg-white/5 px-3.5 py-2 text-xs font-bold text-dikubs-100/85">✓ Convenient Shopping</span>
+                        <span class="rounded-xl border border-white/10 bg-white/5 px-3.5 py-2 text-xs font-bold text-dikubs-100/85">✓ Easy Ordering</span>
+                    </div>
+
+                    <form method="get"
+                          class="mt-8 flex max-w-3xl flex-col gap-2 rounded-2xl border border-white/10 bg-white p-2 shadow-2xl shadow-black/30 sm:flex-row">
+                        <div class="flex min-w-0 flex-1 items-center">
+                            <i data-lucide="search" class="ml-3 h-5 w-5 shrink-0 text-dikubs-700/60"></i>
+                            <input type="text" name="q" value="{{ search }}"
+                                   placeholder="Search products, brands or SKU..."
+                                   class="min-w-0 flex-1 bg-transparent px-4 py-3 text-sm font-medium text-dikubs-950 outline-none placeholder:text-dikubs-700/45">
+                        </div>
+                        {% if selected_category %}<input type="hidden" name="category" value="{{ selected_category }}">{% endif %}
+                        {% if selected_brand %}<input type="hidden" name="brand" value="{{ selected_brand }}">{% endif %}
+                        <button type="submit"
+                                class="btn-shimmer rounded-xl px-7 py-3 text-sm font-black text-dikubs-950 shadow-gold transition hover:shadow-xl">
+                            Search
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Hero visual -->
+                <div class="relative hidden min-h-[410px] lg:col-span-5 lg:block">
+                    <div class="absolute right-0 top-1/2 h-80 w-80 -translate-y-1/2 rounded-full border border-white/10 bg-white/[.035]"></div>
+                    <div class="absolute right-10 top-1/2 h-64 w-64 -translate-y-1/2 rounded-full border border-gold-400/25"></div>
+
+                    <div class="absolute right-28 top-1/2 flex h-28 w-28 -translate-y-1/2 animate-float items-center justify-center rounded-[2rem] border border-gold-400/30 bg-gold-400/15 shadow-2xl shadow-black/30">
+                        <div class="text-center">
+                            <div class="font-display text-5xl font-black text-gold-300">D</div>
+                            <div class="mt-1 text-[9px] font-black uppercase tracking-[.25em] text-gold-200">Dikubs</div>
+                        </div>
+                    </div>
+
+                    <div class="absolute right-0 top-7 rounded-2xl border border-white/10 bg-white/10 px-5 py-4 backdrop-blur-md">
+                        <p class="text-[10px] font-black uppercase tracking-widest text-gold-300">Explore</p>
+                        <p class="mt-1 text-sm font-black text-white">Everyday essentials</p>
+                    </div>
+
+                    <div class="absolute bottom-7 left-0 rounded-2xl border border-white/10 bg-white/10 px-5 py-4 backdrop-blur-md">
+                        <p class="text-[10px] font-black uppercase tracking-widest text-crop-300">Shop smart</p>
+                        <p class="mt-1 text-sm font-black text-white">Simple & convenient</p>
+                    </div>
+
+                    <span class="absolute right-24 top-16 h-3 w-3 rounded-full bg-gold-400 shadow-lg shadow-gold-400/40"></span>
+                    <span class="absolute right-8 bottom-28 h-2 w-2 rounded-full bg-crop-300"></span>
+                    <span class="absolute left-24 top-32 h-2 w-2 rounded-full bg-white/30"></span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================== TRUST STRIP ===================== -->
+    <section class="relative z-10 -mt-6 px-4 sm:px-6 lg:px-8">
+        <div class="mx-auto grid max-w-7xl overflow-hidden rounded-3xl border border-dikubs-200 bg-white shadow-dikubs md:grid-cols-3">
+            <div class="flex items-center gap-4 border-b border-dikubs-100 p-5 md:border-b-0 md:border-r">
+                <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-dikubs-50 text-dikubs-800">
+                    <i data-lucide="shield-check" class="h-5 w-5"></i>
+                </div>
+                <div><p class="text-sm font-black text-dikubs-900">Quality first</p><p class="mt-1 text-[11px] text-dikubs-700/70">A cleaner way to shop.</p></div>
+            </div>
+            <div class="flex items-center gap-4 border-b border-dikubs-100 p-5 md:border-b-0 md:border-r">
+                <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#f9f1e0] text-gold-700">
+                    <i data-lucide="search-check" class="h-5 w-5"></i>
+                </div>
+                <div><p class="text-sm font-black text-dikubs-900">Find it faster</p><p class="mt-1 text-[11px] text-dikubs-700/70">Search and filter easily.</p></div>
+            </div>
+            <div class="flex items-center gap-4 p-5">
+                <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-crop-50 text-crop-700">
+                    <i data-lucide="message-circle" class="h-5 w-5"></i>
+                </div>
+                <div><p class="text-sm font-black text-dikubs-900">Easy ordering</p><p class="mt-1 text-[11px] text-dikubs-700/70">Simple communication around your order.</p></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================== MAIN ===================== -->
+    <main class="mx-auto max-w-7xl px-4 pb-24 pt-14 sm:px-6 lg:px-8">
+
+        <!-- ---------- Categories ---------- -->
+        <section id="categories" class="scroll-mt-28">
+            <div class="flex items-end justify-between gap-5">
+                <div>
+                    <p class="text-[10px] font-black uppercase tracking-[.22em] text-gold-600">Shop your way</p>
+                    <h2 class="mt-2 font-display text-3xl font-bold text-dikubs-900 sm:text-4xl">Browse categories</h2>
+                    <p class="mt-2 text-sm text-dikubs-700/70">Explore the store by the products you need.</p>
+                </div>
+            </div>
+
+            <div class="no-scrollbar mt-7 flex gap-3 overflow-x-auto pb-2">
+                {% for category in categories %}
+                <a href="?category={{ category.pk }}"
+                   class="category-pill group min-w-[180px] shrink-0 rounded-2xl border border-dikubs-200 bg-white p-4 shadow-sm hover:border-gold-400 hover:shadow-md">
+                    <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-dikubs-50 text-dikubs-800 transition group-hover:bg-dikubs-950 group-hover:text-gold-400">
+                        <i data-lucide="layers-3" class="h-4 w-4"></i>
+                    </div>
+                    <p class="mt-4 truncate text-sm font-black text-dikubs-900">{{ category.name }}</p>
+                    <span class="mt-1.5 inline-flex items-center gap-1 text-[10px] font-bold text-gold-600">
+                        Explore <i data-lucide="arrow-up-right" class="h-3 w-3"></i>
+                    </span>
+                </a>
+                {% empty %}
+                <div class="w-full rounded-2xl border border-dashed border-dikubs-300 bg-white p-8 text-center text-sm text-dikubs-700/70">
+                    Categories will appear here as your catalog grows.
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <!-- ---------- Catalog ---------- -->
+        <section id="catalog-section" class="mt-16 scroll-mt-28">
+            <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                    <p class="text-[10px] font-black uppercase tracking-[.22em] text-gold-600">Dikubs collection</p>
+                    <h2 class="mt-2 font-display text-3xl font-bold text-dikubs-900 sm:text-4xl">Explore our products</h2>
+                    <p class="mt-2 text-sm text-dikubs-700/70">Discover products for your everyday needs.</p>
+                </div>
+                {% if products %}
+                <div class="rounded-full bg-dikubs-100 px-4 py-2 text-xs font-bold text-dikubs-800">
+                    {{ products|length }} products available
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Filters -->
+            <form method="get" class="mt-7 rounded-3xl border border-dikubs-200 bg-white p-3 shadow-sm sm:p-4">
+                <div class="grid gap-3 lg:grid-cols-[1.6fr_1fr_1fr_auto]">
+                    <div class="relative">
+                        <i data-lucide="search" class="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-dikubs-700/50"></i>
+                        <input type="text" name="q" value="{{ search }}" placeholder="Search products..."
+                               class="w-full rounded-2xl border border-dikubs-200 bg-dikubs-50 py-3.5 pl-11 pr-4 text-sm font-medium outline-none focus:border-gold-400 focus:bg-white focus:ring-4 focus:ring-gold-400/15">
+                    </div>
+                    <select name="category"
+                            class="rounded-2xl border border-dikubs-200 bg-dikubs-50 px-4 py-3.5 text-sm font-semibold outline-none focus:border-gold-400 focus:bg-white">
+                        <option value="">All categories</option>
+                        {% for category in categories %}
+                        <option value="{{ category.pk }}" {% if selected_category == category.pk|stringformat:"s" %}selected{% endif %}>{{ category.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <select name="brand"
+                            class="rounded-2xl border border-dikubs-200 bg-dikubs-50 px-4 py-3.5 text-sm font-semibold outline-none focus:border-gold-400 focus:bg-white">
+                        <option value="">All brands</option>
+                        {% for brand in brands %}
+                        <option value="{{ brand.pk }}" {% if selected_brand == brand.pk|stringformat:"s" %}selected{% endif %}>{{ brand.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <div class="flex gap-2">
+                        <button type="submit"
+                                class="flex-1 rounded-2xl bg-dikubs-950 px-5 py-3.5 text-sm font-black text-gold-400 hover:bg-dikubs-900 transition">
+                            Filter
+                        </button>
+                        <a href="{% url 'supermarket:store' %}"
+                           class="flex items-center justify-center rounded-2xl border border-dikubs-200 px-4 text-dikubs-700/70 hover:bg-dikubs-50"
+                           aria-label="Clear filters">
+                            <i data-lucide="x" class="h-4 w-4"></i>
+                        </a>
+                    </div>
+                </div>
+            </form>
+
+            {% if products %}
+            <div class="mt-8 grid grid-cols-2 gap-3.5 sm:grid-cols-2 sm:gap-5 md:grid-cols-3 lg:grid-cols-4">
+                {% for product in products %}
+                <a href="{% url 'supermarket:store_product_detail' product.pk %}"
+                   class="product-card group flex flex-col overflow-hidden rounded-3xl border border-dikubs-200 bg-white">
+                    <div class="relative aspect-square overflow-hidden bg-dikubs-50">
+                        {% if product.image %}
+                            <img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy"
+                                 class="product-img h-full w-full object-cover">
+                        {% elif product.images.first %}
+                            <img src="{{ product.images.first.image.url }}" alt="{{ product.name }}" loading="lazy"
+                                 class="product-img h-full w-full object-cover">
+                        {% else %}
+                            <div class="flex h-full flex-col items-center justify-center bg-gradient-to-br from-dikubs-50 to-dikubs-100">
+                                <div class="flex h-16 w-16 items-center justify-center rounded-2xl bg-white font-display text-4xl font-black text-gold-600 shadow-sm">D</div>
+                                <span class="mt-3 text-[9px] font-black uppercase tracking-widest text-dikubs-700/50">Image coming soon</span>
+                            </div>
+                        {% endif %}
+
+                        {% if product.is_featured %}
+                        <span class="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-gold-400 px-3 py-1.5 text-[9px] font-black uppercase tracking-wider text-dikubs-950 shadow-md">
+                            <i data-lucide="star" class="h-3 w-3 fill-current"></i> Featured
+                        </span>
+                        {% endif %}
+
+                        <span class="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-xl bg-white/90 text-dikubs-900 shadow-md backdrop-blur transition group-hover:bg-dikubs-950 group-hover:text-gold-400">
+                            <i data-lucide="arrow-up-right" class="h-4 w-4"></i>
+                        </span>
+                    </div>
+
+                    <div class="flex flex-1 flex-col justify-between p-4 sm:p-5">
+                        <div>
+                            {% if product.brand %}
+                            <p class="truncate text-[9px] font-black uppercase tracking-[.16em] text-gold-600">{{ product.brand.name }}</p>
+                            {% endif %}
+                            <h3 class="mt-1.5 line-clamp-2 min-h-[2.65rem] text-[13px] font-black leading-5 text-dikubs-900 sm:text-[15px]">{{ product.name }}</h3>
+                            {% if product.category %}
+                            <p class="mt-1.5 truncate text-[10px] font-medium text-dikubs-700/60">{{ product.category.name }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div class="mt-4 flex items-end justify-between gap-2 border-t border-dikubs-100 pt-3">
+                            <div class="min-w-0">
+                                {% if product.starting_price %}
+                                <p class="text-[9px] font-bold uppercase tracking-wider text-dikubs-700/60">Starting from</p>
+                                <p class="mt-0.5 truncate text-base font-black text-dikubs-900 sm:text-lg">₦{{ product.starting_price|floatformat:2 }}</p>
+                                {% else %}
+                                <p class="text-[10px] font-bold text-dikubs-700/60">Price on request</p>
+                                {% endif %}
+                            </div>
+                            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-dikubs-50 text-dikubs-800 transition group-hover:bg-dikubs-950 group-hover:text-gold-400">
+                                <i data-lucide="arrow-right" class="h-4 w-4"></i>
+                            </span>
+                        </div>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="mt-8 rounded-3xl border border-dikubs-200 bg-white px-6 py-20 text-center shadow-sm">
+                <div class="mx-auto flex h-20 w-20 items-center justify-center rounded-3xl bg-dikubs-50 font-display text-4xl font-black text-gold-600">D</div>
+                <h3 class="mt-6 font-display text-2xl font-bold text-dikubs-900">No matching products</h3>
+                <p class="mx-auto mt-2 max-w-md text-sm leading-6 text-dikubs-700/70">Try changing your search or filters to see more of the Dikubs collection.</p>
+                <a href="{% url 'supermarket:store' %}"
+                   class="mt-6 inline-flex items-center gap-2 rounded-2xl bg-dikubs-950 px-6 py-3.5 text-sm font-black text-gold-400 hover:bg-dikubs-900 transition">
+                    View all products <i data-lucide="arrow-right" class="h-4 w-4"></i>
+                </a>
+            </div>
+            {% endif %}
+        </section>
+
+        <!-- ---------- Why Dikubs ---------- -->
+        <section id="why-dikubs" class="mt-20 scroll-mt-28">
+            <div class="relative overflow-hidden rounded-[2rem] bg-dikubs-950 text-white shadow-dikubs-lg">
+                <div class="pointer-events-none absolute -right-32 -top-32 h-80 w-80 rounded-full bg-gold-400/15 blur-3xl"></div>
+                <div class="pointer-events-none absolute -bottom-32 -left-32 h-80 w-80 rounded-full bg-crop-500/15 blur-3xl"></div>
+
+                <div class="grid gap-10 p-7 sm:p-10 lg:grid-cols-[.85fr_1.15fr] lg:p-12">
+                    <div class="relative">
+                        <p class="text-[10px] font-black uppercase tracking-[.22em] text-gold-400">The Dikubs difference</p>
+                        <h2 class="mt-3 font-display text-3xl font-bold leading-tight sm:text-4xl">A better way to shop.</h2>
+                        <p class="mt-4 max-w-lg text-sm leading-7 text-dikubs-100/70">
+                            A polished shopping experience focused on clarity, convenience and the products that matter to you.
+                        </p>
+                    </div>
+
+                    <div class="grid gap-3 sm:grid-cols-2">
+                        <div class="rounded-2xl border border-white/10 bg-white/[.055] p-5">
+                            <i data-lucide="badge-check" class="h-5 w-5 text-gold-400"></i>
+                            <h3 class="mt-4 text-sm font-black">Quality-focused</h3>
+                            <p class="mt-1.5 text-xs leading-5 text-dikubs-100/60">Present your best products with confidence.</p>
+                        </div>
+                        <div class="rounded-2xl border border-white/10 bg-white/[.055] p-5">
+                            <i data-lucide="search-check" class="h-5 w-5 text-gold-400"></i>
+                            <h3 class="mt-4 text-sm font-black">Easy discovery</h3>
+                            <p class="mt-1.5 text-xs leading-5 text-dikubs-100/60">Search, filter and browse without clutter.</p>
+                        </div>
+                        <div class="rounded-2xl border border-white/10 bg-white/[.055] p-5">
+                            <i data-lucide="shopping-bag" class="h-5 w-5 text-gold-400"></i>
+                            <h3 class="mt-4 text-sm font-black">Simple shopping</h3>
+                            <p class="mt-1.5 text-xs leading-5 text-dikubs-100/60">Move from product discovery to your basket naturally.</p>
+                        </div>
+                        <div class="rounded-2xl border border-white/10 bg-white/[.055] p-5">
+                            <i data-lucide="message-circle" class="h-5 w-5 text-gold-400"></i>
+                            <h3 class="mt-4 text-sm font-black">Convenient ordering</h3>
+                            <p class="mt-1.5 text-xs leading-5 text-dikubs-100/60">Keep customer communication straightforward.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ===================== FOOTER ===================== -->
+    <footer class="border-t border-white/10 bg-dikubs-950 pb-24 pt-14 text-white lg:pb-10">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div class="grid gap-10 md:grid-cols-3">
+                <div>
+                    <div class="flex items-center gap-3">
+                        <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-gold-400 to-gold-600 font-black text-dikubs-950">D</div>
+                        <div>
+                            <p class="font-display text-xl font-bold">Dikubs</p>
+                            <p class="text-[9px] font-black uppercase tracking-[.24em] text-gold-400">Supermarket</p>
+                        </div>
+                    </div>
+                    <p class="mt-5 max-w-sm text-sm leading-7 text-dikubs-100/60">
+                        Quality products, thoughtful presentation and a simpler shopping experience.
+                    </p>
+                </div>
+                <div>
+                    <p class="text-xs font-black uppercase tracking-[.2em] text-gold-400">Shop</p>
+                    <div class="mt-4 space-y-2 text-sm text-dikubs-100/60">
+                        <a href="#categories"      class="block hover:text-gold-300 transition">Categories</a>
+                        <a href="#catalog-section" class="block hover:text-gold-300 transition">All Products</a>
+                        <a href="{% url 'supermarket:cart' %}" class="block hover:text-gold-300 transition">Shopping Cart</a>
+                    </div>
+                </div>
+                <div>
+                    <p class="text-xs font-black uppercase tracking-[.2em] text-gold-400">Experience</p>
+                    <div class="mt-4 space-y-2 text-sm text-dikubs-100/60">
+                        <a href="#why-dikubs"      class="block hover:text-gold-300 transition">Why Dikubs</a>
+                        <a href="#catalog-section" class="block hover:text-gold-300 transition">Explore Products</a>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-10 flex flex-col gap-2 border-t border-white/10 pt-6 text-xs text-dikubs-100/40 sm:flex-row sm:justify-between">
+                <p>© {% now "Y" %} Dikubs Supermarket. All rights reserved.</p>
+                <p>Shop smarter. Live better.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ===================== MOBILE BOTTOM BAR ===================== -->
+    <div class="fixed bottom-0 left-0 right-0 z-40 border-t border-white/10 bg-dikubs-950 px-6 py-2.5 text-white shadow-2xl md:hidden">
+        <div class="mx-auto flex max-w-md items-center justify-between">
+            <a href="{% url 'supermarket:store' %}" class="flex flex-col items-center gap-0.5 text-[9px] font-bold text-gold-400">
+                <i data-lucide="home" class="h-5 w-5"></i>Home
+            </a>
+            <a href="#categories" class="flex flex-col items-center gap-0.5 text-[9px] font-bold text-dikubs-200/70">
+                <i data-lucide="grid-3x3" class="h-5 w-5"></i>Shop
+            </a>
+            <a href="#catalog-section" class="flex flex-col items-center gap-0.5 text-[9px] font-bold text-dikubs-200/70">
+                <i data-lucide="search" class="h-5 w-5"></i>Search
+            </a>
+            <a href="{% url 'supermarket:cart' %}" class="relative flex flex-col items-center gap-0.5 text-[9px] font-bold text-dikubs-200/70">
+                <i data-lucide="shopping-bag" class="h-5 w-5"></i>Cart
+                <span class="absolute -right-2 -top-1 min-w-4 rounded-full bg-gold-400 px-1 text-center text-[8px] font-black text-dikubs-950">
+                    {{ supermarket_cart_count }}
+                </span>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            if (window.lucide) lucide.createIcons();
+        });
+    </script>
+</body>
+</html>

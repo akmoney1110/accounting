@@ -607,7 +607,7 @@ class CheckoutView(View):
 
     # WhatsApp number:
     # country code + number, no +, spaces, or dashes.
-    WHATSAPP_NUMBER = "2337062548298"
+    WHATSAPP_NUMBER = "+2349150541630"
 
     def get(self, request):
         form = CustomerCheckoutForm()
@@ -1349,7 +1349,7 @@ def order_whatsapp(request, order_number):
     # -----------------------------------------------------
     # DIKUBS WHATSAPP NUMBER
     # -----------------------------------------------------
-    whatsapp_number = "+2347062548298"
+    whatsapp_number = "+2349150541630"
 
     # -----------------------------------------------------
     # BUILD TRUSTED MESSAGE FROM DATABASE

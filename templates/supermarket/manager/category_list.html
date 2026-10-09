@@ -1,0 +1,389 @@
+{% extends "supermarket/manager/base.html" %}
+
+
+{% block title %}
+    Categories
+{% endblock %}
+
+
+{% block page_title %}
+    Categories
+{% endblock %}
+
+
+{% block header_actions %}
+
+<a
+    href="{% url 'supermarket:category_add' %}"
+    class="
+        rounded-xl
+        bg-emerald-500
+        px-4 py-2.5
+        text-sm
+        font-black
+        text-gray-950
+        transition
+        hover:bg-emerald-400
+    "
+>
+    + Add Category
+</a>
+
+{% endblock %}
+
+
+{% block content %}
+
+<div
+    class="
+        overflow-hidden
+        rounded-2xl
+        border border-gray-200
+        bg-white
+    "
+>
+
+    <div
+        class="
+            border-b
+            border-gray-200
+            p-6
+        "
+    >
+
+        <h2
+            class="
+                text-lg
+                font-black
+            "
+        >
+            Product Categories
+        </h2>
+
+        <p
+            class="
+                mt-1 text-sm
+                text-gray-500
+            "
+        >
+            Organize supermarket products into
+            departments and subcategories.
+        </p>
+
+    </div>
+
+
+    {% if categories %}
+
+        <div class="divide-y divide-gray-100">
+
+            {% for category in categories %}
+
+                <div
+                    class="
+                        flex flex-col
+                        gap-5 p-5
+                        sm:flex-row
+                        sm:items-center
+                        sm:justify-between
+                    "
+                >
+
+                    <div
+                        class="
+                            flex min-w-0
+                            items-center
+                            gap-4
+                        "
+                    >
+
+                        <!-- IMAGE -->
+                        {% if category.image %}
+
+                            <img
+                                src="{{ category.image.url }}"
+                                alt="{{ category.name }}"
+                                class="
+                                    h-14 w-14
+                                    shrink-0
+                                    rounded-xl
+                                    object-cover
+                                "
+                            >
+
+                        {% else %}
+
+                            <div
+                                class="
+                                    flex h-14 w-14
+                                    shrink-0
+                                    items-center
+                                    justify-center
+                                    rounded-xl
+                                    bg-emerald-50
+                                    text-xl
+                                "
+                            >
+                                ▤
+                            </div>
+
+                        {% endif %}
+
+
+                        <div class="min-w-0">
+
+                            <div
+                                class="
+                                    flex flex-wrap
+                                    items-center
+                                    gap-2
+                                "
+                            >
+
+                                <h3
+                                    class="
+                                        font-black
+                                        text-gray-950
+                                    "
+                                >
+                                    {{ category.name }}
+                                </h3>
+
+
+                                {% if category.is_active %}
+
+                                    <span
+                                        class="
+                                            rounded-full
+                                            bg-emerald-50
+                                            px-2.5 py-1
+                                            text-[10px]
+                                            font-black
+                                            uppercase
+                                            text-emerald-700
+                                        "
+                                    >
+                                        Active
+                                    </span>
+
+                                {% else %}
+
+                                    <span
+                                        class="
+                                            rounded-full
+                                            bg-gray-100
+                                            px-2.5 py-1
+                                            text-[10px]
+                                            font-black
+                                            uppercase
+                                            text-gray-500
+                                        "
+                                    >
+                                        Hidden
+                                    </span>
+
+                                {% endif %}
+
+                            </div>
+
+
+                            {% if category.parent %}
+
+                                <p
+                                    class="
+                                        mt-1 text-xs
+                                        font-bold
+                                        text-emerald-600
+                                    "
+                                >
+                                    ↳ {{ category.parent.name }}
+                                </p>
+
+                            {% else %}
+
+                                <p
+                                    class="
+                                        mt-1 text-xs
+                                        font-bold
+                                        text-gray-400
+                                    "
+                                >
+                                    Main Category
+                                </p>
+
+                            {% endif %}
+
+
+                            {% if category.description %}
+
+                                <p
+                                    class="
+                                        mt-2
+                                        max-w-2xl
+                                        truncate
+                                        text-sm
+                                        text-gray-500
+                                    "
+                                >
+                                    {{ category.description }}
+                                </p>
+
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- ACTIONS -->
+                    <div
+                        class="
+                            flex shrink-0
+                            items-center gap-2
+                        "
+                    >
+
+                        <a
+                            href="{% url 'supermarket:category_add' %}?parent={{ category.pk }}"
+                            class="
+                                rounded-lg
+                                border border-gray-200
+                                px-3 py-2
+                                text-xs
+                                font-bold
+                                text-gray-600
+                                transition
+                                hover:bg-gray-50
+                            "
+                        >
+                            + Subcategory
+                        </a>
+
+<a
+    href="{% url 'supermarket:category_attribute_list' category.pk %}"
+    class="
+        rounded-lg
+        border border-emerald-200
+        px-3 py-2
+        text-xs
+        font-bold
+        text-emerald-700
+        transition
+        hover:bg-emerald-50
+    "
+>
+    Attributes
+</a>
+                        <a
+                            href="{% url 'supermarket:category_edit' category.pk %}"
+                            class="
+                                rounded-lg
+                                border border-gray-200
+                                px-3 py-2
+                                text-xs
+                                font-bold
+                                text-gray-600
+                                transition
+                                hover:bg-gray-50
+                            "
+                        >
+                            Edit
+                        </a>
+
+
+                        <form
+                            method="post"
+                            action="{% url 'supermarket:category_delete' category.pk %}"
+                            onsubmit="
+                                return confirm(
+                                    'Delete this category?'
+                                );
+                            "
+                        >
+                            {% csrf_token %}
+
+                            <button
+                                type="submit"
+                                class="
+                                    rounded-lg
+                                    border border-red-200
+                                    px-3 py-2
+                                    text-xs
+                                    font-bold
+                                    text-red-600
+                                    transition
+                                    hover:bg-red-50
+                                "
+                            >
+                                Delete
+                            </button>
+
+                        </form>
+
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    {% else %}
+
+        <div
+            class="
+                px-6 py-20
+                text-center
+            "
+        >
+
+            <div class="text-5xl">
+                🛒
+            </div>
+
+            <h3
+                class="
+                    mt-5 text-xl
+                    font-black
+                "
+            >
+                No categories yet
+            </h3>
+
+            <p
+                class="
+                    mx-auto mt-2
+                    max-w-md
+                    text-sm
+                    leading-6
+                    text-gray-500
+                "
+            >
+                Start organizing your supermarket by
+                creating categories such as Electronics,
+                Groceries and Toiletries.
+            </p>
+
+
+            <a
+                href="{% url 'supermarket:category_add' %}"
+                class="
+                    mt-6 inline-flex
+                    rounded-xl
+                    bg-emerald-500
+                    px-5 py-3
+                    text-sm
+                    font-black
+                    text-gray-950
+                "
+            >
+                Create First Category
+            </a>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

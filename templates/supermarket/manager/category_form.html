@@ -1,0 +1,375 @@
+{% extends "supermarket/manager/base.html" %}
+
+
+{% block title %}
+    {{ title }}
+{% endblock %}
+
+
+{% block page_title %}
+    {{ title }}
+{% endblock %}
+
+
+{% block content %}
+
+<div class="mx-auto max-w-3xl">
+
+    <div
+        class="
+            rounded-2xl
+            border border-gray-200
+            bg-white
+        "
+    >
+
+        <div
+            class="
+                border-b
+                border-gray-200
+                p-6
+            "
+        >
+
+            <h2
+                class="
+                    text-xl
+                    font-black
+                "
+            >
+                {{ title }}
+            </h2>
+
+            <p
+                class="
+                    mt-2 text-sm
+                    text-gray-500
+                "
+            >
+                Create a main department or place this
+                category underneath another category.
+            </p>
+
+        </div>
+
+
+        <form
+            method="post"
+            enctype="multipart/form-data"
+            class="p-6"
+        >
+
+            {% csrf_token %}
+
+
+            {% if form.non_field_errors %}
+
+                <div
+                    class="
+                        mb-6 rounded-xl
+                        border border-red-200
+                        bg-red-50
+                        p-4
+                        text-sm
+                        font-bold
+                        text-red-700
+                    "
+                >
+
+                    {% for error in form.non_field_errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+
+                </div>
+
+            {% endif %}
+
+
+            <!-- PARENT -->
+            <div>
+
+                <label
+                    for="{{ form.parent.id_for_label }}"
+                    class="
+                        mb-2 block
+                        text-sm font-black
+                    "
+                >
+                    Parent Category
+                </label>
+
+                {{ form.parent }}
+
+                <p
+                    class="
+                        mt-2 text-xs
+                        text-gray-500
+                    "
+                >
+                    Leave as "Main category" for departments
+                    such as Electronics, Groceries or Toiletries.
+                </p>
+
+                {% for error in form.parent.errors %}
+                    <p
+                        class="
+                            mt-2 text-xs
+                            font-bold
+                            text-red-600
+                        "
+                    >
+                        {{ error }}
+                    </p>
+                {% endfor %}
+
+            </div>
+
+
+            <!-- NAME -->
+            <div class="mt-6">
+
+                <label
+                    for="{{ form.name.id_for_label }}"
+                    class="
+                        mb-2 block
+                        text-sm font-black
+                    "
+                >
+                    Category Name
+                    <span class="text-red-500">*</span>
+                </label>
+
+                {{ form.name }}
+
+                {% for error in form.name.errors %}
+                    <p
+                        class="
+                            mt-2 text-xs
+                            font-bold
+                            text-red-600
+                        "
+                    >
+                        {{ error }}
+                    </p>
+                {% endfor %}
+
+            </div>
+
+
+            <!-- DESCRIPTION -->
+            <div class="mt-6">
+
+                <label
+                    for="{{ form.description.id_for_label }}"
+                    class="
+                        mb-2 block
+                        text-sm font-black
+                    "
+                >
+                    Description
+                </label>
+
+                {{ form.description }}
+
+                {% for error in form.description.errors %}
+                    <p
+                        class="
+                            mt-2 text-xs
+                            font-bold
+                            text-red-600
+                        "
+                    >
+                        {{ error }}
+                    </p>
+                {% endfor %}
+
+            </div>
+
+
+            <!-- IMAGE -->
+            <div class="mt-6">
+
+                <label
+                    for="{{ form.image.id_for_label }}"
+                    class="
+                        mb-2 block
+                        text-sm font-black
+                    "
+                >
+                    Category Image
+                </label>
+
+                {% if category and category.image %}
+
+                    <div class="mb-4">
+
+                        <img
+                            src="{{ category.image.url }}"
+                            alt="{{ category.name }}"
+                            class="
+                                h-28 w-28
+                                rounded-xl
+                                object-cover
+                            "
+                        >
+
+                    </div>
+
+                {% endif %}
+
+                {{ form.image }}
+
+                {% for error in form.image.errors %}
+                    <p
+                        class="
+                            mt-2 text-xs
+                            font-bold
+                            text-red-600
+                        "
+                    >
+                        {{ error }}
+                    </p>
+                {% endfor %}
+
+            </div>
+
+
+            <!-- ORDER -->
+            <div class="mt-6">
+
+                <label
+                    for="{{ form.order.id_for_label }}"
+                    class="
+                        mb-2 block
+                        text-sm font-black
+                    "
+                >
+                    Display Order
+                </label>
+
+                {{ form.order }}
+
+                <p
+                    class="
+                        mt-2 text-xs
+                        text-gray-500
+                    "
+                >
+                    Lower numbers appear first.
+                </p>
+
+                {% for error in form.order.errors %}
+                    <p
+                        class="
+                            mt-2 text-xs
+                            font-bold
+                            text-red-600
+                        "
+                    >
+                        {{ error }}
+                    </p>
+                {% endfor %}
+
+            </div>
+
+
+            <!-- ACTIVE -->
+            <div
+                class="
+                    mt-6 flex
+                    items-start gap-3
+                    rounded-xl
+                    bg-gray-50
+                    p-4
+                "
+            >
+
+                {{ form.is_active }}
+
+                <div>
+
+                    <label
+                        for="{{ form.is_active.id_for_label }}"
+                        class="
+                            text-sm font-black
+                        "
+                    >
+                        Active Category
+                    </label>
+
+                    <p
+                        class="
+                            mt-1 text-xs
+                            text-gray-500
+                        "
+                    >
+                        Inactive categories can be hidden
+                        from the customer storefront.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- BUTTONS -->
+            <div
+                class="
+                    mt-8 flex
+                    flex-col-reverse
+                    gap-3
+                    border-t
+                    border-gray-200
+                    pt-6
+                    sm:flex-row
+                    sm:justify-end
+                "
+            >
+
+                <a
+                    href="{% url 'supermarket:category_list' %}"
+                    class="
+                        rounded-xl
+                        border border-gray-300
+                        px-5 py-3
+                        text-center
+                        text-sm
+                        font-black
+                        text-gray-700
+                        transition
+                        hover:bg-gray-50
+                    "
+                >
+                    Cancel
+                </a>
+
+
+                <button
+                    type="submit"
+                    class="
+                        rounded-xl
+                        bg-emerald-500
+                        px-6 py-3
+                        text-sm
+                        font-black
+                        text-gray-950
+                        transition
+                        hover:bg-emerald-400
+                    "
+                >
+                    {% if category %}
+                        Save Changes
+                    {% else %}
+                        Create Category
+                    {% endif %}
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

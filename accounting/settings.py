@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
     'core',
     "eatery",
+    "supermarket",
 ]
 from datetime import timedelta
 
@@ -129,6 +130,7 @@ TEMPLATES = [
             'context_processors': [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
+                "supermarket.context_processors.supermarket_cart",
                 'django.contrib.messages.context_processors.messages',
             ],
         },

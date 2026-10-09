@@ -1,0 +1,2270 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="Dikubs Supermarket — quality products, convenient shopping and easy WhatsApp ordering."
+    >
+
+    <meta
+        name="theme-color"
+        content="#17351f"
+    >
+
+    <title>Dikubs Supermarket</title>
+
+    <!-- =========================================================
+         TAILWIND CSS CDN
+         ========================================================= -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- =========================================================
+         TAILWIND CONFIG
+         ========================================================= -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        dikubs: {
+                            50:  '#f7f8f4',
+                            100: '#eef1ea',
+                            200: '#dfe6dc',
+                            300: '#cbd7c8',
+                            400: '#9caf9a',
+                            500: '#718b70',
+                            600: '#536f53',
+                            700: '#3c583f',
+                            800: '#29422f',
+                            900: '#17351f',
+                            950: '#0f2716',
+                        },
+
+                        gold: {
+                            300: '#e4d69c',
+                            400: '#d1c184',
+                            500: '#c8b77a',
+                            600: '#ad9a5d',
+                        }
+                    },
+
+                    fontFamily: {
+                        sans: [
+                            'Inter',
+                            'ui-sans-serif',
+                            'system-ui',
+                            '-apple-system',
+                            'BlinkMacSystemFont',
+                            'Segoe UI',
+                            'sans-serif'
+                        ],
+
+                        display: [
+                            'Playfair Display',
+                            'Georgia',
+                            'serif'
+                        ]
+                    },
+
+                    boxShadow: {
+                        'dikubs':
+                            '0 25px 70px rgba(23, 53, 31, 0.12)',
+
+                        'dikubs-lg':
+                            '0 35px 100px rgba(23, 53, 31, 0.18)',
+
+                        'gold':
+                            '0 15px 45px rgba(200, 183, 122, 0.18)',
+                    },
+
+                    backgroundImage: {
+                        'dikubs-grid':
+                            'linear-gradient(rgba(23,53,31,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(23,53,31,.035) 1px, transparent 1px)',
+
+                        'dikubs-radial':
+                            'radial-gradient(circle at center, rgba(200,183,122,.18), transparent 65%)',
+                    },
+
+                    animation: {
+                        'float':
+                            'float 6s ease-in-out infinite',
+
+                        'pulse-soft':
+                            'pulseSoft 3s ease-in-out infinite',
+
+                        'marquee':
+                            'marquee 25s linear infinite',
+                    },
+
+                    keyframes: {
+                        float: {
+                            '0%, 100%': {
+                                transform: 'translateY(0)'
+                            },
+                            '50%': {
+                                transform: 'translateY(-8px)'
+                            }
+                        },
+
+                        pulseSoft: {
+                            '0%, 100%': {
+                                opacity: '0.55'
+                            },
+                            '50%': {
+                                opacity: '1'
+                            }
+                        },
+
+                        marquee: {
+                            '0%': {
+                                transform: 'translateX(0)'
+                            },
+                            '100%': {
+                                transform: 'translateX(-50%)'
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- =========================================================
+         GOOGLE FONTS
+         ========================================================= -->
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <!-- =========================================================
+         LUCIDE ICONS
+         ========================================================= -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- =========================================================
+         CUSTOM BASE STYLES
+         ========================================================= -->
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: Inter, sans-serif;
+            background: #f7f8f4;
+            color: #17351f;
+            margin: 0;
+        }
+
+        ::selection {
+            background: #c8b77a;
+            color: #17351f;
+        }
+
+        /* Premium scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #eef1ea;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #718b70;
+            border-radius: 999px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #536f53;
+        }
+
+        /* Product image zoom */
+        .product-image {
+            transition:
+                transform 0.7s cubic-bezier(.2,.8,.2,1);
+        }
+
+        .product-card:hover .product-image {
+            transform: scale(1.06);
+        }
+
+        /* Smooth cards */
+        .product-card {
+            transition:
+                transform .35s ease,
+                box-shadow .35s ease,
+                border-color .35s ease;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow:
+                0 25px 70px rgba(23,53,31,.12);
+        }
+
+        /* Hide scrollbar but retain scrolling */
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Glass effect */
+        .glass {
+            background: rgba(255,255,255,.72);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+        }
+
+        /* Gold shine */
+        .gold-shine {
+            background:
+                linear-gradient(
+                    120deg,
+                    #ad9a5d 0%,
+                    #e4d69c 45%,
+                    #c8b77a 70%,
+                    #ad9a5d 100%
+                );
+        }
+
+        /* Decorative ring */
+        .dikubs-ring {
+            border: 1px solid rgba(200,183,122,.35);
+            box-shadow:
+                inset 0 0 40px rgba(200,183,122,.06);
+        }
+
+        /* Focus accessibility */
+        :focus-visible {
+            outline: 3px solid rgba(200,183,122,.75);
+            outline-offset: 3px;
+        }
+
+        /* Prevent horizontal overflow */
+        body {
+            overflow-x: hidden;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- YOUR DIKUBS STOREFRONT CONTENT GOES HERE -->
+
+
+<div class="min-h-screen bg-gray-50">
+
+    <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+
+        <!-- =====================================================
+             BREADCRUMB
+        ====================================================== -->
+
+        <nav class="mb-6 flex flex-wrap items-center gap-2 text-sm text-gray-500">
+
+            <a
+                href="{% url 'supermarket:store' %}"
+                class="font-semibold transition hover:text-emerald-600"
+            >
+                Supermarket
+            </a>
+
+            <span>/</span>
+
+            {% if product.category %}
+
+                <span class="text-gray-400">
+                    {{ product.category.name }}
+                </span>
+
+                <span>/</span>
+
+            {% endif %}
+
+            <span class="font-semibold text-gray-700">
+                {{ product.name }}
+            </span>
+
+        </nav>
+
+
+        <!-- =====================================================
+             PRODUCT
+        ====================================================== -->
+
+        <div class="grid gap-10 lg:grid-cols-2 lg:gap-14">
+
+            <!-- =================================================
+                 PRODUCT GALLERY
+            ================================================== -->
+
+            <div>
+
+                <!-- Main Image -->
+
+                <div
+                    class="relative overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-sm"
+                >
+
+                    {% if product.is_featured %}
+
+                        <span
+                            class="absolute left-4 top-4 z-10 rounded-full bg-amber-400 px-3 py-1.5 text-xs font-black text-amber-950 shadow-sm"
+                        >
+                            Featured
+                        </span>
+
+                    {% endif %}
+
+
+                    {% if product.image %}
+
+                        <img
+                            id="main-product-image"
+                            src="{{ product.image.url }}"
+                            alt="{{ product.name }}"
+                            class="aspect-square h-full w-full object-contain p-6 transition duration-300"
+                        >
+
+                    {% elif product.images.first %}
+
+                        <img
+                            id="main-product-image"
+                            src="{{ product.images.first.image.url }}"
+                            alt="{{ product.name }}"
+                            class="aspect-square h-full w-full object-contain p-6 transition duration-300"
+                        >
+
+                    {% else %}
+
+                        <div
+                            class="flex aspect-square flex-col items-center justify-center bg-gray-100 text-gray-400"
+                        >
+
+                            <svg
+                                class="h-16 w-16"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="1.5"
+                                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                                ></path>
+                            </svg>
+
+                            <span class="mt-3 text-sm font-semibold">
+                                No product image
+                            </span>
+
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+
+                <!-- Thumbnails -->
+
+                {% if product.image or product.images.all %}
+
+                    <div class="mt-4 flex gap-3 overflow-x-auto pb-2">
+
+                        {% if product.image %}
+
+                            <button
+                                type="button"
+                                onclick="changeProductImage(this, '{{ product.image.url|escapejs }}')"
+                                class="product-thumbnail h-20 w-20 shrink-0 overflow-hidden rounded-xl border-2 border-emerald-600 bg-white p-1 transition"
+                            >
+
+                                <img
+                                    src="{{ product.image.url }}"
+                                    alt="{{ product.name }}"
+                                    class="h-full w-full rounded-lg object-cover"
+                                >
+
+                            </button>
+
+                        {% endif %}
+
+
+                        {% for image in product.images.all %}
+
+                            <button
+                                type="button"
+                                onclick="changeProductImage(this, '{{ image.image.url|escapejs }}')"
+                                class="product-thumbnail h-20 w-20 shrink-0 overflow-hidden rounded-xl border-2 border-gray-200 bg-white p-1 transition hover:border-emerald-400"
+                            >
+
+                                <img
+                                    src="{{ image.image.url }}"
+                                    alt="{{ image.alt_text|default:product.name }}"
+                                    class="h-full w-full rounded-lg object-cover"
+                                >
+
+                            </button>
+
+                        {% endfor %}
+
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+
+            <!-- =================================================
+                 PRODUCT INFORMATION
+            ================================================== -->
+
+            <div>
+
+                <!-- Brand -->
+
+                {% if product.brand %}
+
+                    <p
+                        class="text-sm font-black uppercase tracking-widest text-emerald-600"
+                    >
+                        {{ product.brand.name }}
+                    </p>
+
+                {% endif %}
+
+
+                <!-- Name -->
+
+                <h1
+                    class="mt-2 text-3xl font-black tracking-tight text-gray-900 sm:text-4xl"
+                >
+                    {{ product.name }}
+                </h1>
+
+
+                <!-- Category -->
+
+                {% if product.category %}
+
+                    <div class="mt-3">
+
+                        <span
+                            class="inline-flex rounded-full bg-gray-100 px-3 py-1 text-xs font-bold text-gray-600"
+                        >
+                            {{ product.category.name }}
+                        </span>
+
+                    </div>
+
+                {% endif %}
+
+
+                <!-- =================================================
+                     PRICE
+                ================================================== -->
+
+                <div class="mt-7">
+
+                    <div class="flex flex-wrap items-end gap-3">
+
+                        <p
+                            id="product-price"
+                            class="text-3xl font-black text-gray-900 sm:text-4xl"
+                        >
+
+                            {% if product.starting_price %}
+
+                                ₦{{ product.starting_price|floatformat:2 }}
+
+                            {% else %}
+
+                                Unavailable
+
+                            {% endif %}
+
+                        </p>
+
+
+                        <p
+                            id="regular-price"
+                            class="hidden pb-1 text-base font-semibold text-gray-400 line-through"
+                        ></p>
+
+
+                        <span
+                            id="sale-badge"
+                            class="hidden rounded-full bg-red-100 px-3 py-1 text-xs font-black text-red-700"
+                        >
+                            Sale
+                        </span>
+
+                    </div>
+
+
+                    {% if attribute_options %}
+
+                        <p
+                            id="price-helper"
+                            class="mt-2 text-sm text-gray-500"
+                        >
+                            Select your preferred options to see the exact price.
+                        </p>
+
+                    {% endif %}
+
+                </div>
+
+
+                <!-- =================================================
+                     VARIANT OPTIONS
+                ================================================== -->
+
+                {% if attribute_options %}
+
+                    <div
+                        class="mt-8 space-y-7 border-t border-gray-200 pt-7"
+                    >
+
+                        {% for item in attribute_options %}
+
+                            <div>
+
+                                <div
+                                    class="mb-3 flex items-center justify-between gap-4"
+                                >
+
+                                    <label
+                                        class="text-sm font-black text-gray-900"
+                                    >
+                                        {{ item.attribute.name }}
+                                    </label>
+
+
+                                    <span
+                                        id="selected-attribute-{{ item.attribute.pk }}"
+                                        class="text-xs font-bold text-emerald-600"
+                                    ></span>
+
+                                </div>
+
+
+                                <div
+                                    class="flex flex-wrap gap-2"
+                                    data-attribute="{{ item.attribute.pk }}"
+                                >
+
+                                    {% for value in item.values %}
+
+                                        <button
+                                            type="button"
+                                            data-option
+                                            data-attribute-id="{{ item.attribute.pk }}"
+                                            data-value-id="{{ value.pk }}"
+                                            data-value-name="{{ value.value }}"
+                                            onclick="selectOption(this)"
+                                            class="variant-option rounded-xl border-2 border-gray-200 bg-white px-4 py-2.5 text-sm font-bold text-gray-700 transition hover:border-emerald-400 hover:text-emerald-700"
+                                        >
+                                            {{ value.value }}
+                                        </button>
+
+                                    {% endfor %}
+
+                                </div>
+
+                            </div>
+
+                        {% endfor %}
+
+                    </div>
+
+                {% endif %}
+
+
+                <!-- =================================================
+                     SELECTED VARIANT
+                ================================================== -->
+
+                <div
+                    id="variant-information"
+                    class="mt-8 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm"
+                >
+
+                    <p
+                        id="variant-message"
+                        class="text-sm font-semibold text-gray-600"
+                    >
+
+                        {% if attribute_options %}
+
+                            Select all product options to continue.
+
+                        {% else %}
+
+                            Checking product availability...
+
+                        {% endif %}
+
+                    </p>
+
+
+                    <div
+                        id="variant-details"
+                        class="hidden"
+                    >
+
+                        <div
+                            class="flex flex-wrap items-start justify-between gap-4"
+                        >
+
+                            <div>
+
+                                <p
+                                    class="text-xs font-black uppercase tracking-wider text-gray-400"
+                                >
+                                    Selected option
+                                </p>
+
+                                <p
+                                    id="variant-description"
+                                    class="mt-1 font-black text-gray-900"
+                                ></p>
+
+                            </div>
+
+
+                            <span
+                                id="stock-status"
+                                class="rounded-full px-3 py-1 text-xs font-black"
+                            ></span>
+
+                        </div>
+
+
+                        <div
+                            class="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-gray-100 pt-4"
+                        >
+
+                            <span
+                                id="variant-sku"
+                                class="text-xs font-semibold text-gray-500"
+                            ></span>
+
+                            <span
+                                id="stock-quantity"
+                                class="text-xs font-semibold text-gray-500"
+                            ></span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =================================================
+                     QUANTITY
+                ================================================== -->
+
+                <div class="mt-7">
+
+                    <label
+                        class="mb-3 block text-sm font-black text-gray-900"
+                    >
+                        Quantity
+                    </label>
+
+
+                    <div
+                        class="inline-flex overflow-hidden rounded-xl border border-gray-300 bg-white"
+                    >
+
+                        <button
+                            type="button"
+                            onclick="changeQuantity(-1)"
+                            class="flex h-12 w-12 items-center justify-center text-xl font-bold text-gray-700 transition hover:bg-gray-100"
+                            aria-label="Decrease quantity"
+                        >
+                            −
+                        </button>
+
+
+                        <input
+                            id="quantity"
+                            type="number"
+                            value="1"
+                            min="1"
+                            inputmode="numeric"
+                            onchange="validateQuantity()"
+                            class="h-12 w-16 border-x border-y-0 border-gray-300 text-center text-sm font-black text-gray-900 outline-none"
+                        >
+
+
+                        <button
+                            type="button"
+                            onclick="changeQuantity(1)"
+                            class="flex h-12 w-12 items-center justify-center text-xl font-bold text-gray-700 transition hover:bg-gray-100"
+                            aria-label="Increase quantity"
+                        >
+                            +
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Selected Variant ID -->
+
+                <input
+                    id="selected-variant-id"
+                    type="hidden"
+                    value=""
+                >
+
+
+                <!-- =================================================
+                     ADD TO CART
+                ================================================== -->
+
+                <button
+                    id="add-to-cart-button"
+                    type="button"
+                    disabled
+                    onclick="addToCart()"
+                    class="mt-7 w-full cursor-not-allowed rounded-2xl bg-gray-300 px-6 py-4 text-base font-black text-gray-500 transition"
+                >
+                    Select Options
+                </button>
+
+
+                <!-- Cart Result Message -->
+
+                <div
+                    id="cart-message"
+                    class="mt-4 hidden rounded-2xl px-5 py-4 text-sm"
+                ></div>
+
+
+                <!-- Cart Actions -->
+
+                <div
+                    id="cart-actions"
+                    class="mt-4 hidden grid-cols-2 gap-3"
+                >
+
+                    <a
+                        href="{% url 'supermarket:store' %}"
+                        class="rounded-xl border border-gray-300 bg-white px-4 py-3 text-center text-sm font-black text-gray-700 transition hover:border-emerald-500 hover:text-emerald-700"
+                    >
+                        Continue Shopping
+                    </a>
+
+
+                    <a
+                        href="{% url 'supermarket:cart' %}"
+                        class="rounded-xl bg-gray-900 px-4 py-3 text-center text-sm font-black text-white transition hover:bg-black"
+                    >
+                        View Cart
+                    </a>
+
+                </div>
+
+
+                <!-- =================================================
+                     BENEFITS
+                ================================================== -->
+
+                <div
+                    class="mt-8 grid gap-3 border-t border-gray-200 pt-7 sm:grid-cols-3"
+                >
+
+                    <div
+                        class="rounded-xl bg-gray-100 px-4 py-4"
+                    >
+                        <p
+                            class="text-xs font-black uppercase tracking-wide text-gray-900"
+                        >
+                            Secure Shopping
+                        </p>
+
+                        <p
+                            class="mt-1 text-xs leading-5 text-gray-500"
+                        >
+                            Your selected variant is verified before purchase.
+                        </p>
+                    </div>
+
+
+                    <div
+                        class="rounded-xl bg-gray-100 px-4 py-4"
+                    >
+                        <p
+                            class="text-xs font-black uppercase tracking-wide text-gray-900"
+                        >
+                            Live Stock
+                        </p>
+
+                        <p
+                            class="mt-1 text-xs leading-5 text-gray-500"
+                        >
+                            Availability is checked before items enter your cart.
+                        </p>
+                    </div>
+
+
+                    <div
+                        class="rounded-xl bg-gray-100 px-4 py-4"
+                    >
+                        <p
+                            class="text-xs font-black uppercase tracking-wide text-gray-900"
+                        >
+                            Exact Variant
+                        </p>
+
+                        <p
+                            class="mt-1 text-xs leading-5 text-gray-500"
+                        >
+                            Your exact color, size or configuration is saved.
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <!-- =================================================
+                     DESCRIPTION
+                ================================================== -->
+
+                {% if product.description %}
+
+                    <div
+                        class="mt-10 border-t border-gray-200 pt-8"
+                    >
+
+                        <h2
+                            class="text-lg font-black text-gray-900"
+                        >
+                            Product Description
+                        </h2>
+
+
+                        <div
+                            class="mt-4 whitespace-pre-line text-sm leading-7 text-gray-600"
+                        >
+                            {{ product.description }}
+                        </div>
+
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     DJANGO -> JAVASCRIPT DATA
+========================================================== -->
+
+{{ variant_data|json_script:"variant-data" }}
+
+
+<div
+    id="cart-url-config"
+    data-add-url="{% url 'supermarket:cart_add' 999999 %}"
+    data-cart-url="{% url 'supermarket:cart' %}"
+    hidden
+></div>
+
+
+<script>
+
+    /* =========================================================
+       DATA
+    ========================================================== */
+
+    const variants = JSON.parse(
+        document.getElementById(
+            "variant-data"
+        ).textContent
+    );
+
+
+    const selectedAttributes = {};
+
+
+    let selectedVariant = null;
+
+
+    /* =========================================================
+       IMAGE GALLERY
+    ========================================================== */
+
+    function changeProductImage(
+        button,
+        url
+    ) {
+
+        const image =
+            document.getElementById(
+                "main-product-image"
+            );
+
+
+        if (image) {
+
+            image.style.opacity = "0";
+
+
+            setTimeout(() => {
+
+                image.src = url;
+
+                image.style.opacity = "1";
+
+            }, 120);
+
+        }
+
+
+        document
+            .querySelectorAll(
+                ".product-thumbnail"
+            )
+            .forEach((thumbnail) => {
+
+                thumbnail.classList.remove(
+                    "border-emerald-600"
+                );
+
+                thumbnail.classList.add(
+                    "border-gray-200"
+                );
+
+            });
+
+
+        if (button) {
+
+            button.classList.remove(
+                "border-gray-200"
+            );
+
+            button.classList.add(
+                "border-emerald-600"
+            );
+
+        }
+
+    }
+
+
+    /* =========================================================
+       ATTRIBUTE SELECTION
+    ========================================================== */
+
+    function selectOption(button) {
+
+        const attributeId =
+            button.dataset.attributeId;
+
+
+        const valueId =
+            parseInt(
+                button.dataset.valueId,
+                10
+            );
+
+
+        const valueName =
+            button.dataset.valueName;
+
+
+        selectedAttributes[
+            attributeId
+        ] = valueId;
+
+
+        /*
+         * Reset buttons belonging to this
+         * particular attribute.
+         */
+
+        document
+            .querySelectorAll(
+                `[data-attribute-id="${attributeId}"]`
+            )
+            .forEach((item) => {
+
+                item.classList.remove(
+                    "border-emerald-600",
+                    "bg-emerald-50",
+                    "text-emerald-700",
+                    "ring-1",
+                    "ring-emerald-600"
+                );
+
+
+                item.classList.add(
+                    "border-gray-200",
+                    "bg-white",
+                    "text-gray-700"
+                );
+
+            });
+
+
+        /*
+         * Highlight selected option.
+         */
+
+        button.classList.remove(
+            "border-gray-200",
+            "bg-white",
+            "text-gray-700"
+        );
+
+
+        button.classList.add(
+            "border-emerald-600",
+            "bg-emerald-50",
+            "text-emerald-700",
+            "ring-1",
+            "ring-emerald-600"
+        );
+
+
+        /*
+         * Display selected value beside
+         * attribute name.
+         */
+
+        const label =
+            document.getElementById(
+                `selected-attribute-${attributeId}`
+            );
+
+
+        if (label) {
+
+            label.textContent =
+                valueName;
+
+        }
+
+
+        resolveVariant();
+
+    }
+
+
+    /* =========================================================
+       RESOLVE EXACT PRODUCT VARIANT
+    ========================================================== */
+
+    function resolveVariant() {
+
+        selectedVariant = null;
+
+
+        const selectedKeys =
+            Object.keys(
+                selectedAttributes
+            );
+
+
+        const attributeGroups =
+            document.querySelectorAll(
+                "[data-attribute]"
+            );
+
+
+        /*
+         * Customer has not selected every
+         * required visible attribute yet.
+         */
+
+        if (
+            selectedKeys.length <
+            attributeGroups.length
+        ) {
+
+            clearVariant(
+                "Select all product options to continue."
+            );
+
+            updateAvailableOptions();
+
+            return;
+
+        }
+
+
+        /*
+         * Find exact variant.
+         */
+
+        const matchedVariant =
+            variants.find(
+                (variant) => {
+
+                    const variantAttributes =
+                        variant.attributes || {};
+
+
+                    const variantKeys =
+                        Object.keys(
+                            variantAttributes
+                        );
+
+
+                    if (
+                        variantKeys.length !==
+                        selectedKeys.length
+                    ) {
+
+                        return false;
+
+                    }
+
+
+                    return selectedKeys.every(
+                        (attributeId) => {
+
+                            return (
+                                parseInt(
+                                    variantAttributes[
+                                        attributeId
+                                    ],
+                                    10
+                                )
+                                ===
+                                parseInt(
+                                    selectedAttributes[
+                                        attributeId
+                                    ],
+                                    10
+                                )
+                            );
+
+                        }
+                    );
+
+                }
+            );
+
+
+        if (!matchedVariant) {
+
+            clearVariant(
+                "This combination is currently unavailable. Please choose another option."
+            );
+
+            updateAvailableOptions();
+
+            return;
+
+        }
+
+
+        selectedVariant =
+            matchedVariant;
+
+
+        showVariant(
+            matchedVariant
+        );
+
+
+        updateAvailableOptions();
+
+    }
+
+
+    /* =========================================================
+       DISPLAY SELECTED VARIANT
+    ========================================================== */
+
+    function showVariant(variant) {
+
+        selectedVariant =
+            variant;
+
+
+        document.getElementById(
+            "selected-variant-id"
+        ).value =
+            variant.id;
+
+
+        document.getElementById(
+            "variant-message"
+        ).classList.add(
+            "hidden"
+        );
+
+
+        document.getElementById(
+            "variant-details"
+        ).classList.remove(
+            "hidden"
+        );
+
+
+        document.getElementById(
+            "variant-description"
+        ).textContent =
+            variant.description ||
+            "Standard";
+
+
+        document.getElementById(
+            "variant-sku"
+        ).textContent =
+            `SKU: ${variant.sku}`;
+
+
+        /*
+         * Price
+         */
+
+        const price =
+            document.getElementById(
+                "product-price"
+            );
+
+
+        const regularPrice =
+            document.getElementById(
+                "regular-price"
+            );
+
+
+        const saleBadge =
+            document.getElementById(
+                "sale-badge"
+            );
+
+
+        price.textContent =
+            formatCurrency(
+                variant.current_price
+            );
+
+
+        if (
+            variant.sale_price &&
+            parseFloat(
+                variant.sale_price
+            )
+            <
+            parseFloat(
+                variant.price
+            )
+        ) {
+
+            regularPrice.textContent =
+                formatCurrency(
+                    variant.price
+                );
+
+
+            regularPrice.classList.remove(
+                "hidden"
+            );
+
+
+            saleBadge.classList.remove(
+                "hidden"
+            );
+
+        } else {
+
+            regularPrice.classList.add(
+                "hidden"
+            );
+
+
+            saleBadge.classList.add(
+                "hidden"
+            );
+
+        }
+
+
+        /*
+         * Stock
+         */
+
+        const stockStatus =
+            document.getElementById(
+                "stock-status"
+            );
+
+
+        const stockQuantity =
+            document.getElementById(
+                "stock-quantity"
+            );
+
+
+        const quantityInput =
+            document.getElementById(
+                "quantity"
+            );
+
+
+        const button =
+            document.getElementById(
+                "add-to-cart-button"
+            );
+
+
+        if (variant.in_stock) {
+
+            stockStatus.textContent =
+                "In Stock";
+
+
+            stockStatus.className =
+                "rounded-full bg-emerald-100 px-3 py-1 text-xs font-black text-emerald-700";
+
+
+            if (variant.track_stock) {
+
+                stockQuantity.textContent =
+                    `${variant.stock_quantity} available`;
+
+
+                quantityInput.max =
+                    variant.stock_quantity;
+
+            } else {
+
+                stockQuantity.textContent =
+                    "Available";
+
+
+                quantityInput.removeAttribute(
+                    "max"
+                );
+
+            }
+
+
+            button.disabled =
+                false;
+
+
+            button.textContent =
+                "Add to Cart";
+
+
+            button.className =
+                "mt-7 w-full rounded-2xl bg-emerald-600 px-6 py-4 text-base font-black text-white shadow-lg shadow-emerald-600/20 transition hover:bg-emerald-700 active:scale-[0.99]";
+
+
+        } else {
+
+            stockStatus.textContent =
+                "Out of Stock";
+
+
+            stockStatus.className =
+                "rounded-full bg-red-100 px-3 py-1 text-xs font-black text-red-700";
+
+
+            stockQuantity.textContent =
+                variant.track_stock
+                ?
+                "0 available"
+                :
+                "Unavailable";
+
+
+            button.disabled =
+                true;
+
+
+            button.textContent =
+                "Out of Stock";
+
+
+            button.className =
+                "mt-7 w-full cursor-not-allowed rounded-2xl bg-gray-300 px-6 py-4 text-base font-black text-gray-500";
+
+        }
+
+
+        validateQuantity();
+
+    }
+
+
+    /* =========================================================
+       CLEAR VARIANT
+    ========================================================== */
+
+    function clearVariant(message) {
+
+        selectedVariant =
+            null;
+
+
+        document.getElementById(
+            "selected-variant-id"
+        ).value = "";
+
+
+        document.getElementById(
+            "variant-details"
+        ).classList.add(
+            "hidden"
+        );
+
+
+        const messageElement =
+            document.getElementById(
+                "variant-message"
+            );
+
+
+        messageElement.textContent =
+            message;
+
+
+        messageElement.classList.remove(
+            "hidden"
+        );
+
+
+        const button =
+            document.getElementById(
+                "add-to-cart-button"
+            );
+
+
+        button.disabled =
+            true;
+
+
+        button.textContent =
+            "Select Options";
+
+
+        button.className =
+            "mt-7 w-full cursor-not-allowed rounded-2xl bg-gray-300 px-6 py-4 text-base font-black text-gray-500";
+
+    }
+
+
+    /* =========================================================
+       DISABLE IMPOSSIBLE OPTIONS
+    ========================================================== */
+
+    function updateAvailableOptions() {
+
+        document
+            .querySelectorAll(
+                "[data-option]"
+            )
+            .forEach((button) => {
+
+                const attributeId =
+                    button.dataset.attributeId;
+
+
+                const valueId =
+                    parseInt(
+                        button.dataset.valueId,
+                        10
+                    );
+
+
+                /*
+                 * Build hypothetical selection using
+                 * this button.
+                 */
+
+                const hypothetical = {
+                    ...selectedAttributes,
+                    [attributeId]: valueId,
+                };
+
+
+                const possible =
+                    variants.some(
+                        (variant) => {
+
+                            if (
+                                !variant.in_stock
+                            ) {
+
+                                return false;
+
+                            }
+
+
+                            const attributes =
+                                variant.attributes || {};
+
+
+                            return Object.entries(
+                                hypothetical
+                            ).every(
+                                ([
+                                    selectedAttributeId,
+                                    selectedValueId
+                                ]) => {
+
+                                    return (
+                                        parseInt(
+                                            attributes[
+                                                selectedAttributeId
+                                            ],
+                                            10
+                                        )
+                                        ===
+                                        parseInt(
+                                            selectedValueId,
+                                            10
+                                        )
+                                    );
+
+                                }
+                            );
+
+                        }
+                    );
+
+
+                const currentlySelected =
+                    parseInt(
+                        selectedAttributes[
+                            attributeId
+                        ],
+                        10
+                    )
+                    ===
+                    valueId;
+
+
+                button.disabled =
+                    !possible &&
+                    !currentlySelected;
+
+
+                if (
+                    !possible &&
+                    !currentlySelected
+                ) {
+
+                    button.classList.add(
+                        "cursor-not-allowed",
+                        "opacity-40"
+                    );
+
+                } else {
+
+                    button.classList.remove(
+                        "cursor-not-allowed",
+                        "opacity-40"
+                    );
+
+                }
+
+            });
+
+    }
+
+
+    /* =========================================================
+       QUANTITY
+    ========================================================== */
+
+    function changeQuantity(change) {
+
+        const input =
+            document.getElementById(
+                "quantity"
+            );
+
+
+        let quantity =
+            parseInt(
+                input.value,
+                10
+            );
+
+
+        if (
+            Number.isNaN(
+                quantity
+            )
+        ) {
+
+            quantity = 1;
+
+        }
+
+
+        quantity += change;
+
+
+        if (quantity < 1) {
+
+            quantity = 1;
+
+        }
+
+
+        if (
+            selectedVariant &&
+            selectedVariant.track_stock
+        ) {
+
+            const maximum =
+                parseInt(
+                    selectedVariant.stock_quantity,
+                    10
+                );
+
+
+            if (
+                quantity >
+                maximum
+            ) {
+
+                quantity =
+                    maximum;
+
+            }
+
+        }
+
+
+        input.value =
+            quantity;
+
+
+        validateQuantity();
+
+    }
+
+
+    function validateQuantity() {
+
+        const input =
+            document.getElementById(
+                "quantity"
+            );
+
+
+        let quantity =
+            parseInt(
+                input.value,
+                10
+            );
+
+
+        if (
+            Number.isNaN(
+                quantity
+            )
+            ||
+            quantity < 1
+        ) {
+
+            quantity = 1;
+
+        }
+
+
+        if (
+            selectedVariant &&
+            selectedVariant.track_stock
+        ) {
+
+            const maximum =
+                parseInt(
+                    selectedVariant.stock_quantity,
+                    10
+                );
+
+
+            if (
+                maximum > 0 &&
+                quantity > maximum
+            ) {
+
+                quantity =
+                    maximum;
+
+            }
+
+        }
+
+
+        input.value =
+            quantity;
+
+
+        return quantity;
+
+    }
+
+
+    /* =========================================================
+       ADD TO CART
+    ========================================================== */
+
+    async function addToCart() {
+
+        const variantId =
+            document.getElementById(
+                "selected-variant-id"
+            ).value;
+
+
+        const quantity =
+            validateQuantity();
+
+
+        if (!variantId) {
+
+            showCartMessage(
+                "Please select a valid product option.",
+                false
+            );
+
+            return;
+
+        }
+
+
+        if (
+            !quantity ||
+            quantity < 1
+        ) {
+
+            showCartMessage(
+                "Quantity must be at least 1.",
+                false
+            );
+
+            return;
+
+        }
+
+
+        if (
+            selectedVariant &&
+            selectedVariant.track_stock &&
+            quantity >
+            parseInt(
+                selectedVariant.stock_quantity,
+                10
+            )
+        ) {
+
+            showCartMessage(
+                `Only ${selectedVariant.stock_quantity} item(s) are currently available.`,
+                false
+            );
+
+            return;
+
+        }
+
+
+        const button =
+            document.getElementById(
+                "add-to-cart-button"
+            );
+
+
+        const originalButtonText =
+            button.textContent;
+
+
+        button.disabled =
+            true;
+
+
+        button.textContent =
+            "Adding to Cart...";
+
+
+        const formData =
+            new FormData();
+
+
+        formData.append(
+            "quantity",
+            quantity
+        );
+
+
+        /*
+         * Let Django generate the URL rather
+         * than hardcoding /supermarket/.
+         */
+
+        const urlTemplate =
+            document.getElementById(
+                "cart-url-config"
+            ).dataset.addUrl;
+
+
+        const addUrl =
+            urlTemplate.replace(
+                "999999",
+                variantId
+            );
+
+
+        try {
+
+            const response =
+                await fetch(
+                    addUrl,
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "X-CSRFToken":
+                                getCookie(
+                                    "csrftoken"
+                                ),
+
+                            "X-Requested-With":
+                                "XMLHttpRequest",
+                        },
+
+                        body:
+                            formData,
+                    }
+                );
+
+
+            let data;
+
+
+            try {
+
+                data =
+                    await response.json();
+
+            } catch {
+
+                throw new Error(
+                    "The server returned an invalid response."
+                );
+
+            }
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    data.message ||
+                    "Unable to add this item to your cart."
+                );
+
+            }
+
+
+            showCartMessage(
+                data.message ||
+                "Item added to your cart.",
+                true
+            );
+
+
+            updateCartCounter(
+                data.cart_count
+            );
+
+
+            document.getElementById(
+                "cart-actions"
+            ).classList.remove(
+                "hidden"
+            );
+
+
+            document.getElementById(
+                "cart-actions"
+            ).classList.add(
+                "grid"
+            );
+
+
+            button.textContent =
+                "Added to Cart ✓";
+
+
+            setTimeout(() => {
+
+                if (
+                    selectedVariant &&
+                    selectedVariant.in_stock
+                ) {
+
+                    button.disabled =
+                        false;
+
+
+                    button.textContent =
+                        "Add to Cart";
+
+                }
+
+            }, 1400);
+
+
+        } catch (error) {
+
+            showCartMessage(
+                error.message ||
+                "Something went wrong. Please try again.",
+                false
+            );
+
+
+            if (
+                selectedVariant &&
+                selectedVariant.in_stock
+            ) {
+
+                button.disabled =
+                    false;
+
+
+                button.textContent =
+                    originalButtonText ||
+                    "Add to Cart";
+
+            }
+
+        }
+
+    }
+
+
+    /* =========================================================
+       CART MESSAGE
+    ========================================================== */
+
+    function showCartMessage(
+        message,
+        success
+    ) {
+
+        const element =
+            document.getElementById(
+                "cart-message"
+            );
+
+
+        if (!element) {
+
+            return;
+
+        }
+
+
+        if (success) {
+
+            element.innerHTML = `
+                <div class="flex items-start gap-3">
+
+                    <div
+                        class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-700"
+                    >
+                        ✓
+                    </div>
+
+                    <div>
+                        <p class="font-black">
+                            Added successfully
+                        </p>
+
+                        <p class="mt-1 font-medium">
+                            ${escapeHtml(message)}
+                        </p>
+                    </div>
+
+                </div>
+            `;
+
+
+            element.className =
+                "mt-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-4 text-sm text-emerald-800";
+
+        } else {
+
+            element.innerHTML = `
+                <div class="flex items-start gap-3">
+
+                    <div
+                        class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-red-100 text-red-700"
+                    >
+                        !
+                    </div>
+
+                    <div>
+                        <p class="font-black">
+                            Unable to continue
+                        </p>
+
+                        <p class="mt-1 font-medium">
+                            ${escapeHtml(message)}
+                        </p>
+                    </div>
+
+                </div>
+            `;
+
+
+            element.className =
+                "mt-4 rounded-2xl border border-red-200 bg-red-50 px-5 py-4 text-sm text-red-800";
+
+        }
+
+    }
+
+
+    /* =========================================================
+       CART COUNTER
+    ========================================================== */
+
+    function updateCartCounter(count) {
+
+        const counter =
+            document.getElementById(
+                "supermarket-cart-count"
+            );
+
+
+        if (counter) {
+
+            counter.textContent =
+                count;
+
+        }
+
+    }
+
+
+    /* =========================================================
+       CURRENCY
+    ========================================================== */
+
+    function formatCurrency(value) {
+
+        const number =
+            parseFloat(value);
+
+
+        if (
+            Number.isNaN(
+                number
+            )
+        ) {
+
+            return "₦0.00";
+
+        }
+
+
+        return new Intl.NumberFormat(
+            "en-NG",
+            {
+                style: "currency",
+                currency: "NGN",
+                minimumFractionDigits: 2,
+            }
+        ).format(number);
+
+    }
+
+
+    /* =========================================================
+       CSRF COOKIE
+    ========================================================== */
+
+    function getCookie(name) {
+
+        let cookieValue =
+            null;
+
+
+        if (
+            document.cookie &&
+            document.cookie !== ""
+        ) {
+
+            const cookies =
+                document.cookie.split(
+                    ";"
+                );
+
+
+            for (
+                let i = 0;
+                i < cookies.length;
+                i++
+            ) {
+
+                const cookie =
+                    cookies[
+                        i
+                    ].trim();
+
+
+                if (
+                    cookie.substring(
+                        0,
+                        name.length + 1
+                    )
+                    ===
+                    (
+                        name + "="
+                    )
+                ) {
+
+                    cookieValue =
+                        decodeURIComponent(
+                            cookie.substring(
+                                name.length + 1
+                            )
+                        );
+
+
+                    break;
+
+                }
+
+            }
+
+        }
+
+
+        return cookieValue;
+
+    }
+
+
+    /* =========================================================
+       SAFE MESSAGE OUTPUT
+    ========================================================== */
+
+    function escapeHtml(value) {
+
+        const element =
+            document.createElement(
+                "div"
+            );
+
+
+        element.textContent =
+            value || "";
+
+
+        return element.innerHTML;
+
+    }
+
+
+    /* =========================================================
+       INITIALISE PAGE
+    ========================================================== */
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        () => {
+
+            /*
+             * If there is exactly one variant
+             * and no selectable attributes,
+             * automatically select it.
+             */
+
+            const attributeGroups =
+                document.querySelectorAll(
+                    "[data-attribute]"
+                );
+
+
+            if (
+                variants.length === 1 &&
+                attributeGroups.length === 0
+            ) {
+
+                showVariant(
+                    variants[0]
+                );
+
+            }
+
+
+            /*
+             * Disable impossible/out-of-stock
+             * options immediately.
+             */
+
+            updateAvailableOptions();
+
+        }
+    );
+
+</script>
+
+    <!-- =========================================================
+         LUCIDE INITIALIZATION
+         ========================================================= -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            if (window.lucide) {
+                lucide.createIcons();
+            }
+        });
+    </script>
+
+</body>
+</html>
+
+

@@ -11,6 +11,11 @@ urlpatterns = [
     path('', include('account.urls')),
     path('', include('core.urls')),
     path("eatery/", include("eatery.urls")),
+    path(
+    "supermarket/",
+    include("supermarket.urls"),
+),
+    
 ]
 
 handler404 = 'account.views.custom_page_not_found_view'

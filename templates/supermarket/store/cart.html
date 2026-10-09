@@ -1,0 +1,1385 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="Dikubs Supermarket — quality products, convenient shopping and easy WhatsApp ordering."
+    >
+
+    <meta
+        name="theme-color"
+        content="#17351f"
+    >
+
+    <title>Dikubs Supermarket</title>
+
+    <!-- =========================================================
+         TAILWIND CSS CDN
+         ========================================================= -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- =========================================================
+         TAILWIND CONFIG
+         ========================================================= -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        dikubs: {
+                            50:  '#f7f8f4',
+                            100: '#eef1ea',
+                            200: '#dfe6dc',
+                            300: '#cbd7c8',
+                            400: '#9caf9a',
+                            500: '#718b70',
+                            600: '#536f53',
+                            700: '#3c583f',
+                            800: '#29422f',
+                            900: '#17351f',
+                            950: '#0f2716',
+                        },
+
+                        gold: {
+                            300: '#e4d69c',
+                            400: '#d1c184',
+                            500: '#c8b77a',
+                            600: '#ad9a5d',
+                        }
+                    },
+
+                    fontFamily: {
+                        sans: [
+                            'Inter',
+                            'ui-sans-serif',
+                            'system-ui',
+                            '-apple-system',
+                            'BlinkMacSystemFont',
+                            'Segoe UI',
+                            'sans-serif'
+                        ],
+
+                        display: [
+                            'Playfair Display',
+                            'Georgia',
+                            'serif'
+                        ]
+                    },
+
+                    boxShadow: {
+                        'dikubs':
+                            '0 25px 70px rgba(23, 53, 31, 0.12)',
+
+                        'dikubs-lg':
+                            '0 35px 100px rgba(23, 53, 31, 0.18)',
+
+                        'gold':
+                            '0 15px 45px rgba(200, 183, 122, 0.18)',
+                    },
+
+                    backgroundImage: {
+                        'dikubs-grid':
+                            'linear-gradient(rgba(23,53,31,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(23,53,31,.035) 1px, transparent 1px)',
+
+                        'dikubs-radial':
+                            'radial-gradient(circle at center, rgba(200,183,122,.18), transparent 65%)',
+                    },
+
+                    animation: {
+                        'float':
+                            'float 6s ease-in-out infinite',
+
+                        'pulse-soft':
+                            'pulseSoft 3s ease-in-out infinite',
+
+                        'marquee':
+                            'marquee 25s linear infinite',
+                    },
+
+                    keyframes: {
+                        float: {
+                            '0%, 100%': {
+                                transform: 'translateY(0)'
+                            },
+                            '50%': {
+                                transform: 'translateY(-8px)'
+                            }
+                        },
+
+                        pulseSoft: {
+                            '0%, 100%': {
+                                opacity: '0.55'
+                            },
+                            '50%': {
+                                opacity: '1'
+                            }
+                        },
+
+                        marquee: {
+                            '0%': {
+                                transform: 'translateX(0)'
+                            },
+                            '100%': {
+                                transform: 'translateX(-50%)'
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- =========================================================
+         GOOGLE FONTS
+         ========================================================= -->
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <!-- =========================================================
+         LUCIDE ICONS
+         ========================================================= -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- =========================================================
+         CUSTOM BASE STYLES
+         ========================================================= -->
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: Inter, sans-serif;
+            background: #f7f8f4;
+            color: #17351f;
+            margin: 0;
+        }
+
+        ::selection {
+            background: #c8b77a;
+            color: #17351f;
+        }
+
+        /* Premium scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #eef1ea;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #718b70;
+            border-radius: 999px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #536f53;
+        }
+
+        /* Product image zoom */
+        .product-image {
+            transition:
+                transform 0.7s cubic-bezier(.2,.8,.2,1);
+        }
+
+        .product-card:hover .product-image {
+            transform: scale(1.06);
+        }
+
+        /* Smooth cards */
+        .product-card {
+            transition:
+                transform .35s ease,
+                box-shadow .35s ease,
+                border-color .35s ease;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow:
+                0 25px 70px rgba(23,53,31,.12);
+        }
+
+        /* Hide scrollbar but retain scrolling */
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Glass effect */
+        .glass {
+            background: rgba(255,255,255,.72);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+        }
+
+        /* Gold shine */
+        .gold-shine {
+            background:
+                linear-gradient(
+                    120deg,
+                    #ad9a5d 0%,
+                    #e4d69c 45%,
+                    #c8b77a 70%,
+                    #ad9a5d 100%
+                );
+        }
+
+        /* Decorative ring */
+        .dikubs-ring {
+            border: 1px solid rgba(200,183,122,.35);
+            box-shadow:
+                inset 0 0 40px rgba(200,183,122,.06);
+        }
+
+        /* Focus accessibility */
+        :focus-visible {
+            outline: 3px solid rgba(200,183,122,.75);
+            outline-offset: 3px;
+        }
+
+        /* Prevent horizontal overflow */
+        body {
+            overflow-x: hidden;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- YOUR DIKUBS STOREFRONT CONTENT GOES HERE -->
+
+
+<div class="min-h-screen bg-gray-50">
+
+    <div
+        class="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8"
+    >
+
+        <!-- =================================================
+             HEADER
+        ================================================== -->
+
+        <div
+            class="mb-8 flex flex-wrap items-center justify-between gap-4"
+        >
+
+            <div>
+
+                <p
+                    class="text-sm font-black uppercase tracking-widest text-emerald-600"
+                >
+                    Dikubs Supermarket
+                </p>
+
+                <h1
+                    class="mt-1 text-3xl font-black text-gray-900"
+                >
+                    Shopping Cart
+                </h1>
+
+                <p
+                    class="mt-2 text-sm text-gray-500"
+                >
+                    Review your products before checkout.
+                </p>
+
+            </div>
+
+
+            <a
+                href="{% url 'supermarket:store' %}"
+                class="rounded-xl border border-gray-300 bg-white px-4 py-2.5 text-sm font-black text-gray-700 transition hover:border-emerald-500 hover:text-emerald-700"
+            >
+                Continue Shopping
+            </a>
+
+        </div>
+
+
+        <!-- Global Cart Message -->
+
+        <div
+            id="cart-global-message"
+            class="mb-5 hidden rounded-xl px-4 py-3 text-sm font-bold"
+        ></div>
+
+
+        {% if cart|length %}
+
+            <div
+                id="cart-content"
+                class="grid gap-8 lg:grid-cols-[1fr_340px]"
+            >
+
+                <!-- =============================================
+                     ITEMS
+                ============================================== -->
+
+                <div
+                    id="cart-items"
+                    class="space-y-4"
+                >
+
+                    {% for item in cart %}
+
+                        <article
+                            id="cart-item-{{ item.variant.pk }}"
+                            class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm"
+                        >
+
+                            <div
+                                class="flex flex-col gap-5 sm:flex-row"
+                            >
+
+                                <!-- Image -->
+
+                                <div
+                                    class="h-32 w-full shrink-0 overflow-hidden rounded-xl bg-gray-100 sm:h-28 sm:w-28"
+                                >
+
+                                    {% if item.product.image %}
+
+                                        <img
+                                            src="{{ item.product.image.url }}"
+                                            alt="{{ item.product.name }}"
+                                            class="h-full w-full object-cover"
+                                        >
+
+                                    {% elif item.product.images.first %}
+
+                                        <img
+                                            src="{{ item.product.images.first.image.url }}"
+                                            alt="{{ item.product.name }}"
+                                            class="h-full w-full object-cover"
+                                        >
+
+                                    {% else %}
+
+                                        <div
+                                            class="flex h-full w-full items-center justify-center text-xs font-bold text-gray-400"
+                                        >
+                                            No image
+                                        </div>
+
+                                    {% endif %}
+
+                                </div>
+
+
+                                <!-- Details -->
+
+                                <div
+                                    class="min-w-0 flex-1"
+                                >
+
+                                    <div
+                                        class="flex flex-col justify-between gap-3 sm:flex-row"
+                                    >
+
+                                        <div>
+
+                                            <a
+                                                href="{% url 'supermarket:store_product_detail' item.product.pk %}"
+                                                class="text-lg font-black text-gray-900 transition hover:text-emerald-600"
+                                            >
+                                                {{ item.product.name }}
+                                            </a>
+
+
+                                            {% if item.variant.variant_full_description %}
+
+                                                <p
+                                                    class="mt-1 text-sm font-semibold text-gray-500"
+                                                >
+                                                    {{ item.variant.variant_full_description }}
+                                                </p>
+
+                                            {% endif %}
+
+
+                                            <p
+                                                class="mt-1 text-xs font-semibold text-gray-400"
+                                            >
+                                                SKU:
+                                                {{ item.variant.sku }}
+                                            </p>
+
+                                        </div>
+
+
+                                        <!-- Item Total -->
+
+                                        <div
+                                            class="sm:text-right"
+                                        >
+
+                                            <p
+                                                class="text-xs font-bold uppercase tracking-wide text-gray-400"
+                                            >
+                                                Total
+                                            </p>
+
+                                            <p
+                                                id="item-total-{{ item.variant.pk }}"
+                                                class="mt-1 text-lg font-black text-gray-900"
+                                            >
+                                                ₦{{ item.total_price|floatformat:2 }}
+                                            </p>
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <!-- Unit Price -->
+
+                                    <p
+                                        class="mt-4 text-sm text-gray-500"
+                                    >
+                                        ₦{{ item.price|floatformat:2 }}
+                                        each
+                                    </p>
+
+
+                                    <!-- Controls -->
+
+                                    <div
+                                        class="mt-5 flex flex-wrap items-center justify-between gap-4"
+                                    >
+
+                                        <!-- Quantity -->
+
+                                        <div
+                                            class="inline-flex overflow-hidden rounded-xl border border-gray-300 bg-white"
+                                        >
+
+                                            <button
+                                                type="button"
+                                                onclick="changeCartQuantity('{{ item.variant.pk }}', -1)"
+                                                class="flex h-10 w-10 items-center justify-center text-lg font-black text-gray-700 transition hover:bg-gray-100"
+                                            >
+                                                −
+                                            </button>
+
+
+                                            <input
+                                                id="cart-quantity-{{ item.variant.pk }}"
+                                                type="number"
+                                                min="1"
+
+                                                {% if item.variant.track_stock %}
+                                                    max="{{ item.variant.stock_quantity }}"
+                                                {% endif %}
+
+                                                value="{{ item.quantity }}"
+
+                                                onchange="updateCartItem('{{ item.variant.pk }}')"
+
+                                                class="h-10 w-16 border-x border-y-0 border-gray-300 text-center text-sm font-black text-gray-900 outline-none"
+                                            >
+
+
+                                            <button
+                                                type="button"
+                                                onclick="changeCartQuantity('{{ item.variant.pk }}', 1)"
+                                                class="flex h-10 w-10 items-center justify-center text-lg font-black text-gray-700 transition hover:bg-gray-100"
+                                            >
+                                                +
+                                            </button>
+
+                                        </div>
+
+
+                                        <button
+                                            type="button"
+                                            onclick="removeCartItem('{{ item.variant.pk }}')"
+                                            class="text-sm font-black text-red-600 transition hover:text-red-700"
+                                        >
+                                            Remove
+                                        </button>
+
+                                    </div>
+
+
+                                    {% if item.variant.track_stock %}
+
+                                        <p
+                                            class="mt-3 text-xs font-semibold text-gray-400"
+                                        >
+                                            {{ item.variant.stock_quantity }}
+                                            available
+                                        </p>
+
+                                    {% endif %}
+
+                                </div>
+
+                            </div>
+
+                        </article>
+
+                    {% endfor %}
+
+                </div>
+
+
+                <!-- =============================================
+                     SUMMARY
+                ============================================== -->
+
+                <aside>
+
+                    <div
+                        class="sticky top-6 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm"
+                    >
+
+                        <h2
+                            class="text-lg font-black text-gray-900"
+                        >
+                            Order Summary
+                        </h2>
+
+
+                        <div
+                            class="mt-6 flex items-center justify-between text-sm"
+                        >
+
+                            <span
+                                class="text-gray-500"
+                            >
+                                Items
+                            </span>
+
+                            <span
+                                id="cart-item-count"
+                                class="font-black text-gray-900"
+                            >
+                                {{ cart|length }}
+                            </span>
+
+                        </div>
+
+
+                        <div
+                            class="mt-5 border-t border-gray-200 pt-5"
+                        >
+
+                            <div
+                                class="flex items-end justify-between gap-4"
+                            >
+
+                                <div>
+
+                                    <p
+                                        class="text-sm font-black text-gray-900"
+                                    >
+                                        Total
+                                    </p>
+
+                                    <p
+                                        class="mt-1 text-xs text-gray-400"
+                                    >
+                                        Delivery calculated at checkout.
+                                    </p>
+
+                                </div>
+
+
+                                <span
+                                    id="cart-total"
+                                    class="text-2xl font-black text-gray-900"
+                                >
+                                    ₦{{ cart.get_total_price|floatformat:2 }}
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+                        <a
+    href="{% url 'supermarket:checkout' %}"
+    class="mt-6 block w-full rounded-xl bg-emerald-600 px-5 py-4 text-center font-black text-white transition hover:bg-emerald-700"
+>
+    Proceed to Checkout
+</a>
+
+
+                        <a
+                            href="{% url 'supermarket:store' %}"
+                            class="mt-3 block w-full rounded-xl border border-gray-300 px-5 py-3 text-center text-sm font-black text-gray-700 transition hover:border-emerald-500 hover:text-emerald-700"
+                        >
+                            Continue Shopping
+                        </a>
+
+                    </div>
+
+                </aside>
+
+            </div>
+
+
+            <!-- Empty state used after AJAX removes final item -->
+
+            <div
+                id="ajax-empty-cart"
+                class="hidden rounded-3xl border border-gray-200 bg-white px-6 py-20 text-center"
+            >
+
+                <div class="text-5xl">
+                    🛒
+                </div>
+
+                <h2
+                    class="mt-5 text-2xl font-black text-gray-900"
+                >
+                    Your cart is empty
+                </h2>
+
+                <p
+                    class="mt-2 text-sm text-gray-500"
+                >
+                    Add some products to continue shopping.
+                </p>
+
+                <a
+                    href="{% url 'supermarket:store' %}"
+                    class="mt-7 inline-block rounded-xl bg-emerald-600 px-6 py-3 font-black text-white"
+                >
+                    Start Shopping
+                </a>
+
+            </div>
+
+        {% else %}
+
+            <!-- =============================================
+                 EMPTY CART
+            ============================================== -->
+
+            <div
+                class="rounded-3xl border border-gray-200 bg-white px-6 py-20 text-center"
+            >
+
+                <div class="text-5xl">
+                    🛒
+                </div>
+
+                <h2
+                    class="mt-5 text-2xl font-black text-gray-900"
+                >
+                    Your cart is empty
+                </h2>
+
+                <p
+                    class="mt-2 text-sm text-gray-500"
+                >
+                    Add some products to continue shopping.
+                </p>
+
+                <a
+                    href="{% url 'supermarket:store' %}"
+                    class="mt-7 inline-block rounded-xl bg-emerald-600 px-6 py-3 font-black text-white"
+                >
+                    Start Shopping
+                </a>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     URL TEMPLATES
+========================================================== -->
+
+<div
+    id="cart-url-config"
+    data-update-url="{% url 'supermarket:cart_update' 999999 %}"
+    data-remove-url="{% url 'supermarket:cart_remove' 999999 %}"
+    hidden
+></div>
+
+
+<script>
+
+    /* =========================================================
+       CHANGE QUANTITY WITH + / -
+    ========================================================== */
+
+    function changeCartQuantity(
+        variantId,
+        change
+    ) {
+
+        const input =
+            document.getElementById(
+                `cart-quantity-${variantId}`
+            );
+
+
+        if (!input) {
+            return;
+        }
+
+
+        let quantity =
+            parseInt(
+                input.value,
+                10
+            );
+
+
+        if (
+            Number.isNaN(
+                quantity
+            )
+        ) {
+            quantity = 1;
+        }
+
+
+        quantity += change;
+
+
+        if (quantity < 1) {
+            quantity = 1;
+        }
+
+
+        const maximum =
+            parseInt(
+                input.max,
+                10
+            );
+
+
+        if (
+            !Number.isNaN(maximum) &&
+            maximum > 0 &&
+            quantity > maximum
+        ) {
+
+            quantity =
+                maximum;
+
+        }
+
+
+        input.value =
+            quantity;
+
+
+        updateCartItem(
+            variantId
+        );
+
+    }
+
+
+    /* =========================================================
+       UPDATE CART ITEM
+    ========================================================== */
+
+    async function updateCartItem(
+        variantId
+    ) {
+
+        const input =
+            document.getElementById(
+                `cart-quantity-${variantId}`
+            );
+
+
+        if (!input) {
+            return;
+        }
+
+
+        let quantity =
+            parseInt(
+                input.value,
+                10
+            );
+
+
+        if (
+            Number.isNaN(quantity) ||
+            quantity < 1
+        ) {
+
+            quantity = 1;
+
+            input.value = 1;
+
+        }
+
+
+        const maximum =
+            parseInt(
+                input.max,
+                10
+            );
+
+
+        if (
+            !Number.isNaN(maximum) &&
+            maximum > 0 &&
+            quantity > maximum
+        ) {
+
+            quantity =
+                maximum;
+
+            input.value =
+                maximum;
+
+        }
+
+
+        const config =
+            document.getElementById(
+                "cart-url-config"
+            );
+
+
+        const url =
+            config.dataset.updateUrl.replace(
+                "999999",
+                variantId
+            );
+
+
+        const formData =
+            new FormData();
+
+
+        formData.append(
+            "quantity",
+            quantity
+        );
+
+
+        input.disabled =
+            true;
+
+
+        try {
+
+            const response =
+                await fetch(
+                    url,
+                    {
+                        method: "POST",
+
+                        headers: {
+
+                            "X-CSRFToken":
+                                getCookie(
+                                    "csrftoken"
+                                ),
+
+                            "X-Requested-With":
+                                "XMLHttpRequest",
+                        },
+
+                        body:
+                            formData,
+                    }
+                );
+
+
+            const data =
+                await response.json();
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    data.message ||
+                    "Unable to update cart."
+                );
+
+            }
+
+
+            /*
+             * Update item total.
+             */
+
+            const itemTotal =
+                document.getElementById(
+                    `item-total-${variantId}`
+                );
+
+
+            if (itemTotal) {
+
+                itemTotal.textContent =
+                    formatCurrency(
+                        data.item_total
+                    );
+
+            }
+
+
+            /*
+             * Update entire cart total.
+             */
+
+            const cartTotal =
+                document.getElementById(
+                    "cart-total"
+                );
+
+
+            if (cartTotal) {
+
+                cartTotal.textContent =
+                    formatCurrency(
+                        data.cart_total
+                    );
+
+            }
+
+
+            /*
+             * Update number of items.
+             */
+
+            updateAllCartCounters(
+                data.cart_count
+            );
+
+
+            showCartMessage(
+                "Cart updated.",
+                true
+            );
+
+
+        } catch (error) {
+
+            showCartMessage(
+                error.message,
+                false
+            );
+
+        } finally {
+
+            input.disabled =
+                false;
+
+        }
+
+    }
+
+
+    /* =========================================================
+       REMOVE ITEM
+    ========================================================== */
+
+    async function removeCartItem(
+        variantId
+    ) {
+
+        const config =
+            document.getElementById(
+                "cart-url-config"
+            );
+
+
+        const url =
+            config.dataset.removeUrl.replace(
+                "999999",
+                variantId
+            );
+
+
+        try {
+
+            const response =
+                await fetch(
+                    url,
+                    {
+                        method: "POST",
+
+                        headers: {
+
+                            "X-CSRFToken":
+                                getCookie(
+                                    "csrftoken"
+                                ),
+
+                            "X-Requested-With":
+                                "XMLHttpRequest",
+                        },
+                    }
+                );
+
+
+            const data =
+                await response.json();
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    data.message ||
+                    "Unable to remove item."
+                );
+
+            }
+
+
+            const item =
+                document.getElementById(
+                    `cart-item-${variantId}`
+                );
+
+
+            if (item) {
+
+                item.remove();
+
+            }
+
+
+            const cartTotal =
+                document.getElementById(
+                    "cart-total"
+                );
+
+
+            if (cartTotal) {
+
+                cartTotal.textContent =
+                    formatCurrency(
+                        data.cart_total
+                    );
+
+            }
+
+
+            updateAllCartCounters(
+                data.cart_count
+            );
+
+
+            /*
+             * If cart is now empty, switch
+             * to empty-cart state.
+             */
+
+            if (
+                parseInt(
+                    data.cart_count,
+                    10
+                ) === 0
+            ) {
+
+                const content =
+                    document.getElementById(
+                        "cart-content"
+                    );
+
+
+                const empty =
+                    document.getElementById(
+                        "ajax-empty-cart"
+                    );
+
+
+                if (content) {
+
+                    content.classList.add(
+                        "hidden"
+                    );
+
+                }
+
+
+                if (empty) {
+
+                    empty.classList.remove(
+                        "hidden"
+                    );
+
+                }
+
+            } else {
+
+                showCartMessage(
+                    "Item removed from cart.",
+                    true
+                );
+
+            }
+
+
+        } catch (error) {
+
+            showCartMessage(
+                error.message,
+                false
+            );
+
+        }
+
+    }
+
+
+    /* =========================================================
+       UPDATE ALL CART COUNTERS
+    ========================================================== */
+
+    function updateAllCartCounters(
+        count
+    ) {
+
+        /*
+         * Cart summary count.
+         */
+
+        const summaryCounter =
+            document.getElementById(
+                "cart-item-count"
+            );
+
+
+        if (summaryCounter) {
+
+            summaryCounter.textContent =
+                count;
+
+        }
+
+
+        /*
+         * Header / navigation cart badge.
+         */
+
+        const headerCounter =
+            document.getElementById(
+                "supermarket-cart-count"
+            );
+
+
+        if (headerCounter) {
+
+            headerCounter.textContent =
+                count;
+
+        }
+
+    }
+
+
+    /* =========================================================
+       CART MESSAGE
+    ========================================================== */
+
+    function showCartMessage(
+        message,
+        success
+    ) {
+
+        const element =
+            document.getElementById(
+                "cart-global-message"
+            );
+
+
+        if (!element) {
+            return;
+        }
+
+
+        element.textContent =
+            message;
+
+
+        element.className =
+            success
+            ?
+            "mb-5 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-bold text-emerald-700"
+            :
+            "mb-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-bold text-red-700";
+
+
+        window.clearTimeout(
+            window.cartMessageTimer
+        );
+
+
+        window.cartMessageTimer =
+            window.setTimeout(
+                () => {
+
+                    element.classList.add(
+                        "hidden"
+                    );
+
+                },
+                2500
+            );
+
+    }
+
+
+    /* =========================================================
+       CURRENCY
+    ========================================================== */
+
+    function formatCurrency(
+        value
+    ) {
+
+        const number =
+            parseFloat(
+                value
+            );
+
+
+        if (
+            Number.isNaN(
+                number
+            )
+        ) {
+
+            return "₦0.00";
+
+        }
+
+
+        return new Intl.NumberFormat(
+            "en-NG",
+            {
+                style: "currency",
+                currency: "NGN",
+                minimumFractionDigits: 2,
+            }
+        ).format(
+            number
+        );
+
+    }
+
+
+    /* =========================================================
+       CSRF
+    ========================================================== */
+
+    function getCookie(
+        name
+    ) {
+
+        let cookieValue =
+            null;
+
+
+        if (
+            document.cookie &&
+            document.cookie !== ""
+        ) {
+
+            const cookies =
+                document.cookie.split(
+                    ";"
+                );
+
+
+            for (
+                let i = 0;
+                i < cookies.length;
+                i++
+            ) {
+
+                const cookie =
+                    cookies[
+                        i
+                    ].trim();
+
+
+                if (
+                    cookie.substring(
+                        0,
+                        name.length + 1
+                    )
+                    ===
+                    (
+                        name + "="
+                    )
+                ) {
+
+                    cookieValue =
+                        decodeURIComponent(
+                            cookie.substring(
+                                name.length + 1
+                            )
+                        );
+
+
+                    break;
+
+                }
+
+            }
+
+        }
+
+
+        return cookieValue;
+
+    }
+
+</script>
+
+
+
+    <!-- =========================================================
+         LUCIDE INITIALIZATION
+         ========================================================= -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            if (window.lucide) {
+                lucide.createIcons();
+            }
+        });
+    </script>
+
+</body>
+</html>
+

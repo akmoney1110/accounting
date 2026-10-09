@@ -1,0 +1,208 @@
+{% extends "supermarket/manager/base.html" %}
+
+{% block title %}Attributes{% endblock %}
+{% block page_title %}Product Attributes{% endblock %}
+
+
+{% block header_actions %}
+
+<a
+    href="{% url 'supermarket:attribute_add' %}"
+    class="
+        rounded-xl bg-emerald-500
+        px-4 py-2.5
+        text-sm font-black
+        text-gray-950
+    "
+>
+    + Add Attribute
+</a>
+
+{% endblock %}
+
+
+{% block content %}
+
+<div class="grid gap-5 lg:grid-cols-2">
+
+    {% for attribute in attributes %}
+
+        <div
+            class="
+                rounded-2xl
+                border border-gray-200
+                bg-white p-6
+            "
+        >
+
+            <div
+                class="
+                    flex items-start
+                    justify-between gap-4
+                "
+            >
+
+                <div>
+
+                    <h3 class="text-lg font-black">
+                        {{ attribute.name }}
+                    </h3>
+
+                    <p class="mt-1 text-xs text-gray-400">
+                        {{ attribute.slug }}
+                    </p>
+
+                </div>
+
+
+                <div class="flex gap-2">
+
+                    <a
+                        href="{% url 'supermarket:attribute_edit' attribute.pk %}"
+                        class="
+                            rounded-lg
+                            border border-gray-200
+                            px-3 py-2
+                            text-xs font-bold
+                        "
+                    >
+                        Edit
+                    </a>
+
+                    <form
+                        method="post"
+                        action="{% url 'supermarket:attribute_delete' attribute.pk %}"
+                        onsubmit="
+                            return confirm(
+                                'Delete this attribute and its values?'
+                            );
+                        "
+                    >
+                        {% csrf_token %}
+
+                        <button
+                            class="
+                                rounded-lg
+                                border border-red-200
+                                px-3 py-2
+                                text-xs font-bold
+                                text-red-600
+                            "
+                        >
+                            Delete
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+
+            <div
+                class="
+                    mt-5 flex
+                    flex-wrap gap-2
+                "
+            >
+
+                {% for value in attribute.values.all %}
+
+                    <div
+                        class="
+                            inline-flex
+                            items-center gap-2
+                            rounded-full
+                            bg-gray-100
+                            px-3 py-1.5
+                        "
+                    >
+
+                        <span
+                            class="
+                                text-xs font-bold
+                                text-gray-700
+                            "
+                        >
+                            {{ value.value }}
+                        </span>
+
+
+                        <form
+                            method="post"
+                            action="{% url 'supermarket:attribute_value_delete' value.pk %}"
+                        >
+                            {% csrf_token %}
+
+                            <button
+                                type="submit"
+                                class="
+                                    text-xs
+                                    font-black
+                                    text-red-500
+                                "
+                            >
+                                ×
+                            </button>
+
+                        </form>
+
+                    </div>
+
+                {% empty %}
+
+                    <p class="text-sm text-gray-400">
+                        No values added yet.
+                    </p>
+
+                {% endfor %}
+
+            </div>
+
+
+            <a
+                href="{% url 'supermarket:attribute_value_add' attribute.pk %}"
+                class="
+                    mt-5 inline-flex
+                    text-sm font-black
+                    text-emerald-600
+                "
+            >
+                + Add Value
+            </a>
+
+        </div>
+
+    {% empty %}
+
+        <div
+            class="
+                col-span-full
+                rounded-2xl
+                border border-dashed
+                border-gray-300
+                bg-white
+                p-16 text-center
+            "
+        >
+
+            <div class="text-5xl">
+                ⚙️
+            </div>
+
+            <h3 class="mt-4 text-xl font-black">
+                No attributes yet
+            </h3>
+
+            <p class="mt-2 text-sm text-gray-500">
+                Create attributes such as Color,
+                Size, Storage, RAM and Weight.
+            </p>
+
+        </div>
+
+    {% endfor %}
+
+</div>
+
+{% endblock %}

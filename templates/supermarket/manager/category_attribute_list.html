@@ -1,0 +1,835 @@
+{% extends "supermarket/manager/base.html" %}
+
+{% block title %}
+    {{ category.name }} Attributes
+{% endblock %}
+
+{% block page_title %}
+    {{ category.name }} Attributes
+{% endblock %}
+
+
+{% block header_actions %}
+
+<a
+    href="{% url 'supermarket:category_attribute_add' category.pk %}?attribute={{ item.attribute.pk }}"
+    class="
+        inline-flex items-center
+        rounded-xl
+        bg-emerald-500
+        px-4 py-2.5
+        text-sm font-black
+        text-gray-950
+        transition
+        hover:bg-emerald-400
+    "
+>
+    + Assign Attribute
+</a>
+
+{% endblock %}
+
+
+{% block content %}
+
+<div class="mx-auto max-w-6xl">
+
+
+    <!-- ================================================== -->
+    <!-- CATEGORY HEADER -->
+    <!-- ================================================== -->
+
+    <div
+        class="
+            mb-6 rounded-3xl
+            bg-gray-950
+            p-6 text-white
+            sm:p-8
+        "
+    >
+
+        <a
+            href="{% url 'supermarket:category_list' %}"
+            class="
+                text-xs font-black
+                uppercase
+                tracking-[0.18em]
+                text-emerald-400
+            "
+        >
+            ← Categories
+        </a>
+
+
+        <div
+            class="
+                mt-4 flex
+                flex-col gap-5
+                md:flex-row
+                md:items-end
+                md:justify-between
+            "
+        >
+
+            <div>
+
+                <p
+                    class="
+                        text-xs font-bold
+                        uppercase
+                        tracking-wider
+                        text-gray-500
+                    "
+                >
+                    Product Category
+                </p>
+
+                <h2
+                    class="
+                        mt-1 text-3xl
+                        font-black
+                    "
+                >
+                    {{ category.name }}
+                </h2>
+
+
+                <!-- CATEGORY PATH -->
+
+                <div
+                    class="
+                        mt-3 flex
+                        flex-wrap
+                        items-center gap-2
+                        text-sm
+                    "
+                >
+
+                    {% for item in category_chain %}
+
+                        <span
+                            class="
+                                font-bold
+
+                                {% if item.pk == category.pk %}
+                                    text-emerald-400
+                                {% else %}
+                                    text-gray-400
+                                {% endif %}
+                            "
+                        >
+                            {{ item.name }}
+                        </span>
+
+                        {% if not forloop.last %}
+                            <span class="text-gray-600">
+                                →
+                            </span>
+                        {% endif %}
+
+                    {% endfor %}
+
+                </div>
+
+            </div>
+
+
+            <div
+                class="
+                    rounded-2xl
+                    bg-white/5
+                    px-5 py-4
+                "
+            >
+
+                <p
+                    class="
+                        text-[10px]
+                        font-black
+                        uppercase
+                        tracking-wider
+                        text-gray-500
+                    "
+                >
+                    Effective Attributes
+                </p>
+
+                <p
+                    class="
+                        mt-1 text-3xl
+                        font-black
+                    "
+                >
+                    {{ effective_attributes|length }}
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================================== -->
+    <!-- INHERITANCE EXPLANATION -->
+    <!-- ================================================== -->
+
+    <div
+        class="
+            mb-6 rounded-2xl
+            border border-emerald-200
+            bg-emerald-50
+            p-5
+        "
+    >
+
+        <h3
+            class="
+                font-black
+                text-emerald-900
+            "
+        >
+            Attribute inheritance is enabled
+        </h3>
+
+        <p
+            class="
+                mt-2 max-w-3xl
+                text-sm leading-6
+                text-emerald-800
+            "
+        >
+            This category automatically receives
+            attributes configured on its parent
+            categories. You can also assign an
+            inherited attribute directly here to
+            override its settings for this category.
+        </p>
+
+    </div>
+
+
+    <!-- ================================================== -->
+    <!-- DIRECT ATTRIBUTES -->
+    <!-- ================================================== -->
+
+    <div
+        class="
+            overflow-hidden
+            rounded-2xl
+            border border-gray-200
+            bg-white
+        "
+    >
+
+        <div
+            class="
+                flex flex-col gap-4
+                border-b border-gray-200
+                p-6
+                sm:flex-row
+                sm:items-center
+                sm:justify-between
+            "
+        >
+
+            <div>
+
+                <div
+                    class="
+                        flex items-center
+                        gap-2
+                    "
+                >
+
+                    <h3
+                        class="
+                            text-lg font-black
+                        "
+                    >
+                        Direct Attributes
+                    </h3>
+
+                    <span
+                        class="
+                            rounded-full
+                            bg-gray-100
+                            px-2.5 py-1
+                            text-[10px]
+                            font-black
+                            text-gray-600
+                        "
+                    >
+                        {{ direct_attributes|length }}
+                    </span>
+
+                </div>
+
+                <p
+                    class="
+                        mt-1 text-sm
+                        text-gray-500
+                    "
+                >
+                    Attributes configured specifically
+                    for {{ category.name }}.
+                </p>
+
+            </div>
+
+
+            <a
+                href="{% url 'supermarket:category_attribute_add' category.pk %}"
+                class="
+                    text-sm font-black
+                    text-emerald-700
+                "
+            >
+                + Assign Attribute
+            </a>
+
+        </div>
+
+
+        {% if direct_attributes %}
+
+            <div class="divide-y divide-gray-100">
+
+                {% for item in direct_attributes %}
+
+                    <div class="p-6">
+
+                        <div
+                            class="
+                                flex flex-col gap-5
+                                lg:flex-row
+                                lg:items-center
+                                lg:justify-between
+                            "
+                        >
+
+                            <div class="min-w-0">
+
+                                <div
+                                    class="
+                                        flex flex-wrap
+                                        items-center gap-2
+                                    "
+                                >
+
+                                    <h4
+                                        class="
+                                            text-base
+                                            font-black
+                                        "
+                                    >
+                                        {{ item.attribute.name }}
+                                    </h4>
+
+
+                                    <span
+                                        class="
+                                            rounded-full
+                                            bg-gray-950
+                                            px-2.5 py-1
+                                            text-[10px]
+                                            font-black
+                                            uppercase
+                                            text-white
+                                        "
+                                    >
+                                        Direct
+                                    </span>
+
+
+                                    {% if item.is_required %}
+
+                                        <span
+                                            class="
+                                                rounded-full
+                                                bg-red-50
+                                                px-2.5 py-1
+                                                text-[10px]
+                                                font-black
+                                                uppercase
+                                                text-red-700
+                                            "
+                                        >
+                                            Required
+                                        </span>
+
+                                    {% else %}
+
+                                        <span
+                                            class="
+                                                rounded-full
+                                                bg-gray-100
+                                                px-2.5 py-1
+                                                text-[10px]
+                                                font-black
+                                                uppercase
+                                                text-gray-500
+                                            "
+                                        >
+                                            Optional
+                                        </span>
+
+                                    {% endif %}
+
+
+                                    {% if item.is_variant_attribute %}
+
+                                        <span
+                                            class="
+                                                rounded-full
+                                                bg-emerald-50
+                                                px-2.5 py-1
+                                                text-[10px]
+                                                font-black
+                                                uppercase
+                                                text-emerald-700
+                                            "
+                                        >
+                                            Variant
+                                        </span>
+
+                                    {% else %}
+
+                                        <span
+                                            class="
+                                                rounded-full
+                                                bg-blue-50
+                                                px-2.5 py-1
+                                                text-[10px]
+                                                font-black
+                                                uppercase
+                                                text-blue-700
+                                            "
+                                        >
+                                            Information
+                                        </span>
+
+                                    {% endif %}
+
+                                </div>
+
+
+                                <p
+                                    class="
+                                        mt-2 text-xs
+                                        font-bold
+                                        text-gray-400
+                                    "
+                                >
+                                    {{ item.attribute.slug }}
+                                </p>
+
+
+                                <!-- VALUES -->
+
+                                <div
+                                    class="
+                                        mt-4 flex
+                                        flex-wrap gap-2
+                                    "
+                                >
+
+                                    {% for value in item.attribute.values.all %}
+
+                                        <span
+                                            class="
+                                                rounded-full
+                                                bg-gray-100
+                                                px-3 py-1.5
+                                                text-xs
+                                                font-bold
+                                                text-gray-700
+                                            "
+                                        >
+                                            {{ value.value }}
+                                        </span>
+
+                                    {% empty %}
+
+                                        <span
+                                            class="
+                                                text-xs
+                                                font-bold
+                                                text-amber-600
+                                            "
+                                        >
+                                            No values yet
+                                        </span>
+
+                                    {% endfor %}
+
+                                </div>
+
+                            </div>
+
+
+                            <div
+                                class="
+                                    flex shrink-0
+                                    flex-wrap gap-2
+                                "
+                            >
+
+                                <a
+                                    href="{% url 'supermarket:attribute_value_add' item.attribute.pk %}"
+                                    class="
+                                        rounded-lg
+                                        border
+                                        border-emerald-200
+                                        px-3 py-2
+                                        text-xs
+                                        font-bold
+                                        text-emerald-700
+                                    "
+                                >
+                                    + Value
+                                </a>
+
+
+                                <a
+                                    href="{% url 'supermarket:category_attribute_edit' item.pk %}"
+                                    class="
+                                        rounded-lg
+                                        border
+                                        border-gray-200
+                                        px-3 py-2
+                                        text-xs
+                                        font-bold
+                                    "
+                                >
+                                    Edit
+                                </a>
+
+
+                                <form
+                                    method="post"
+                                    action="{% url 'supermarket:category_attribute_delete' item.pk %}"
+                                    onsubmit="
+                                        return confirm(
+                                            'Remove this attribute from this category?'
+                                        );
+                                    "
+                                >
+
+                                    {% csrf_token %}
+
+                                    <button
+                                        type="submit"
+                                        class="
+                                            rounded-lg
+                                            border
+                                            border-red-200
+                                            px-3 py-2
+                                            text-xs
+                                            font-bold
+                                            text-red-600
+                                        "
+                                    >
+                                        Remove
+                                    </button>
+
+                                </form>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div
+                class="
+                    p-12 text-center
+                "
+            >
+
+                <p
+                    class="
+                        font-black
+                        text-gray-700
+                    "
+                >
+                    No direct attributes
+                </p>
+
+                <p
+                    class="
+                        mt-2 text-sm
+                        text-gray-500
+                    "
+                >
+                    This category may still inherit
+                    attributes from its parents.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- ================================================== -->
+    <!-- INHERITED ATTRIBUTES -->
+    <!-- ================================================== -->
+
+    <div
+        class="
+            mt-6 overflow-hidden
+            rounded-2xl
+            border border-gray-200
+            bg-white
+        "
+    >
+
+        <div
+            class="
+                border-b border-gray-200
+                p-6
+            "
+        >
+
+            <div
+                class="
+                    flex items-center gap-2
+                "
+            >
+
+                <h3
+                    class="
+                        text-lg font-black
+                    "
+                >
+                    Inherited Attributes
+                </h3>
+
+                <span
+                    class="
+                        rounded-full
+                        bg-purple-50
+                        px-2.5 py-1
+                        text-[10px]
+                        font-black
+                        text-purple-700
+                    "
+                >
+                    {{ inherited_attributes|length }}
+                </span>
+
+            </div>
+
+
+            <p
+                class="
+                    mt-1 text-sm
+                    text-gray-500
+                "
+            >
+                Automatically inherited from
+                parent categories.
+            </p>
+
+        </div>
+
+
+        {% if inherited_attributes %}
+
+            <div class="divide-y divide-gray-100">
+
+                {% for item in inherited_attributes %}
+
+                    <div class="p-6">
+
+                        <div
+                            class="
+                                flex flex-col gap-4
+                                md:flex-row
+                                md:items-center
+                                md:justify-between
+                            "
+                        >
+
+                            <div>
+
+                                <div
+                                    class="
+                                        flex flex-wrap
+                                        items-center gap-2
+                                    "
+                                >
+
+                                    <h4
+                                        class="
+                                            font-black
+                                        "
+                                    >
+                                        {{ item.attribute.name }}
+                                    </h4>
+
+
+                                    <span
+                                        class="
+                                            rounded-full
+                                            bg-purple-50
+                                            px-2.5 py-1
+                                            text-[10px]
+                                            font-black
+                                            uppercase
+                                            text-purple-700
+                                        "
+                                    >
+                                        Inherited
+                                    </span>
+
+
+                                    {% if item.is_required %}
+
+                                        <span
+                                            class="
+                                                rounded-full
+                                                bg-red-50
+                                                px-2.5 py-1
+                                                text-[10px]
+                                                font-black
+                                                uppercase
+                                                text-red-700
+                                            "
+                                        >
+                                            Required
+                                        </span>
+
+                                    {% endif %}
+
+
+                                    {% if item.is_variant_attribute %}
+
+                                        <span
+                                            class="
+                                                rounded-full
+                                                bg-emerald-50
+                                                px-2.5 py-1
+                                                text-[10px]
+                                                font-black
+                                                uppercase
+                                                text-emerald-700
+                                            "
+                                        >
+                                            Variant
+                                        </span>
+
+                                    {% endif %}
+
+                                </div>
+
+
+                                <p
+                                    class="
+                                        mt-2 text-xs
+                                        text-gray-500
+                                    "
+                                >
+                                    Inherited from
+                                    <strong>
+                                        {{ item.category.name }}
+                                    </strong>
+                                </p>
+
+
+                                <div
+                                    class="
+                                        mt-3 flex
+                                        flex-wrap gap-2
+                                    "
+                                >
+
+                                    {% for value in item.attribute.values.all %}
+
+                                        <span
+                                            class="
+                                                rounded-full
+                                                bg-gray-100
+                                                px-3 py-1.5
+                                                text-xs
+                                                font-bold
+                                                text-gray-700
+                                            "
+                                        >
+                                            {{ value.value }}
+                                        </span>
+
+                                    {% empty %}
+
+                                        <span
+                                            class="
+                                                text-xs
+                                                text-amber-600
+                                            "
+                                        >
+                                            No values
+                                        </span>
+
+                                    {% endfor %}
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- Override means assigning the
+                                 same attribute directly here. -->
+
+                            <a
+                                href="{% url 'supermarket:category_attribute_add' category.pk %}"
+                                class="
+                                    shrink-0
+                                    rounded-lg
+                                    border
+                                    border-purple-200
+                                    px-4 py-2
+                                    text-xs
+                                    font-black
+                                    text-purple-700
+                                    transition
+                                    hover:bg-purple-50
+                                "
+                            >
+                                Override
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div
+                class="
+                    p-12 text-center
+                    text-sm text-gray-500
+                "
+            >
+                No attributes are inherited
+                from parent categories.
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endblock %}

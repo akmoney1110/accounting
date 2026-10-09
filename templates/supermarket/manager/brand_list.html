@@ -1,0 +1,223 @@
+{% extends "supermarket/manager/base.html" %}
+
+{% block title %}Brands{% endblock %}
+{% block page_title %}Brands{% endblock %}
+
+{% block header_actions %}
+<a
+    href="{% url 'supermarket:brand_add' %}"
+    class="
+        rounded-xl bg-emerald-500
+        px-4 py-2.5 text-sm font-black
+        text-gray-950 hover:bg-emerald-400
+    "
+>
+    + Add Brand
+</a>
+{% endblock %}
+
+
+{% block content %}
+
+<div
+    class="
+        overflow-hidden rounded-2xl
+        border border-gray-200 bg-white
+    "
+>
+
+    <div class="border-b border-gray-200 p-6">
+
+        <h2 class="text-lg font-black">
+            Product Brands
+        </h2>
+
+        <p class="mt-1 text-sm text-gray-500">
+            Manage manufacturers and brands sold
+            in your supermarket.
+        </p>
+
+    </div>
+
+
+    {% if brands %}
+
+        <div class="divide-y divide-gray-100">
+
+            {% for brand in brands %}
+
+                <div
+                    class="
+                        flex flex-col gap-4 p-5
+                        sm:flex-row sm:items-center
+                        sm:justify-between
+                    "
+                >
+
+                    <div class="flex items-center gap-4">
+
+                        {% if brand.logo %}
+
+                            <img
+                                src="{{ brand.logo.url }}"
+                                alt="{{ brand.name }}"
+                                class="
+                                    h-14 w-14 rounded-xl
+                                    border border-gray-200
+                                    object-contain p-1
+                                "
+                            >
+
+                        {% else %}
+
+                            <div
+                                class="
+                                    flex h-14 w-14
+                                    items-center justify-center
+                                    rounded-xl bg-gray-100
+                                    text-xl
+                                "
+                            >
+                                🏷️
+                            </div>
+
+                        {% endif %}
+
+
+                        <div>
+
+                            <div
+                                class="
+                                    flex items-center gap-2
+                                "
+                            >
+
+                                <h3 class="font-black">
+                                    {{ brand.name }}
+                                </h3>
+
+                                {% if brand.is_active %}
+
+                                    <span
+                                        class="
+                                            rounded-full
+                                            bg-emerald-50
+                                            px-2 py-1
+                                            text-[10px]
+                                            font-black
+                                            text-emerald-700
+                                        "
+                                    >
+                                        ACTIVE
+                                    </span>
+
+                                {% else %}
+
+                                    <span
+                                        class="
+                                            rounded-full
+                                            bg-gray-100
+                                            px-2 py-1
+                                            text-[10px]
+                                            font-black
+                                            text-gray-500
+                                        "
+                                    >
+                                        HIDDEN
+                                    </span>
+
+                                {% endif %}
+
+                            </div>
+
+
+                            {% if brand.description %}
+
+                                <p
+                                    class="
+                                        mt-1 max-w-xl
+                                        text-sm text-gray-500
+                                    "
+                                >
+                                    {{ brand.description|truncatechars:100 }}
+                                </p>
+
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="flex gap-2">
+
+                        <a
+                            href="{% url 'supermarket:brand_edit' brand.pk %}"
+                            class="
+                                rounded-lg
+                                border border-gray-200
+                                px-3 py-2
+                                text-xs font-bold
+                            "
+                        >
+                            Edit
+                        </a>
+
+
+                        <form
+                            method="post"
+                            action="{% url 'supermarket:brand_delete' brand.pk %}"
+                            onsubmit="
+                                return confirm(
+                                    'Delete this brand?'
+                                );
+                            "
+                        >
+                            {% csrf_token %}
+
+                            <button
+                                class="
+                                    rounded-lg
+                                    border border-red-200
+                                    px-3 py-2
+                                    text-xs font-bold
+                                    text-red-600
+                                "
+                            >
+                                Delete
+                            </button>
+
+                        </form>
+
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    {% else %}
+
+        <div class="p-16 text-center">
+
+            <div class="text-5xl">
+                🏷️
+            </div>
+
+            <h3 class="mt-4 text-xl font-black">
+                No brands yet
+            </h3>
+
+            <p class="mt-2 text-sm text-gray-500">
+                Add brands such as Samsung, LG,
+                Nivea, Nestlé or Oraimo.
+            </p>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}
